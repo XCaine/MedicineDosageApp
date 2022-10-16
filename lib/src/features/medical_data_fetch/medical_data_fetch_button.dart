@@ -1,59 +1,41 @@
+import 'package:csv/csv.dart';
+import 'package:drugs_dosage_app/src/shared/classes/medicine.dart';
+import 'package:drugs_dosage_app/src/shared/data_fetch/medicine_header_mapper.dart';
+import 'package:drugs_dosage_app/src/shared/database/database_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../../shared/classes/medicine.dart';
-import '../../shared/database/database.dart';
-
-class MedicalDataFetchButton extends StatefulWidget {
-  const MedicalDataFetchButton({Key? key}) : super(key: key);
+class MedicalDataButton extends StatefulWidget {
+  const MedicalDataButton({Key? key}) : super(key: key);
 
   @override
-  State<MedicalDataFetchButton> createState() => _MedicalDataFetchButtonState();
+  State<MedicalDataButton> createState() => _MedicalDataButtonState();
 }
 
-class _MedicalDataFetchButtonState extends State<MedicalDataFetchButton> {
-  final String url =
-      'https://api.dane.gov.pl/resources/29618,wykaz-produktow-leczniczych-plik-w-formacie-csv/file';
-
-  setData(http.Response response) {
-    print('gotcha');
-  }
+class _MedicalDataButtonState extends State<MedicalDataButton> {
+  final _dbClient = DatabaseFacade();
+  final _apiUrl = 'https://api.dane.gov.pl/resources/29618,wykaz-produktow-leczniczych-plik-w-formacie-csv/file';
 
   fetchMedicalData() async {
-    //Future<http.Response> res = http.get(Uri.parse(url)).then((value) => setData(value));
-    //print(res);
+    final response = await http.get(Uri.parse(_apiUrl));
 
-    DatabaseHandler handler = DatabaseHandler();
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load medical records');
+    } else {
+      List<List<dynamic>> decoded = const CsvToListConverter(
+        fieldDelimiter: ';',
+        eol: '\n',
+      ).convert(response.body);
 
-    // Create a Dog and add it to the dogs table
-    var newDrug = const Medicine(
-      productIdentifier: '100000014',
-      productName: 'Zoledronic acid Fresenius Kabi',
-    );
-
-    await handler.insertMedicine(newDrug);
-
-    // Now, use the method above to retrieve all the dogs.
-    List<Medicine> results = await handler.fetchMedicine();
-    print(results); // Prints a list that include Fido.
-
-    // Update Fido's age and save it to the database.
-    newDrug = Medicine(
-      id: results.first.id,
-      productIdentifier: '100000014',
-      productName: 'Zoledronic acid Fresenius Kabi version2',
-    );
-    await handler.updateMedicine(newDrug);
-
-    // Print the updated results.
-    results = await handler.fetchMedicine();
-    print(results); // Prints Fido with age 42.
-
-    // Delete Fido from the database.
-    await handler.deleteMedicine(results.first.id!);
-
-    // Print the list of dogs (empty).
-    print(await handler.fetchMedicine());
+      List<List<dynamic>> instances = decoded.skip(1).toList();
+      List<Medicine> medicineList = [];
+      for (List<dynamic> instanceData in instances) {
+        Medicine medicineInstance = ApiMedicineMapper().mapData(instanceData);
+        medicineList.add(medicineInstance);
+      }
+      await _dbClient.insertMedicineList(medicineList);
+      print('Loaded data');
+    }
   }
 
   @override

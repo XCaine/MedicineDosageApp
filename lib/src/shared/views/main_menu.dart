@@ -1,7 +1,7 @@
+import 'package:drugs_dosage_app/src/features/root/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/medical_data_fetch/medical_data_fetch_button.dart';
 import '../constants/constants.dart';
 
 class MainMenu extends StatefulWidget {
@@ -17,19 +17,34 @@ class _MainMenuState extends State<MainMenu> {
     return Drawer(
       child: ListView(
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(
+          DrawerHeader(
+            decoration: const BoxDecoration(
                 color: Colors.blue,
-                gradient: LinearGradient(colors: [Colors.grey, Colors.blue])),
-            child: Text(''),
-          ),
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Menu'),
-            onTap: () {
-              context.go(Constants.homeScreenRoute);
-              Navigator.pop(context);
-            },
+                image: DecorationImage(image: AssetImage('resources/images/menu-background.jpg'), fit: BoxFit.cover)),
+            child: FractionallySizedBox(
+                alignment: Alignment.topLeft,
+                widthFactor: 0.5,
+                heightFactor: 0.4,
+                child: Container(
+                  color: Colors.lightBlue.withOpacity(0.7),
+                  child: ListTile(
+                    leading: const Icon(Icons.home_outlined),
+                    title: const Text('Menu'),
+                    onTap: () {
+                      context.go(Constants.homeScreenRoute);
+                      Navigator.pop(context);
+                },
+              ),
+            )
+                /*ListTile(
+                leading: const Icon(Icons.home),
+                title: const Text('Menu'),
+                onTap: () {
+                  context.go(Constants.homeScreenRoute);
+                  Navigator.pop(context);
+                },
+              ),*/
+                ),
           ),
           ListTile(
               leading: const Icon(Icons.medical_services_outlined),
@@ -45,7 +60,16 @@ class _MainMenuState extends State<MainMenu> {
                 context.go(Constants.bmiCalculatorScreenRoute);
                 Navigator.pop(context);
               }),
-          const MedicalDataFetchButton(),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Ustawienia'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Settings()),
+              );
+            },
+          ),
         ],
       ),
     );
