@@ -1,76 +1,98 @@
 import 'dart:async';
 
+import 'package:drugs_dosage_app/src/shared/classes/root_model.dart';
+import 'package:drugs_dosage_app/src/shared/providers/bootstrap_query_provider.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
-import '../classes/medicine.dart';
+import '../constants/constants.dart';
 
 class DatabaseHandler {
-  late Future<sqflite.Database> database;
-  DatabaseHandler() {
-    database = initDatabase();
+  Future<sqflite.Database> database;
+  static DatabaseHandler? _instance;
+
+  DatabaseHandler._internal() : database = _initDatabase();
+
+  factory DatabaseHandler() {
+    if(_instance == null) {
+      print('!!!Instance is null!!!');
+    }
+    _instance ??= DatabaseHandler._internal();
+
+    return _instance!;
   }
 
-  Future<sqflite.Database> initDatabase() async {
-    //TODO REMOVE
-    String databasePath = join(await sqflite.getDatabasesPath(), 'medical_app_database.db');
-    if(await sqflite.databaseFactory.databaseExists(databasePath)) {
-      sqflite.databaseFactory.deleteDatabase(databasePath);
-    }
+  factory DatabaseHandler.initialize() {
+    return DatabaseHandler();
+  }
 
-    return sqflite.openDatabase(
+  static Future<sqflite.Database> _initDatabase() async {
+    String databasePath = join(await sqflite.getDatabasesPath(), Constants.databaseName);
+    //TODO REMOVE database delete
+    await _deleteDatabaseIfExists(databasePath);
+
+    Future<sqflite.Database> database = sqflite.openDatabase(
       databasePath,
       onCreate: (db, version) {
-
-        return db.execute(
-          Medicine.getCreateTableQuery(),
-        );
+        print('Database created!');
+        return db.execute(BootstrapQueryProvider.getDatabaseBootstrapQuery());
       },
       version: 1,
     );
+    return database;
   }
 
-  Future<void> insertMedicine(Medicine medicine) async {
+  static Future<void> _deleteDatabaseIfExists(String databasePath) async {
+    print('Database deleted!');
+    if (await sqflite.databaseFactory.databaseExists(databasePath)) {
+      sqflite.databaseFactory.deleteDatabase(databasePath);
+    }
+  }
+
+  Future<void> insert<T extends RootDatabaseModel>(T object,
+      [sqflite.ConflictAlgorithm conflictAlgorithm = sqflite.ConflictAlgorithm.replace]) async {
     final db = await database;
 
-    await db.insert(
-      'medicine',
-      medicine.toMap(),
-      conflictAlgorithm: sqflite.ConflictAlgorithm.replace,
-    );
+    await db.insert(object.getDatabaseName(), object.toMap(), conflictAlgorithm: conflictAlgorithm);
   }
 
-  Future<List<Medicine>> fetchMedicine() async {
+  Future<void> insertAll<T extends RootDatabaseModel>(List<T> objects,
+      [sqflite.ConflictAlgorithm conflictAlgorithm = sqflite.ConflictAlgorithm.replace]) async {
+    if (objects.isEmpty) {
+      return;
+    }
+    final tableName = objects.first.getDatabaseName();
     final db = await database;
 
-    final List<Map<String, dynamic>> maps = await db.query('medicine');
-
-    return List.generate(maps.length, (i) {
-      return Medicine(
-        id: maps[i]['id'],
-        productIdentifier: maps[i]['productIdentifier'],
-        productName: maps[i]['productName'],
-      );
-    });
+    sqflite.Batch batch = db.batch();
+    for (var element in objects) {
+      batch.insert(tableName, element.toMap(), conflictAlgorithm: conflictAlgorithm);
+    }
+    batch.commit();
   }
 
-  Future<void> updateMedicine(Medicine medicine) async {
+  Future<List<T>> get<T extends RootDatabaseModel>(
+      String tableName, T Function(Map<String, dynamic>) constructorCallback) async {
     final db = await database;
 
-    await db.update(
-      'medicine',
-      medicine.toMap(),
-      where: 'id = ?',
-      whereArgs: [medicine.id],
-    );
+    final List<Map<String, dynamic>> maps = await db.query(tableName);
+    return List.generate(maps.length, (i) => constructorCallback(maps[i]));
   }
 
-  Future<void> deleteMedicine(int id) async {
+  Future<void> update<T extends RootDatabaseModel>(T object) async {
+    assert(object.id != null, 'ID cannot be null');
+    final db = await database;
+    object.updateTime = DateTime.now();
+    await db.update(object.getDatabaseName(), object.toMap(), where: 'id = ?', whereArgs: [object.id]);
+  }
+
+  Future<void> delete<T extends RootDatabaseModel>(T object) async {
+    assert(object.id != null, 'ID cannot be null');
     final db = await database;
     await db.delete(
-      'medicine',
+      object.getDatabaseName(),
       where: 'id = ?',
-      whereArgs: [id],
+      whereArgs: [object.id],
     );
   }
 }

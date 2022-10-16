@@ -1,11 +1,11 @@
 abstract class RootDatabaseModel {
-  //DateTime createTime;
-  //DateTime updateTime;
-  final int? id;
+  final DateTime createTime = DateTime.now();
+  DateTime updateTime = DateTime.now();
+  int? id;
 
-  const RootDatabaseModel({
-    this.id,
-  });
+  RootDatabaseModel({this.id});
 
   Map<String, dynamic> toMap();
+
+  String getDatabaseName();
 }
