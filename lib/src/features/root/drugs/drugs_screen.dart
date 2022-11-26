@@ -1,8 +1,8 @@
 import 'package:drugs_dosage_app/src/features/root/drugs/drug_detail.dart';
+import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
 import 'package:drugs_dosage_app/src/shared/views/main_menu.dart';
 import 'package:flutter/material.dart';
 
-import '../../../shared/classes/medicine.dart';
 import '../../../shared/database/database.dart';
 
 class DrugsList extends StatefulWidget {
@@ -13,7 +13,7 @@ class DrugsList extends StatefulWidget {
 }
 
 class _DrugsListState extends State<DrugsList> {
-  final _dbHandler = DatabaseHandler();
+  final _dbHandler = DatabaseBroker();
   final int _limit = 10;
   bool _hasNextPage = true;
   bool _isFirstLoadRunning = false;

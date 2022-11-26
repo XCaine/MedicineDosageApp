@@ -1,6 +1,5 @@
+import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
 import 'package:flutter/material.dart';
-
-import '../../../shared/classes/medicine.dart';
 
 class DrugDetail extends StatelessWidget {
   const DrugDetail({Key? key, required this.medicine}) : super(key: key);

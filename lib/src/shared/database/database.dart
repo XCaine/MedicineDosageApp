@@ -1,29 +1,29 @@
 import 'dart:async';
 
-import 'package:drugs_dosage_app/src/shared/classes/root_model.dart';
+import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
+import 'package:drugs_dosage_app/src/shared/models/root_model.dart';
 import 'package:drugs_dosage_app/src/shared/providers/bootstrap_query_provider.dart';
+import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
 import '../constants/constants.dart';
 
-class DatabaseHandler {
+class DatabaseBroker {
   Future<sqflite.Database> database;
-  static DatabaseHandler? _instance;
+  static final Logger _logger = LogDistributor.getLoggerFor('DatabaseHandler');
+  static DatabaseBroker? _instance;
 
-  DatabaseHandler._internal() : database = _initDatabase();
+  DatabaseBroker._internal() :
+        database = _initDatabase();
 
-  factory DatabaseHandler() {
-    if(_instance == null) {
-      print('!!!Instance is null!!!');
-    }
-    _instance ??= DatabaseHandler._internal();
-
+  factory DatabaseBroker() {
+    _instance ??= DatabaseBroker._internal();
     return _instance!;
   }
 
-  factory DatabaseHandler.initialize() {
-    return DatabaseHandler();
+  factory DatabaseBroker.initialize() {
+    return DatabaseBroker();
   }
 
   static Future<sqflite.Database> _initDatabase() async {
@@ -34,7 +34,7 @@ class DatabaseHandler {
     Future<sqflite.Database> database = sqflite.openDatabase(
       databasePath,
       onCreate: (db, version) {
-        print('Database created!');
+        _logger.info('Database successfully created');
         return db.execute(BootstrapQueryProvider.getDatabaseBootstrapQuery());
       },
       version: 1,
@@ -43,9 +43,14 @@ class DatabaseHandler {
   }
 
   static Future<void> _deleteDatabaseIfExists(String databasePath) async {
-    print('Database deleted!');
+
     if (await sqflite.databaseFactory.databaseExists(databasePath)) {
-      sqflite.databaseFactory.deleteDatabase(databasePath);
+      _logger.info('Deleting database');
+      try {
+        sqflite.databaseFactory.deleteDatabase(databasePath);
+      } catch(e, stackTrace) {
+       _logger.severe('Failed to delete database', e, stackTrace);
+      }
     }
   }
 
