@@ -1,4 +1,4 @@
-import 'package:drugs_dosage_app/src/shared/providers/impl/registered_medicine_provider.dart';
+import 'package:drugs_dosage_app/src/shared/providers/medicine/impl/registered_medicine_loader.dart';
 import 'package:flutter/material.dart';
 
 class MedicalDataButton extends StatefulWidget {
@@ -11,7 +11,7 @@ class MedicalDataButton extends StatefulWidget {
 class _MedicalDataButtonState extends State<MedicalDataButton> {
 
   void fetchMedicalData() async {
-    await RegisteredMedicineProvider().loadMedicalData();
+    await RegisteredMedicineLoader().load();
   }
 
   @override

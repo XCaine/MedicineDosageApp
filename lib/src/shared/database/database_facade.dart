@@ -5,8 +5,9 @@ import 'database.dart';
 
 class DatabaseFacade {
   static final DatabaseBroker _databaseBroker = DatabaseBroker();
-  final DatabaseMedicineHandler medicineHandler =
+
+  static final DatabaseMedicineHandler medicineHandler =
       DatabaseMedicineHandler(databaseBroker: _databaseBroker);
-  final DatabasePackagingOptionHandler packagingOptionHandler =
+  static final DatabasePackagingOptionHandler packagingOptionHandler =
       DatabasePackagingOptionHandler(databaseBroker: _databaseBroker);
 }

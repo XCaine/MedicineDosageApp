@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 class LogDistributor {
@@ -9,11 +10,13 @@ class LogDistributor {
   }
 
   static _onRecord(LogRecord record) {
-    String msg = '${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}';
-    if(record.error != null) {
-      msg = '$msg with Exception\n${record.error}';
+    if (kDebugMode) {
+      String msg = '${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}';
+      if(record.error != null) {
+        msg = '$msg with Exception\n${record.error}';
+      }
+      print(msg);
     }
-    print(msg);
   }
 
   static final Map<String, Logger> _cache = {};

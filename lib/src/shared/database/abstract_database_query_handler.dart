@@ -14,10 +14,10 @@ abstract class AbstractDatabaseQueryHandler<T extends RootDatabaseModel> {
     databaseBroker.insertAll(objectList);
   }
 
-  Future<List<T>> getObject(
+  Future<List<T>> getObjects(
       String databaseName, Function(Map<String, dynamic>) constructor) async {
     Future<List<T>> medicine =
-        databaseBroker.get(databaseName, (queryResult) => constructor(queryResult));
+        databaseBroker.getAll(databaseName, (queryResult) => constructor(queryResult));
     return medicine;
   }
 
