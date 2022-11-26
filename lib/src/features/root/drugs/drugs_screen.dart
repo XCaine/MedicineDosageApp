@@ -1,7 +1,9 @@
 import 'package:drugs_dosage_app/src/features/root/drugs/drug_detail.dart';
+import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
 import 'package:drugs_dosage_app/src/shared/views/main_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 import '../../../shared/database/database.dart';
 
@@ -13,6 +15,7 @@ class DrugsList extends StatefulWidget {
 }
 
 class _DrugsListState extends State<DrugsList> {
+  static final Logger _logger = LogDistributor.getLoggerFor('DrugsList');
   final _dbHandler = DatabaseBroker();
   final int _limit = 10;
   bool _hasNextPage = true;
@@ -38,8 +41,8 @@ class _DrugsListState extends State<DrugsList> {
         _drugs.addAll(tempDrugs);
         _lastid += _limit;
       });
-    } catch (e) {
-      print('Something went load during initial load');
+    } catch (e, stackTrace) {
+      _logger.severe('Something went load during initial load', e, stackTrace);
     }
 
     setState(() {
@@ -57,7 +60,7 @@ class _DrugsListState extends State<DrugsList> {
     }
     try {
       final db = await _dbHandler.database;
-      print('Loading more; Last ID: $_lastid, Limit: $_limit');
+      _logger.info('Loading more; Last ID: $_lastid, Limit: $_limit');
       List<Map<String, Object?>> responseList =
           await db.rawQuery('select * from medicine where id > $_lastid order by id limit $_limit');
       if (responseList.isNotEmpty) {
@@ -74,8 +77,8 @@ class _DrugsListState extends State<DrugsList> {
           _hasNextPage = false;
         });
       }
-    } catch (e) {
-      print('Something went load during another load');
+    } catch (e, stackTrace) {
+      _logger.severe('Something went load during another load', e, stackTrace);
     }
 
     setState(() {

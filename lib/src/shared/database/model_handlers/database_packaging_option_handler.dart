@@ -14,11 +14,11 @@ class DatabasePackagingOptionHandler
     super.insertObjectList(packagingOptionList);
   }
 
-  Future<List<PackagingOption>> getPackagingOption() async {
-    Future<List<PackagingOption>> packagingOption = super.getObject(
+  Future<List<PackagingOption>> getPackagingOptions() async {
+    Future<List<PackagingOption>> packagingOptions = super.getObjects(
         PackagingOption.databaseName(),
         (queryResult) => PackagingOption.fromJson(queryResult));
-    return packagingOption;
+    return packagingOptions;
   }
 
   Future<void> updateMedicine(PackagingOption packagingOption) async {

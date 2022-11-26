@@ -3,30 +3,31 @@ import 'package:drugs_dosage_app/src/shared/models/root_model.dart';
 class PackagingOption extends RootDatabaseModel {
   static const String _databaseName = 'packaging';
 
-  static const String externalIdFieldName = 'externalId';
+  static const List<String> drugCategories = [
+    'otc', 'rp', 'rpz', 'rpw', 'lz'
+  ];
+
+  static const String medicineIdFieldName = 'medicineId';
   static const String categoryFieldName = 'category';
-  static const String numberFieldName = 'number';
   static const String freeTextFieldName = 'freeText';
 
-  String externalId;
+  //foreign key
+  int medicineId;
   String category;
-  String number;
   String freeText;
 
   PackagingOption(
       {super.id,
-      required this.externalId,
+      required this.medicineId,
       required this.category,
-      required this.number,
       required this.freeText});
 
   @override
   factory PackagingOption.fromJson(Map<String, dynamic> json) {
     return PackagingOption(
       id: json[RootDatabaseModel.idFieldName],
-      externalId: json[externalIdFieldName],
+      medicineId: json[medicineIdFieldName],
       category: json[categoryFieldName],
-      number: json[numberFieldName],
       freeText: json[freeTextFieldName],
     );
   }
@@ -43,9 +44,8 @@ class PackagingOption extends RootDatabaseModel {
   @override
   Map<String, dynamic> toMap() {
     final map = {
-      externalIdFieldName: externalId,
+      medicineIdFieldName: medicineId,
       categoryFieldName: category,
-      numberFieldName: number,
       freeTextFieldName: freeText
     };
     return map;

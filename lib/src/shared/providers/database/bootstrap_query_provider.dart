@@ -1,8 +1,10 @@
-class BootstrapQueryProvider {
-  static const String _query = '''
+import 'package:drugs_dosage_app/src/shared/providers/abstract_provider.dart';
+
+class BootstrapQueryProvider implements AbstractProvider {
+  final String _query = '''
     CREATE TABLE medicine(
       id INTEGER PRIMARY KEY, 
-      productIdentifier VARCHAR(255), 
+      productIdentifier VARCHAR(255) UNIQUE, 
       productName VARCHAR(255),
       commonlyUsedName VARCHAR(255),
       medicineType VARCHAR(255),
@@ -23,7 +25,8 @@ class BootstrapQueryProvider {
     )
     ''';
 
-  static String getDatabaseBootstrapQuery() {
+  @override
+  provide() {
     return _query;
   }
 }

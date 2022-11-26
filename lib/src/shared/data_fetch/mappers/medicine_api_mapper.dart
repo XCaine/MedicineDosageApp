@@ -3,7 +3,7 @@ import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
 import 'package:logging/logging.dart';
 
-import 'medicine_api_filter.dart';
+import '../filters/impl/medicine_api_filter.dart';
 
 class ApiMedicineMapper {
   late final List<dynamic> parsedHeader;
@@ -54,7 +54,7 @@ class ApiMedicineMapper {
     'charakterystyka': Medicine.characteristicsFieldName,
   };
 
-  Medicine? mapData(List<dynamic> data) {
+  Medicine? map(List<dynamic> data) {
     final int dataLength = data.length;
     Map<String, dynamic> json = {};
     for (int index = 0; index <= dataLength - 1; index++) {
@@ -70,6 +70,5 @@ class ApiMedicineMapper {
     } else {
       return null;
     }
-
   }
 }
