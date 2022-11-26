@@ -3,6 +3,8 @@ abstract class RootDatabaseModel {
   DateTime updateTime = DateTime.now();
   int? id;
 
+  static const String idFieldName = 'id';
+
   RootDatabaseModel({this.id});
 
   Map<String, dynamic> toMap();

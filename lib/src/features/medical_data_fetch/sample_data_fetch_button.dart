@@ -1,8 +1,6 @@
-import 'package:drugs_dosage_app/src/shared/database/database_facade.dart';
-import 'package:drugs_dosage_app/src/shared/providers/sample_medicine_provider.dart';
+import 'package:drugs_dosage_app/src/shared/providers/impl/sample_medicine_provider.dart';
 import 'package:flutter/material.dart';
 
-import '../../shared/classes/medicine.dart';
 
 class SampleMedicalDataButton extends StatefulWidget {
   const SampleMedicalDataButton({Key? key}) : super(key: key);
@@ -12,11 +10,9 @@ class SampleMedicalDataButton extends StatefulWidget {
 }
 
 class _SampleMedicalDataButtonState extends State<SampleMedicalDataButton> {
-  final DatabaseFacade _dbClient = DatabaseFacade();
 
-  void fetchSampleData() {
-    List<Medicine> medicineList = SampleMedicineProvider().data;
-    _dbClient.insertMedicineList(medicineList);
+  void fetchSampleData() async {
+    await SampleMedicineProvider().loadMedicalData();
   }
 
   @override
