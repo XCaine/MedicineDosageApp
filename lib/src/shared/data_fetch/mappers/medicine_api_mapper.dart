@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:diacritic/diacritic.dart';
+import 'package:drugs_dosage_app/src/shared/data_fetch/packaging_options_parser.dart';
 import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
 import 'package:logging/logging.dart';
@@ -64,11 +67,18 @@ class ApiMedicineMapper {
       }
     }
 
-    if(ApiMedicineFilter(medicineMap: json).isValid()) {
-      Medicine medicineInstance = Medicine.fromJson(json);
-      return medicineInstance;
-    } else {
+    if (!ApiMedicineFilter(medicineMap: json).isValid()) {
       return null;
     }
+    String packagingInfo = json[Medicine.packagingFieldName];
+    Map<String, dynamic> packages =
+        PackagingOptionsParser(rawData: packagingInfo).parseToJson();
+    if(packages.isEmpty) {
+      return null;
+    }
+    String jsonEncodedPackages = jsonEncode(packages);
+    json[Medicine.packagingFieldName] = jsonEncodedPackages;
+    Medicine medicineInstance = Medicine.fromJson(json);
+    return medicineInstance;
   }
 }

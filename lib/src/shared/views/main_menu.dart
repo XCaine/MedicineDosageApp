@@ -33,24 +33,22 @@ class _MainMenuState extends State<MainMenu> {
                     onTap: () {
                       context.go(Constants.homeScreenRoute);
                       Navigator.pop(context);
-                },
-              ),
-            )
-                /*ListTile(
-                leading: const Icon(Icons.home),
-                title: const Text('Menu'),
-                onTap: () {
-                  context.go(Constants.homeScreenRoute);
-                  Navigator.pop(context);
-                },
-              ),*/
-                ),
+                    },
+                  ),
+                )),
           ),
           ListTile(
               leading: const Icon(Icons.medical_services_outlined),
-              title: const Text('Lista leków'),
+              title: const Text('Baza leków'),
               onTap: () {
                 context.go(Constants.drugsScreenRoute);
+                Navigator.pop(context);
+              }),
+          ListTile(
+              leading: const Icon(Icons.medical_information_outlined),
+              title: const Text('Kalkulator dawek'),
+              onTap: () {
+                context.go(Constants.drugDosageCalculatorScreenRoute);
                 Navigator.pop(context);
               }),
           ListTile(

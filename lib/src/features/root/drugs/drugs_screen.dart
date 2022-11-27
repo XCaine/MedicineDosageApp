@@ -21,7 +21,7 @@ class _DrugsListState extends State<DrugsList> {
   bool _hasNextPage = true;
   bool _isFirstLoadRunning = false;
   bool _isLoadMoreRunning = false;
-  int _lastid = 0;
+  int _lastId = 0;
 
   final List<Medicine> _drugs = [];
 
@@ -32,14 +32,14 @@ class _DrugsListState extends State<DrugsList> {
     try {
       final db = await _dbHandler.database;
       List<Map<String, Object?>> responseList =
-          await db.rawQuery('select * from medicine where id > $_lastid order by id limit $_limit');
+          await db.rawQuery('select * from medicine where id > $_lastId order by id limit $_limit');
       List<Medicine> tempDrugs = [];
       for (Map<String, Object?> response in responseList) {
         tempDrugs.add(Medicine.fromJson(response));
       }
       setState(() {
         _drugs.addAll(tempDrugs);
-        _lastid += _limit;
+        _lastId += _limit;
       });
     } catch (e, stackTrace) {
       _logger.severe('Something went load during initial load', e, stackTrace);
@@ -60,9 +60,9 @@ class _DrugsListState extends State<DrugsList> {
     }
     try {
       final db = await _dbHandler.database;
-      _logger.info('Loading more; Last ID: $_lastid, Limit: $_limit');
+      _logger.info('Loading more; Last ID: $_lastId, Limit: $_limit');
       List<Map<String, Object?>> responseList =
-          await db.rawQuery('select * from medicine where id > $_lastid order by id limit $_limit');
+          await db.rawQuery('select * from medicine where id > $_lastId order by id limit $_limit');
       if (responseList.isNotEmpty) {
         List<Medicine> tempDrugs = [];
         for (Map<String, Object?> response in responseList) {
@@ -70,7 +70,7 @@ class _DrugsListState extends State<DrugsList> {
         }
         setState(() {
           _drugs.addAll(tempDrugs);
-          _lastid += _limit;
+          _lastId += _limit;
         });
       } else {
         setState(() {
@@ -105,7 +105,7 @@ class _DrugsListState extends State<DrugsList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista leków'),
+        title: const Text('Baza leków'),
       ),
       drawer: const MainMenu(),
       body: _isFirstLoadRunning
