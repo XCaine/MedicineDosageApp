@@ -29,13 +29,20 @@ class DatabaseBroker {
     String databasePath =
         join(await sqflite.getDatabasesPath(), Constants.databaseName);
     //TODO REMOVE database delete
-    await _deleteDatabaseIfExists(databasePath);
+    //await _deleteDatabaseIfExists(databasePath);
 
     Future<sqflite.Database> database = sqflite.openDatabase(
       databasePath,
-      onCreate: (db, version) {
+      onConfigure: (db) async {
+        await db.execute('PRAGMA foreign_keys = ON');
+      },
+      onCreate: (db, version) async {
         _logger.info('Database successfully created');
-        return db.execute(BootstrapQueryProvider().provide());
+        List<String> bootstrapQueries = BootstrapQueryProvider().provide();
+        for(String query in bootstrapQueries) {
+          await db.execute(query);
+        }
+        //return
       },
       version: 1,
     );

@@ -1,7 +1,5 @@
-import 'package:drugs_dosage_app/src/shared/data_fetch/mappers/packaging_option_api_mapper.dart';
 import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
-import 'package:drugs_dosage_app/src/shared/models/packaging_option.dart';
 import 'package:logging/logging.dart';
 
 class ApiMedicineFilter {
@@ -18,7 +16,7 @@ class ApiMedicineFilter {
         _targetSpeciesValid() &&
         _potencyValid() &&
         _permitValidityValid() &&
-        _packagingInfoValid();
+        _packagingValid();
     return validationResult;
   }
 
@@ -65,22 +63,8 @@ class ApiMedicineFilter {
     return result;
   }
 
-  //TODO maybe move it to separate method/class and change existing packaging data to not have to parse it twice
-  //eg. for every element just do element: '$drugCategory\n$restOfTheString'
-  bool _packagingInfoValid() {
-    String? packageInfo = _medicineMap[Medicine.packagingFieldName];
-    bool result = false;
-    if (packageInfo == null) {
-      result = false;
-    } else {
-      List<Map<String, dynamic>> json =
-          ApiPackagingOptionMapper().mapToJson(packageInfo);
-      for (Map<String, dynamic> jsonElement in json) {
-        String category = jsonElement[PackagingOption.categoryFieldName];
-        String freeText = jsonElement[PackagingOption.freeTextFieldName];
-      }
-    }
-
-    return result;
+  bool _packagingValid() {
+    String? packaging = _medicineMap[Medicine.packagingFieldName];
+    return packaging != null && packaging.isNotEmpty;
   }
 }

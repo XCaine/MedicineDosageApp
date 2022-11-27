@@ -5,7 +5,7 @@ class LogDistributor {
   //there is a nice different example in dart.dev/guides/languages/language-tour#constructors
 
   static void initialize() {
-    Logger.root.level = Level.ALL;
+    Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen((record) => _onRecord(record));
   }
 
@@ -13,7 +13,7 @@ class LogDistributor {
     if (kDebugMode) {
       String msg = '${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}';
       if(record.error != null) {
-        msg = '$msg with Exception\n${record.error}';
+        msg = '$msg with Exception\n${record.error}\n${record.stackTrace}';
       }
       print(msg);
     }

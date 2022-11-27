@@ -3,9 +3,7 @@ import 'package:drugs_dosage_app/src/shared/models/root_model.dart';
 class PackagingOption extends RootDatabaseModel {
   static const String _databaseName = 'packaging';
 
-  static const List<String> drugCategories = [
-    'otc', 'rp', 'rpz', 'rpw', 'lz'
-  ];
+  static const rootJsonFieldName = 'packages';
 
   static const String medicineIdFieldName = 'medicineId';
   static const String categoryFieldName = 'category';

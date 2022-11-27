@@ -2,9 +2,10 @@ import 'package:drugs_dosage_app/src/shared/data_fetch/mappers/packaging_option_
 import 'package:drugs_dosage_app/src/shared/database/abstract_database_query_handler.dart';
 import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
+import 'package:quiver/iterables.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 import '../../models/packaging_option.dart';
-import '../database_facade.dart';
 
 class DatabaseMedicineHandler extends AbstractDatabaseQueryHandler<Medicine> {
   static final _logger = LogDistributor.getLoggerFor('DatabaseMedicineHandler');
@@ -16,35 +17,39 @@ class DatabaseMedicineHandler extends AbstractDatabaseQueryHandler<Medicine> {
   }
 
   Future<void> insertMedicineList(List<Medicine> medicineList) async {
-    List<String> productIdentifierList =
-        medicineList.map((medicine) => medicine.productIdentifier).toList();
-    super.insertObjectList(medicineList);
-
-    var commitedMedicines =
-        await _getMedicinesBasedOnProductIdentifiers(productIdentifierList);
+    Database db = await databaseBroker.database;
     ApiPackagingOptionMapper packagingMapper = ApiPackagingOptionMapper();
-    for (Medicine medicine in commitedMedicines) {
-      List<PackagingOption> packagingOptions =
-          packagingMapper.mapToInstances(medicine.packaging, medicine.id!);
-      DatabaseFacade.packagingOptionHandler.insertObjectList(packagingOptions);
+    int chunkSize = 500;
+    var partitionedMedicineList = partition(medicineList, chunkSize);
+    int currentCount = 0;
+    int iterations = partitionedMedicineList.length;
+    var start = DateTime.now();
+    for (List<Medicine> medicineGroup in partitionedMedicineList) {
+      try {
+        currentCount++;
+        _logger.info('Iteration $currentCount/$iterations. Loading $chunkSize medical records per iteration');
+        await db.transaction((Transaction txn) async {
+          for (Medicine medicine in medicineGroup) {
+            await txn.insert(Medicine.databaseName(), medicine.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+            int lastId = await getLastInsertedRowId(txn);
+            var packages = packagingMapper.mapToJson(medicine.packaging);
+            for (var package in packages) {
+              package[PackagingOption.medicineIdFieldName] = lastId;
+              await txn.insert(PackagingOption.databaseName(), package);
+            }
+          }
+        });
+      } catch (e, stackTrace) {
+        _logger.severe('Error during inserting medicine group', e, stackTrace);
+      }
     }
-  }
-
-  Future<List<Medicine>> _getMedicinesBasedOnProductIdentifiers(
-      List<String> productIdentifiers) async {
-    List<
-        Map<String,
-            dynamic>> queryResult = await (await databaseBroker.database).rawQuery(
-        'select * from ${Medicine.databaseName()} where ${Medicine.productIdentifierFieldName} in (${productIdentifiers.join(',')})');
-
-    var instances = List.generate(
-        queryResult.length, (i) => Medicine.fromJson(queryResult[i]));
-    return instances;
+    var end = DateTime.now();
+    _logger.info('Database load took ${(end.difference(start)).inSeconds} s');
   }
 
   Future<List<Medicine>> getMedicines() async {
-    Future<List<Medicine>> medicines = super.getObjects(Medicine.databaseName(),
-        (queryResult) => Medicine.fromJson(queryResult));
+    Future<List<Medicine>> medicines =
+        super.getObjects(Medicine.databaseName(), (queryResult) => Medicine.fromJson(queryResult));
     return medicines;
   }
 

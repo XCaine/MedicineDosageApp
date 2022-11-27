@@ -1,3 +1,4 @@
+import 'package:drugs_dosage_app/src/features/root/dosage_calculator/dosage_calculator_search.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -44,5 +45,11 @@ class _MyAppState extends State<MyApp> {
         return const BmiCalculator();
       },
     ),
+    GoRoute(
+      path: Constants.drugDosageCalculatorScreenRoute,
+      builder: (BuildContext context, GoRouterState state) {
+        return DosageCalculatorSearch();
+      }
+    )
   ]);
 }
