@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:drugs_dosage_app/src/shared/models/packaging_option.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/packaging_option.dart';
 
 class ApiPackagingOptionMapper {
   List<PackagingOption> mapToInstances(String packageData, int medicineId) {

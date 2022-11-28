@@ -1,8 +1,9 @@
 import 'package:drugs_dosage_app/src/features/root/dosage_calculator/dosage_calculator_other_info.dart';
+import 'package:drugs_dosage_app/src/shared/database/database_facade.dart';
 import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/shared/models/basic_medical_record.dart';
-import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
-import 'package:drugs_dosage_app/src/shared/models/root_model.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/medicine.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/root_model.dart';
 import 'package:drugs_dosage_app/src/shared/views/main_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -94,13 +95,11 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const Text(
-                          'Dokładne dopasowanie',
-                      ),
+                      const Text('Sposób wyszukiwania'),
                       Switch(
-                          value: _exactMatch,
+                          value: _searchByProductName,
                           onChanged: (e) => setState(() => {
-                            _exactMatch = !_exactMatch,
+                            _searchByProductName = !_searchByProductName,
                             _searchForPrompts(_input)
                           })
                       ),
@@ -109,11 +108,13 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      const Text('Sposób wyszukiwania'),
+                      const Text(
+                        'Dokładne dopasowanie',
+                      ),
                       Switch(
-                          value: _searchByProductName,
+                          value: _exactMatch,
                           onChanged: (e) => setState(() => {
-                            _searchByProductName = !_searchByProductName,
+                            _exactMatch = !_exactMatch,
                             _searchForPrompts(_input)
                           })
                       ),
@@ -157,7 +158,9 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DosageCalculatorOtherInfo(medicalRecord: _medicalRecords[index])
+                            builder: (context) => DosageCalculatorOtherInfo(
+                                medicalRecord: _medicalRecords[index]
+                            )
                         ),
                       );
                     },

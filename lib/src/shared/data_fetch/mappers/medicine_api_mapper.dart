@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:diacritic/diacritic.dart';
 import 'package:drugs_dosage_app/src/shared/data_fetch/packaging_options_parser.dart';
 import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/medicine.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/packaging_option.dart';
 import 'package:logging/logging.dart';
 
 import '../filters/impl/medicine_api_filter.dart';
@@ -73,7 +74,7 @@ class ApiMedicineMapper {
     String packagingInfo = json[Medicine.packagingFieldName];
     Map<String, dynamic> packages =
         PackagingOptionsParser(rawData: packagingInfo).parseToJson();
-    if(packages.isEmpty) {
+    if(packages[PackagingOption.rootJsonFieldName].isEmpty) {
       return null;
     }
     String jsonEncodedPackages = jsonEncode(packages);

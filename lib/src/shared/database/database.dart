@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/shared/models/root_model.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/root_model.dart';
 import 'package:drugs_dosage_app/src/shared/providers/database/bootstrap_query_provider.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
@@ -29,7 +29,7 @@ class DatabaseBroker {
     String databasePath =
         join(await sqflite.getDatabasesPath(), Constants.databaseName);
     //TODO REMOVE database delete
-    //await _deleteDatabaseIfExists(databasePath);
+    //await _dropDatabaseIfExists(databasePath);
 
     Future<sqflite.Database> database = sqflite.openDatabase(
       databasePath,
@@ -49,7 +49,7 @@ class DatabaseBroker {
     return database;
   }
 
-  static Future<void> _deleteDatabaseIfExists(String databasePath) async {
+  static Future<void> _dropDatabaseIfExists(String databasePath) async {
     if (await sqflite.databaseFactory.databaseExists(databasePath)) {
       _logger.info('Deleting database');
       try {

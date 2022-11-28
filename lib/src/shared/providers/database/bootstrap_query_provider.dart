@@ -1,6 +1,6 @@
-import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
-import 'package:drugs_dosage_app/src/shared/models/packaging_option.dart';
-import 'package:drugs_dosage_app/src/shared/models/root_model.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/medicine.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/packaging_option.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/root_model.dart';
 import 'package:drugs_dosage_app/src/shared/providers/abstract_provider.dart';
 
 class BootstrapQueryProvider implements AbstractProvider {

@@ -1,83 +1,83 @@
 [
   {
     "productIdentifier": "100000001",
-    "productName": "productName1",
-    "commonlyUsedName": "commonlyUserName1",
-    "potency": "2.5 mg",
-    "pharmaceuticalForm": "tabletka",
+    "productName": "test Nalgesin",
+    "commonlyUsedName": "test Naproxenum natricum",
+    "potency": "275 mg",
+    "pharmaceuticalForm": "Tabletki powlekane",
     "permitValidity": "bezterminowe",
-    "packaging": "test"
+    "packaging": "\"05909991023744 ¦ Rp ¦ 8\n10 tabl.\n05909991023768 ¦ Rp ¦ 10\n30 tabl.\n05909991023751 ¦ Rp ¦ 9\n20 tabl.\n05909991023775 ¦ Rp ¦ 11\n60 tabl.\n05909991066178 ¦ Rp ¦ 84656\n40 tabl.\"\n"
   },
   {
     "productIdentifier": "100000002",
-    "productName": "productName2",
-    "commonlyUsedName": "commonlyUserName2",
+    "productName": "test productName2",
+    "commonlyUsedName": "test commonlyUserName2",
     "potency": "2.5 mg",
     "pharmaceuticalForm": "tabletka",
     "permitValidity": "bezterminowe",
-    "packaging": "test"
+    "packaging": "\"05909991023799 ¦ Rp ¦ 13\n20 tabl.\n"
   },
   {
     "productIdentifier": "100000003",
-    "productName": "productName3",
-    "commonlyUsedName": "commonlyUserName3",
+    "productName": "test productName3",
+    "commonlyUsedName": "testcommonlyUserName3",
     "potency": "2.5 mg",
     "pharmaceuticalForm": "tabletka",
     "permitValidity": "bezterminowe",
-    "packaging": "test"
+    "packaging": "\"05909991023799 ¦ Rp ¦ 13\n20 tabl.\n"
   },
   {
     "productIdentifier": "100000004",
-    "productName": "productName4",
-    "commonlyUsedName": "commonlyUserName4",
+    "productName": "test productName4",
+    "commonlyUsedName": "test commonlyUserName4",
     "potency": "2.5 mg",
     "pharmaceuticalForm": "tabletka",
     "permitValidity": "bezterminowe",
-    "packaging": "test"
+    "packaging": "\"05909991023799 ¦ Rp ¦ 13\n20 tabl.\n"
   },
   {
     "productIdentifier": "100000005",
-    "productName": "productName5",
-    "commonlyUsedName": "commonlyUserName5",
+    "productName": "test productName5",
+    "commonlyUsedName": "test commonlyUserName5",
     "potency": "2.5 mg",
     "pharmaceuticalForm": "tabletka",
     "permitValidity": "bezterminowe",
-    "packaging": "test"
+    "packaging": "\"05909991023799 ¦ Rp ¦ 13\n20 tabl.\n"
   },
   {
     "productIdentifier": "100000006",
-    "productName": "productName6",
-    "commonlyUsedName": "commonlyUserName6",
+    "productName": "test productName6",
+    "commonlyUsedName": "test commonlyUserName6",
     "potency": "2.5 mg",
     "pharmaceuticalForm": "tabletka",
     "permitValidity": "bezterminowe",
-    "packaging": "test"
+    "packaging": "\"05909991023799 ¦ Rp ¦ 13\n20 tabl.\n"
   },
   {
     "productIdentifier": "100000007",
-    "productName": "productName7",
-    "commonlyUsedName": "commonlyUserName7",
+    "productName": "test productName7",
+    "commonlyUsedName": "test commonlyUserName7",
     "potency": "2.5 mg",
     "pharmaceuticalForm": "tabletka",
     "permitValidity": "bezterminowe",
-    "packaging": "test"
+    "packaging": "\"05909991023799 ¦ Rp ¦ 13\n20 tabl.\n"
   },
   {
     "productIdentifier": "100000008",
-    "productName": "productName8",
-    "commonlyUsedName": "commonlyUserName8",
+    "productName": "test productName8",
+    "commonlyUsedName": "test commonlyUserName8",
     "potency": "2.5 mg",
     "pharmaceuticalForm": "tabletka",
     "permitValidity": "bezterminowe",
-    "packaging": "test"
+    "packaging": "\"05909991023799 ¦ Rp ¦ 13\n20 tabl.\n"
   },
   {
     "productIdentifier": "100000009",
-    "productName": "productName9",
-    "commonlyUsedName": "commonlyUserName9",
+    "productName": "test productName9",
+    "commonlyUsedName": "test commonlyUserName9",
     "potency": "2.5 mg",
     "pharmaceuticalForm": "tabletka",
     "permitValidity": "bezterminowe",
-    "packaging": "test"
+    "packaging": "\"05909991023799 ¦ Rp ¦ 13\n20 tabl.\n"
   }
 ]

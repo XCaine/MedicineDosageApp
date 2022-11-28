@@ -1,11 +1,11 @@
 import 'package:drugs_dosage_app/src/shared/data_fetch/mappers/packaging_option_api_mapper.dart';
 import 'package:drugs_dosage_app/src/shared/database/abstract_database_query_handler.dart';
 import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/medicine.dart';
 import 'package:quiver/iterables.dart';
 import 'package:sqflite/sqlite_api.dart';
 
-import '../../models/packaging_option.dart';
+import '../../models/database/packaging_option.dart';
 
 class DatabaseMedicineHandler extends AbstractDatabaseQueryHandler<Medicine> {
   static final _logger = LogDistributor.getLoggerFor('DatabaseMedicineHandler');

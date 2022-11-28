@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:drugs_dosage_app/src/shared/models/packaging_option.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/packaging_option.dart';
 import 'package:drugs_dosage_app/src/shared/util/drug_category_util.dart';
 
 ///parser for raw data coming from API
@@ -16,29 +16,29 @@ class PackagingOptionsParser {
   /// or empty list if something went wrong
   Map<String, dynamic> parseToJson() {
     List<Map<String, dynamic>> packageList = _parseInternal();
-    packageList = _validate(packageList);
+    packageList = _onlyValid(packageList);
     Map<String, dynamic> json = {
       PackagingOption.rootJsonFieldName: packageList
     };
     return json;
   }
 
-  List<Map<String, dynamic>> _validate(List<Map<String, dynamic>> json) {
-    List<Map<String, dynamic>> validatedJson = [];
-    for (Map<String, dynamic> jsonElement in json) {
+  List<Map<String, dynamic>> _onlyValid(List<Map<String, dynamic>> json) {
+    List<Map<String, dynamic>> validatedJsonPackages = [];
+    for (Map<String, dynamic> jsonPackage in json) {
       String firstLine =
-          (jsonElement[_packagingFirstLine] as String).toLowerCase();
+          (jsonPackage[_packagingFirstLine] as String).toLowerCase();
       bool packageDeleted = firstLine.contains(_deleted);
       bool isValidDrugType = DrugCategoryUtil.validDrugCategories
           .any((validDrugType) => firstLine.contains(validDrugType));
       if(!packageDeleted && isValidDrugType) {
-        validatedJson.add({
-          PackagingOption.categoryFieldName: jsonElement[PackagingOption.categoryFieldName],
-          PackagingOption.freeTextFieldName: jsonElement[PackagingOption.freeTextFieldName]
+        validatedJsonPackages.add({
+          PackagingOption.categoryFieldName: jsonPackage[PackagingOption.categoryFieldName],
+          PackagingOption.freeTextFieldName: jsonPackage[PackagingOption.freeTextFieldName]
         });
       }
     }
-    return validatedJson;
+    return validatedJsonPackages;
   }
 
   List<Map<String, dynamic>> _parseInternal() {
