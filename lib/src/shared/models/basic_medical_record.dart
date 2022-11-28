@@ -1,5 +1,5 @@
-import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
-import 'package:drugs_dosage_app/src/shared/models/root_model.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/medicine.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/root_model.dart';
 
 class BasicMedicalRecord {
   BasicMedicalRecord({required this.id, required this.commonlyUsedName, required this.productName});

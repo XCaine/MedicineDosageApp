@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:drugs_dosage_app/src/shared/database/database_facade.dart';
 import 'package:drugs_dosage_app/src/shared/io/json_file_reader.dart';
 import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/medicine.dart';
 import 'package:drugs_dosage_app/src/shared/providers/abstract_loader.dart';
+
+import '../../../data_fetch/packaging_options_parser.dart';
 
 class SampleMedicineLoader implements AbstractLoader<Medicine> {
   static final _logger = LogDistributor.getLoggerFor('SampleMedicineLoader');
@@ -19,6 +23,11 @@ class SampleMedicineLoader implements AbstractLoader<Medicine> {
     List<Medicine> medicineList = [];
     _logger.info('Creating Medicine instances');
     for(Map<String, dynamic> jsonInstance in data) {
+      String packagingInfo = jsonInstance[Medicine.packagingFieldName];
+      Map<String, dynamic> packages =
+      PackagingOptionsParser(rawData: packagingInfo).parseToJson();
+      String jsonEncodedPackages = jsonEncode(packages);
+      jsonInstance[Medicine.packagingFieldName] = jsonEncodedPackages;
       Medicine instance = Medicine.fromJson(jsonInstance);
       medicineList.add(instance);
     }

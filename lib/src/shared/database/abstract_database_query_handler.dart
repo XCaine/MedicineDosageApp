@@ -1,5 +1,5 @@
 import 'package:drugs_dosage_app/src/shared/database/database.dart';
-import 'package:drugs_dosage_app/src/shared/models/root_model.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/root_model.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 abstract class AbstractDatabaseQueryHandler<T extends RootDatabaseModel> {

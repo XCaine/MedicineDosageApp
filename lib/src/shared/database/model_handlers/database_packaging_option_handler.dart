@@ -1,5 +1,5 @@
 import 'package:drugs_dosage_app/src/shared/database/abstract_database_query_handler.dart';
-import 'package:drugs_dosage_app/src/shared/models/packaging_option.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/packaging_option.dart';
 
 //TODO relationships with medicine are not handled, so e.g. it may be possible to delete all
 // packages and related medicine would stay intact

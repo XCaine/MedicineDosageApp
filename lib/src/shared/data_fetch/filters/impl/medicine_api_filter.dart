@@ -1,5 +1,5 @@
 import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/medicine.dart';
 import 'package:logging/logging.dart';
 
 class ApiMedicineFilter {

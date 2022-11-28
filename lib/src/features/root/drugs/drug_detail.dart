@@ -1,7 +1,7 @@
 import 'package:drugs_dosage_app/src/shared/database/database.dart';
 import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/shared/models/medicine.dart';
-import 'package:drugs_dosage_app/src/shared/models/packaging_option.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/medicine.dart';
+import 'package:drugs_dosage_app/src/shared/models/database/packaging_option.dart';
 import 'package:drugs_dosage_app/src/shared/util/drug_category_util.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -41,6 +41,16 @@ class _DrugDetailState extends State<DrugDetail> {
     }
   }
 
+  EdgeInsets edgeInsetsForCards() => const EdgeInsets.symmetric(vertical: 2, horizontal: 6);
+
+  Card medicineInfoCard(String title, String subtitle) => Card(
+    margin: edgeInsetsForCards(),
+    child: ListTile(
+      title: Text(title),
+      subtitle: Text(subtitle),
+    ),
+  );
+
   @override
   void initState() {
     super.initState();
@@ -59,50 +69,18 @@ class _DrugDetailState extends State<DrugDetail> {
           Expanded(
             child: ListView(
               children: [
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: ListTile(
-                    title: Text(_medicine.productName),
-                    subtitle: const Text('nazwa produktu'),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: ListTile(
-                    title: Text(_medicine.commonlyUsedName),
-                    subtitle: const Text('substancja czynna'),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: ListTile(
-                    title: Text(_drugCategoryDescription),
-                    subtitle: const Text('kategoria leku'),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: ListTile(
-                    title: Text(_medicine.pharmaceuticalForm),
-                    subtitle: const Text('forma farmaceutyczna'),
-                  ),
-                ),
+                medicineInfoCard(_medicine.productName, 'nazwa produktu'),
+                medicineInfoCard(_medicine.commonlyUsedName, 'substancja czynna'),
+                medicineInfoCard(_drugCategoryDescription, 'kategoria leku'),
+                medicineInfoCard(_medicine.pharmaceuticalForm, 'forma farmaceutyczna'),
                 if (_drugCategoryDescription.isNotEmpty)
-                  Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                    child: ListTile(
-                      title: Text(_medicine.potency),
-                      subtitle: const Text('moc'),
-                  ),
-                ),
+                  medicineInfoCard(_medicine.potency, 'moc'),
                 if(_packages.isNotEmpty)
-                  Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                    child: ListTile(
-                      title: Text(_packages.map((e) => e.freeText).join('\n')),
-                      subtitle: const Text('Warianty opakowań'),
-                    )
-                  )
+                  medicineInfoCard(_packages.map((e) => e.freeText).join('\n'), 'warianty opakowań'),
+                if(_medicine.flyer != null)
+                  Text(_medicine.flyer!),
+                if(_medicine.characteristics != null)
+                  Text(_medicine.characteristics!),
               ],
             ),
           ),

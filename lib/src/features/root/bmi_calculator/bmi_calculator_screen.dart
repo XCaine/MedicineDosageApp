@@ -10,15 +10,14 @@ class BmiCalculator extends StatefulWidget {
 }
 
 class _BmiCalculatorState extends State<BmiCalculator> {
-  // the controller for the text field associated with "height"
   final _heightController = TextEditingController();
-
-  // the controller for the text field associated with "weight"
   final _weightController = TextEditingController();
+  final _ageController = TextEditingController();
+  String? _sex;
 
   double? _bmi;
   // the message at the beginning
-  String _message = 'Please enter your height an weight';
+  String _message = 'Wprowadź swoją wagę i wzrost';
 
   // This function is triggered when the user pressess the "Calculate" button
   void _calculate() {
@@ -28,23 +27,41 @@ class _BmiCalculatorState extends State<BmiCalculator> {
     // Check if the inputs are valid
     if (height == null || height <= 0 || weight == null || weight <= 0) {
       setState(() {
-        _message = "Your height and weigh must be positive numbers";
+        _message = "Waga lub wzrost są niepoprawne";
       });
       return;
     }
-
+    double heightInMeters = height/100;
     setState(() {
-      _bmi = weight / (height * height);
-      if (_bmi! < 18.5) {
-        _message = "You are underweight";
-      } else if (_bmi! < 25) {
-        _message = 'You body is fine';
-      } else if (_bmi! < 30) {
-        _message = 'You are overweight';
+      _bmi = weight / (heightInMeters * heightInMeters);
+      if (_bmi! < 16.0) {
+        _message = "Underweight (Severe thinness)";
+      } else if (_bmi! < 16.9) {
+        _message = "Underweight (Moderate thinness)";
+      } else if (_bmi! < 18.4) {
+        _message = "Underweight (Mild thinness)";
+      } else if (_bmi! < 24.9) {
+        _message = "Normal range";
+      } else if (_bmi! < 29.9) {
+        _message = "Overweight (Pre-obese)";
+      } else if (_bmi! < 34.9) {
+        _message = 'Obese (Class I)';
+      } else if (_bmi! < 39.9) {
+        _message = 'Obese (Class II)';
       } else {
-        _message = 'You are obese';
+        _message = 'Obese (Class III)';
       }
     });
+  }
+
+  //article: BMI classification percentile and cut off points
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    _heightController.dispose();
+    _weightController.dispose();
   }
 
   @override
@@ -64,26 +81,26 @@ class _BmiCalculatorState extends State<BmiCalculator> {
                       keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
                       decoration:
-                      const InputDecoration(labelText: 'Height (m)'),
+                      const InputDecoration(labelText: 'Wysokość (cm)'),
                       controller: _heightController,
                     ),
                     TextField(
                       keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
                       decoration: const InputDecoration(
-                        labelText: 'Weight (kg)',
+                        labelText: 'Waga (kg)',
                       ),
                       controller: _weightController,
                     ),
                     ElevatedButton(
                       onPressed: _calculate,
-                      child: const Text('Calculate'),
+                      child: const Text('Oblicz'),
                     ),
                     const SizedBox(
                       height: 30,
                     ),
                     Text(
-                      _bmi == null ? 'No Result' : _bmi!.toStringAsFixed(2),
+                      _bmi == null ? 'Brak wyniku' : _bmi!.toStringAsFixed(2),
                       style: const TextStyle(fontSize: 50),
                       textAlign: TextAlign.center,
                     ),
