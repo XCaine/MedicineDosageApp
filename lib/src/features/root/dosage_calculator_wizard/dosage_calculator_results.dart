@@ -1,6 +1,8 @@
-import 'package:drugs_dosage_app/src/shared/database/database.dart';
+import 'package:collection/collection.dart';
+import 'package:drugs_dosage_app/src/features/root/dosage_calculator_wizard/shared/close_wizard_dialog.dart';
 import 'package:drugs_dosage_app/src/shared/dosage_calculator/dosage_calculator.dart';
-import 'package:drugs_dosage_app/src/shared/dosage_calculator/dosage_result_wrapper.dart';
+import 'package:drugs_dosage_app/src/shared/dosage_calculator/dosage_result_set.dart';
+import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/shared/models/dosage_search.dart';
 import 'package:flutter/material.dart';
 
@@ -13,41 +15,45 @@ class DosageCalculatorResult extends StatefulWidget {
 }
 
 class _DosageCalculatorResultState extends State<DosageCalculatorResult> {
-  final DatabaseBroker _dbHandler = DatabaseBroker();
-  List<DosageResultWrapper> _dosageResultWrappers = [];
+  static final _logger = LogDistributor.getLoggerFor('DosageCalculatorResult');
+  List<DosageResultSet> _dosageResultWrappers = [];
+  List<int> _availablePackageSizes = [];
 
-  static const int _maxResultsCount = 50;
   bool _loading = false;
 
-  Future<void> _fetchSamplePackages() async {
+  Future<void> _fetchMatchingModels() async {
     setState(() {
       _loading = true;
     });
 
-    var db = await _dbHandler.database;
-    var packageFactorModels = await DosageCalculator(searchWrapper: widget.searchWrapper).findMatchingPackages();
-
-    List<DosageResultWrapper> results = [];
-/*    for (PackageMatchFactorModel packageFactorModel in packageFactorModels) {
-      var queryResult = await db.rawQuery('''
-        SELECT m.* FROM ${Medicine.databaseName()} m
-        JOIN ${PackagingOption.databaseName()} p on p.${PackagingOption.medicineIdFieldName} = m.${RootDatabaseModel.idFieldName}
-        WHERE p.${RootDatabaseModel.idFieldName} = ${packageFactorModel.relatedPackage.id}
-      ''');
-      var medicine = Medicine.fromJson(queryResult.single);
-      results.add(DosageResultWrapper(medicine: medicine, packageFactorModel: packageFactorModel));
-    }*/
+    var resultWrapper = await DosageCalculator(searchWrapper: widget.searchWrapper).findMatchingPackageSets();
 
     setState(() {
       _loading = false;
-      _dosageResultWrappers = results.take(_maxResultsCount).toList();
+      _dosageResultWrappers = resultWrapper.resultSets;
+      _availablePackageSizes = resultWrapper.packageVariants;
     });
+  }
+
+  String _formatPackageModels(DosageResultSet model) {
+    var countsMap = model.packages.fold<Map<int, int>>({}, (map, element) {
+      int key = element.count!;
+      map[key] = (map[key] ?? 0) + 1;
+      return map;
+    });
+    var buffer = StringBuffer();
+    for (var key in countsMap.keys) {
+      buffer.write('Package variant $key; count ${countsMap[key]}\n');
+    }
+    buffer.write('DEBUG Total dosages offered ${model.packages.map((package) => package.count!).sum}\n');
+    buffer.write('Redundancy factor: ${model.redundancyFactor}\n');
+    return buffer.toString();
   }
 
   @override
   void initState() {
     super.initState();
-    _fetchSamplePackages();
+    _fetchMatchingModels();
   }
 
   @override
@@ -55,7 +61,12 @@ class _DosageCalculatorResultState extends State<DosageCalculatorResult> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Wyniki'),
-        actions: [IconButton(onPressed: _fetchSamplePackages, icon: const Icon(Icons.refresh))],
+        //should now be deterministic
+        actions: [
+          IconButton(
+              onPressed: () => CloseWizardDialog.show(context),
+              icon: const Icon(Icons.close))
+        ],
       ),
       body: _loading
           ? const Center(
@@ -70,23 +81,24 @@ class _DosageCalculatorResultState extends State<DosageCalculatorResult> {
                         child: Text(
                           'You searched for ${widget.searchWrapper.selectedMedicine.commonlyUsedName}\n'
                           'potency ${widget.searchWrapper.selectedMedicine.potency}\n'
+                          'package variants ${_availablePackageSizes.join(',')}\n'
                           'number of days ${widget.searchWrapper.searchByDates ? widget.searchWrapper.dateEnd!.difference(widget.searchWrapper.dateStart!).inDays : widget.searchWrapper.numberOfDays}\n'
-                          'dosages per day ${widget.searchWrapper.dosagesPerDay}\n',
+                          'dosages per day ${widget.searchWrapper.dosagesPerDay}\n'
+                          'dosages total: ${widget.searchWrapper.dosagesPerDay! * (widget.searchWrapper.searchByDates ? widget.searchWrapper.dateEnd!.difference(widget.searchWrapper.dateStart!).inDays : widget.searchWrapper.numberOfDays)!}\n',
                         ),
                       ),
                     ),
                   ],
                 ),
-                /*Expanded(
+                Expanded(
                     child: ListView.builder(
                   itemBuilder: (context, index) => Card(
-                    margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-                    child: ListTile(
-                        title: Text(_dosageResultWrappers[index].medicine.productName),
-                        subtitle: Text(_dosageResultWrappers[index].packageFactorModel.relatedPackage.rawCount)),
-                  ),
+                      margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                      child: ListTile(
+                        title: Text(_formatPackageModels(_dosageResultWrappers[index])),
+                      )),
                   itemCount: _dosageResultWrappers.length,
-                )),*/
+                )),
               ],
             ),
     );

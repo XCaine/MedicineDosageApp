@@ -1,4 +1,5 @@
 import 'package:drugs_dosage_app/src/features/root/dosage_calculator_wizard/other_info_form_handler.dart';
+import 'package:drugs_dosage_app/src/features/root/dosage_calculator_wizard/shared/close_wizard_dialog.dart';
 import 'package:drugs_dosage_app/src/shared/database/database.dart';
 import 'package:drugs_dosage_app/src/shared/models/basic_medical_record.dart';
 import 'package:drugs_dosage_app/src/shared/models/database/medicine.dart';
@@ -71,6 +72,11 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Wypełnij szczegóły'),
+        actions: [
+          IconButton(
+              onPressed: () => CloseWizardDialog.show(context),
+              icon: const Icon(Icons.close))
+        ],
       ),
       body: _searchWrapper != null
           ? SingleChildScrollView(
