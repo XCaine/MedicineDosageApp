@@ -4,7 +4,7 @@ import 'package:drugs_dosage_app/src/shared/models/database/packaging_option.dar
 import 'package:collection/collection.dart';
 import 'package:logging/logging.dart';
 
-class DosageResultWrapper implements Comparable<DosageResultWrapper> {
+class DosageResultSet implements Comparable<DosageResultSet> {
   static final Logger _logger = LogDistributor.getLoggerFor('DosageResultsWrapper');
   final List<Medicine> medicines;
   final List<PackagingOption> packages;
@@ -13,7 +13,7 @@ class DosageResultWrapper implements Comparable<DosageResultWrapper> {
   //how many dosages are we losing on this set compared to target
   late final int redundancyFactor;
 
-  DosageResultWrapper({
+  DosageResultSet({
     required this.medicines,
     required this.packages,
     required this.target
@@ -29,7 +29,7 @@ class DosageResultWrapper implements Comparable<DosageResultWrapper> {
   }
 
   @override
-  int compareTo(DosageResultWrapper other) {
+  int compareTo(DosageResultSet other) {
     int result;
     if(redundancyFactor == other.redundancyFactor && packages.length == other.packages.length) {
       result = 0;

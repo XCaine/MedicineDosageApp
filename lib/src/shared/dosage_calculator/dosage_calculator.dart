@@ -1,8 +1,7 @@
-import 'dart:ffi';
-
 import 'package:drugs_dosage_app/src/shared/database/database.dart';
 import 'package:drugs_dosage_app/src/shared/dosage_calculator/dosage_calculation_algorithm.dart';
-import 'package:drugs_dosage_app/src/shared/dosage_calculator/dosage_result_wrapper.dart';
+import 'package:drugs_dosage_app/src/shared/dosage_calculator/dosage_result_set.dart';
+import 'package:drugs_dosage_app/src/shared/dosage_calculator/dosage_result_set_wrapper.dart';
 import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/shared/models/database/packaging_option.dart';
 import 'package:drugs_dosage_app/src/shared/models/database/root_model.dart';
@@ -15,11 +14,12 @@ class DosageCalculator {
   static final Logger _logger = LogDistributor.getLoggerFor('DosageCalculator');
   final DosageSearchWrapper _searchWrapper;
   final DatabaseBroker _dbHandler = DatabaseBroker();
+  static const int _numberOfResults = 3;
 
   DosageCalculator({required DosageSearchWrapper searchWrapper})
       :_searchWrapper = searchWrapper;
 
-  Future<List<DosageResultWrapper>> findMatchingPackages() async {
+  Future<DosageResultSetWrapper> findMatchingPackageSets() async {
     Database db = await _dbHandler.database;
     var allPackages = await db.rawQuery('''
       SELECT p.* FROM ${PackagingOption.databaseName()} p 
@@ -46,7 +46,7 @@ class DosageCalculator {
 
     List<List<int>> allOfferedOptions = DosageCalculationAlgorithm.apply(packageCounts, target);
 
-    List<DosageResultWrapper> results = [];
+    List<DosageResultSet> results = [];
     for(List<int> packagesForOption in allOfferedOptions) {
       //TODO change firstWhere to all instances of a matching package variant from either medicine (for each name)
       List<PackagingOption> packagesForResultWrapper = List.from(
@@ -59,18 +59,20 @@ class DosageCalculator {
               (medicine) => packagesForResultWrapper.any((package) => package.medicineId == medicine.id)
       ).toList();
 
-      var resultWrapper = DosageResultWrapper(
+      var resultWrapper = DosageResultSet(
           medicines: medicinesForResultWrapper,
           packages: packagesForResultWrapper,
           target: target
       );
       results.add(resultWrapper);
     }
+
     results.sort((a,b) => a.compareTo(b));
-    //TODO test case Abacavirum 300mg / 20 days / 2 dosages per day -> result is 30 + 60, which is stupid cause target is 40; packages are 30,60,90,120
-    // should always only choose closest package that will bring us over the limit
-    return results;
+    DosageResultSetWrapper wrapper = DosageResultSetWrapper(
+        packageVariants: packageCounts,
+        resultSets: results.take(_numberOfResults).toList()
+    );
+
+    return wrapper;
   }
-
-
 }
