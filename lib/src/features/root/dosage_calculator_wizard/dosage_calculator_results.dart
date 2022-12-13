@@ -6,6 +6,8 @@ import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/shared/models/dosage_search.dart';
 import 'package:flutter/material.dart';
 
+import '../../../shared/models/database/medicine.dart';
+
 class DosageCalculatorResult extends StatefulWidget {
   const DosageCalculatorResult({Key? key, required this.searchWrapper}) : super(key: key);
   final DosageSearchWrapper searchWrapper;
@@ -44,6 +46,9 @@ class _DosageCalculatorResultState extends State<DosageCalculatorResult> {
     var buffer = StringBuffer();
     for (var key in countsMap.keys) {
       buffer.write('Package variant $key; count ${countsMap[key]}\n');
+      //current package count ==> key
+      List<Medicine> medicinesForPackage = model.medicines.where((medicine) => model.packages.firstWhere((package) => package.count! == key).medicineId == medicine.id).toList();
+      buffer.write('\t\tAvailable drugs: ${medicinesForPackage.join(',')}\n');
     }
     buffer.write('DEBUG Total dosages offered ${model.packages.map((package) => package.count!).sum}\n');
     buffer.write('Redundancy factor: ${model.redundancyFactor}\n');
