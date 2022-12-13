@@ -76,7 +76,7 @@ class _DrugDetailState extends State<DrugDetail> {
                 if (_drugCategoryDescription.isNotEmpty)
                   medicineInfoCard(_medicine.potency, 'moc'),
                 if(_packages.isNotEmpty)
-                  medicineInfoCard(_packages.map((e) => e.freeText).join('\n'), 'warianty opakowań'),
+                  medicineInfoCard(_packages.map((e) => e.rawCount).join('\n'), 'warianty opakowań'),
                 if(_medicine.flyer != null)
                   Text(_medicine.flyer!),
                 if(_medicine.characteristics != null)

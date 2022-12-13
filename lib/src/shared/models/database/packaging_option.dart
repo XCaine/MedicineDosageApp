@@ -7,18 +7,21 @@ class PackagingOption extends RootDatabaseModel {
 
   static const String medicineIdFieldName = 'medicineId';
   static const String categoryFieldName = 'category';
-  static const String freeTextFieldName = 'freeText';
+  static const String countFieldName = 'count';
+  static const String rawCountFieldName = 'rawCount';
 
   //foreign key
   int medicineId;
   String category;
-  String freeText;
+  String rawCount;
+  int? count;
 
   PackagingOption(
       {super.id,
       required this.medicineId,
       required this.category,
-      required this.freeText});
+      required this.rawCount,
+      this.count});
 
   @override
   factory PackagingOption.fromJson(Map<String, dynamic> json) {
@@ -26,7 +29,8 @@ class PackagingOption extends RootDatabaseModel {
       id: json[RootDatabaseModel.idFieldName],
       medicineId: json[medicineIdFieldName],
       category: json[categoryFieldName],
-      freeText: json[freeTextFieldName],
+      rawCount: json[rawCountFieldName],
+      count: json[countFieldName],
     );
   }
 
@@ -44,7 +48,7 @@ class PackagingOption extends RootDatabaseModel {
     final map = {
       medicineIdFieldName: medicineId,
       categoryFieldName: category,
-      freeTextFieldName: freeText
+      countFieldName: count
     };
     return map;
   }

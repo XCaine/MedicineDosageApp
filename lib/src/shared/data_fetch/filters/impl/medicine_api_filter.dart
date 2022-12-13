@@ -11,7 +11,9 @@ class ApiMedicineFilter {
       : _medicineMap = medicineMap;
 
   bool isValid() {
-    bool validationResult = _commonlyUsedNameValid() &&
+    bool validationResult =
+        _commonlyUsedNameValid() &&
+        _pharmaceuticalFormValid() &&
         _medicineTypeValid() &&
         _targetSpeciesValid() &&
         _potencyValid() &&
@@ -27,6 +29,14 @@ class ApiMedicineFilter {
         commonlyUsedName != '-';
   }
 
+  final List<String> _validPharmaceuticalFormPatterns = ['czopki', 'globulki', 'kapsułk', 'tabletk'];
+  bool _pharmaceuticalFormValid() {
+    String? pharmaceuticalForm = _medicineMap[Medicine.pharmaceuticalFormFieldName];
+    return pharmaceuticalForm != null &&
+        pharmaceuticalForm.isNotEmpty &&
+        _validPharmaceuticalFormPatterns.any((pattern) => pharmaceuticalForm.toLowerCase().startsWith(pattern));
+  }
+
   bool _medicineTypeValid() {
     String? medicineType = _medicineMap[Medicine.medicineTypeFieldName];
     return medicineType != null && medicineType == 'Ludzki';
@@ -37,9 +47,12 @@ class ApiMedicineFilter {
     return targetSpecies == null || targetSpecies.isEmpty;
   }
 
+  //50,5 mcg        -> yes
+  //5 mg + 0.2 mg   -> no
+  final RegExp _potencyRegex = RegExp(r"^(\d+(,\d+)?) (mcg|g|mg)$");
   bool _potencyValid() {
     String? potency = _medicineMap[Medicine.potencyFieldName];
-    return potency != null && potency.isNotEmpty && potency != '-';
+    return potency != null && potency.isNotEmpty && potency != '-' && _potencyRegex.hasMatch(potency);
   }
 
   bool _permitValidityValid() {

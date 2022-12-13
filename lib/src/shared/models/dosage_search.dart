@@ -8,6 +8,8 @@ class DosageSearchWrapper {
   int? dosagesPerDay;
   DateTime? dateStart;
   DateTime? dateEnd;
+  int? numberOfDays;
+  bool searchByDates = true;
 
   factory DosageSearchWrapper.fromJson(Map<String, dynamic> medicineJson) {
     return DosageSearchWrapper(

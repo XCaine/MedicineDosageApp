@@ -4,29 +4,6 @@ import 'package:drugs_dosage_app/src/shared/models/database/root_model.dart';
 import 'package:drugs_dosage_app/src/shared/providers/abstract_provider.dart';
 
 class BootstrapQueryProvider implements AbstractProvider {
-  /*final String _query = '''
-    CREATE TABLE medicine(
-      id INTEGER PRIMARY KEY, 
-      productIdentifier VARCHAR(255) UNIQUE, 
-      productName VARCHAR(255),
-      commonlyUsedName VARCHAR(255),
-      medicineType VARCHAR(255),
-      previousName VARCHAR(255),
-      targetSpecies VARCHAR(255),
-      gracePeriod VARCHAR(255),
-      potency VARCHAR(255),
-      pharmaceuticalForm VARCHAR(255),
-      procedureType VARCHAR(255),
-      permitNumber VARCHAR(255),
-      permitValidity VARCHAR(255),
-      atcCode VARCHAR(255),
-      responsibleParty VARCHAR(255),
-      packaging TEXT,
-      activeSubstance VARCHAR(255),
-      flyer VARCHAR(255),
-      characteristics VARCHAR(255)
-    )
-    ''';*/
 
   final String _medicineQuery = '''
     CREATE TABLE ${Medicine.databaseName()}(
@@ -49,8 +26,9 @@ class BootstrapQueryProvider implements AbstractProvider {
       ${RootDatabaseModel.idFieldName} INTEGER PRIMARY KEY,
       ${PackagingOption.medicineIdFieldName} INTEGER,
       ${PackagingOption.categoryFieldName} VARCHAR(255),
-      ${PackagingOption.freeTextFieldName} TEXT,
-      FOREIGN KEY(${PackagingOption.medicineIdFieldName}) REFERENCES ${Medicine.databaseName()}(${RootDatabaseModel.idFieldName}) ON DELETE NO ACTION ON UPDATE NO ACTION
+      ${PackagingOption.rawCountFieldName} VARCHAR(255),
+      ${PackagingOption.countFieldName} INTEGER,
+      FOREIGN KEY(${PackagingOption.medicineIdFieldName}) REFERENCES ${Medicine.databaseName()}(${RootDatabaseModel.idFieldName}) ON DELETE CASCADE ON UPDATE CASCADE
     );
     ''';
 
