@@ -98,7 +98,7 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
       onTap: onListTileTap
     ) : ListTile(
       title: Text(medicalRecord.commonlyUsedName),
-      subtitle: Text('e.g.: ${medicalRecord.productName}'),
+      subtitle: Text('na przykład: ${medicalRecord.productName}'),
       onTap: onListTileTap,
     );
   }
