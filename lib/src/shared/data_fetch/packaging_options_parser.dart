@@ -1,19 +1,22 @@
 import 'dart:convert';
 
+import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/shared/models/database/packaging_option.dart';
 import 'package:drugs_dosage_app/src/shared/util/drug_category_util.dart';
+import 'package:logging/logging.dart';
 
 ///parser for raw data coming from API
 class PackagingOptionsParser {
+  static final Logger _logger = LogDistributor.getLoggerFor('PackagingOptionsParser');
   final String _rawData;
 
   PackagingOptionsParser({required rawData}) : _rawData = rawData;
 
-  static const String _packagingFirstLine = 'packagingFirstLine';
+  static const String _metadata = 'packagingFirstLine';
   static const String _deleted = 'skasowane';
 
   /// Return medicine String parsed to json
-  /// or empty list if something went wrong
+  /// or empty Map if something went wrong
   Map<String, dynamic> parseToJson() {
     List<Map<String, dynamic>> packageList = _parseInternal();
     packageList = _onlyValid(packageList);
@@ -23,21 +26,27 @@ class PackagingOptionsParser {
     return json;
   }
 
-  List<Map<String, dynamic>> _onlyValid(List<Map<String, dynamic>> json) {
+  List<Map<String, dynamic>> _onlyValid(List<Map<String, dynamic>> allPackages) {
     List<Map<String, dynamic>> validatedJsonPackages = [];
-    for (Map<String, dynamic> jsonPackage in json) {
-      String firstLine =
-          (jsonPackage[_packagingFirstLine] as String).toLowerCase();
-      bool packageDeleted = firstLine.contains(_deleted);
+    for (Map<String, dynamic> singlePackage in allPackages) {
+      String metadata = (singlePackage[_metadata] as String);
+      bool packageDeleted = metadata.contains(_deleted);
       bool isValidDrugType = DrugCategoryUtil.validDrugCategories
-          .any((validDrugType) => firstLine.contains(validDrugType));
-      if(!packageDeleted && isValidDrugType) {
+          .any((validDrugType) => metadata.contains(validDrugType));
+      bool countValid = singlePackage[PackagingOption.countFieldName] != null;
+
+      if(!packageDeleted && isValidDrugType && countValid) {
         validatedJsonPackages.add({
-          PackagingOption.categoryFieldName: jsonPackage[PackagingOption.categoryFieldName],
-          PackagingOption.freeTextFieldName: jsonPackage[PackagingOption.freeTextFieldName]
+          PackagingOption.categoryFieldName: singlePackage[PackagingOption.categoryFieldName],
+          PackagingOption.rawCountFieldName: singlePackage[PackagingOption.rawCountFieldName],
+          PackagingOption.countFieldName: singlePackage[PackagingOption.countFieldName]
         });
       }
     }
+    if(validatedJsonPackages.isEmpty) {
+      _logger.finer('They are no json packages after validation');
+    }
+
     return validatedJsonPackages;
   }
 
@@ -59,29 +68,51 @@ class PackagingOptionsParser {
         previousLine = '';
       }
     }
-    List<Map<String, dynamic>> json = [];
+    List<Map<String, dynamic>> packagesJson = [];
     for (List<String> info in packageInfo) {
-      Map<String, dynamic> package = _parseSinglePackage(info);
-      json.add(package);
-    }
-
-    return json;
-  }
-
-  Map<String, dynamic> _parseSinglePackage(
-      List<String> singlePackageInfo) {
-    assert(singlePackageInfo.length == 2);
-    Map<String, dynamic> json = {};
-    String firstLine = singlePackageInfo[0];
-    String selectedCategory = '';
-    for (String category in DrugCategoryUtil.drugCategories) {
-      if (firstLine.toLowerCase().contains(category)) {
-        selectedCategory = category;
+      try {
+        Map<String, dynamic> package = _parseSinglePackage(info);
+        packagesJson.add(package);
+      } catch(e, stackTrace) {
+        _logger.fine(e, stackTrace);
       }
     }
+
+    if(packagesJson.isEmpty) {
+      _logger.finer('There are no packages after parsing');
+    }
+
+    var seen = <int>{};
+    var deduplicatedPackagesJson = packagesJson
+        .where((packageJson) => packageJson[PackagingOption.countFieldName] != null && seen.add(packageJson[PackagingOption.countFieldName]))
+        .toList();
+
+    return deduplicatedPackagesJson;
+  }
+
+  Map<String, dynamic> _parseSinglePackage(List<String> singlePackageInfo) {
+    assert(singlePackageInfo.length == 2);
+    Map<String, dynamic> json = {};
+    String metadata = singlePackageInfo[0].toLowerCase();
+    String rawCount = singlePackageInfo[1].toLowerCase();
+
+    //'20 kaps.' -> 20
+    int? count = int.tryParse(rawCount.split(' ').first);
+
+    String selectedCategory = DrugCategoryUtil.drugCategories.firstWhere(
+        (cat) => metadata.contains(cat),
+        orElse: () => ''
+    );
+
+    //for (String category in DrugCategoryUtil.drugCategories) {
+    //  if (firstLine.toLowerCase().contains(category)) {
+    //    selectedCategory = category;
+    //  }
+    //}
     json[PackagingOption.categoryFieldName] = selectedCategory;
-    json[_packagingFirstLine] = singlePackageInfo[0];
-    json[PackagingOption.freeTextFieldName] = singlePackageInfo[1];
+    json[_metadata] = metadata;
+    json[PackagingOption.rawCountFieldName] = rawCount;
+    json[PackagingOption.countFieldName] = count;
     return json;
   }
 }

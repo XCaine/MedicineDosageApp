@@ -16,6 +16,7 @@ class DatabaseMedicineHandler extends AbstractDatabaseQueryHandler<Medicine> {
     super.insertObject(medicine);
   }
 
+  //for registered medicine loader
   Future<void> insertMedicineList(List<Medicine> medicineList) async {
     Database db = await databaseBroker.database;
     ApiPackagingOptionMapper packagingMapper = ApiPackagingOptionMapper();
@@ -31,6 +32,7 @@ class DatabaseMedicineHandler extends AbstractDatabaseQueryHandler<Medicine> {
         await db.transaction((Transaction txn) async {
           for (Medicine medicine in medicineGroup) {
             await txn.insert(Medicine.databaseName(), medicine.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+            //inserting related packages
             int lastId = await getLastInsertedRowId(txn);
             var packages = packagingMapper.mapToJson(medicine.packaging);
             for (var package in packages) {

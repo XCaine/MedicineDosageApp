@@ -47,6 +47,8 @@ dependencies:
   quiver: ^3.1.0
   pdf: ^3.8.4
   intl: ^0.17.0
+  test: ^1.21.4
+  collection: ^1.16.0
 
 dev_dependencies:
   flutter_test:

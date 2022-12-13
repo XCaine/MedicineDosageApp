@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'src/shared/app.dart';
 
+//DB IS LOCATED IN data/data/com.pw.drugs_dosage_app/databases/medical_app_database.db
 void main() {
   //TODO trzymać plik z lekami nie z api tylko lokalnie; jak nie ma sieci albo
   //nie uda się załadować wersji sieciowe, załadować wersję lokalną.

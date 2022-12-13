@@ -42,7 +42,6 @@ class DatabaseBroker {
         for(String query in bootstrapQueries) {
           await db.execute(query);
         }
-        //return
       },
       version: 1,
     );

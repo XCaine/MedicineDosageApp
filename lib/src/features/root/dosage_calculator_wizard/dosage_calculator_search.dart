@@ -1,4 +1,4 @@
-import 'package:drugs_dosage_app/src/features/root/dosage_calculator/dosage_calculator_other_info.dart';
+import 'package:drugs_dosage_app/src/features/root/dosage_calculator_wizard/dosage_calculator_other_info.dart';
 import 'package:drugs_dosage_app/src/shared/database/database_facade.dart';
 import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/shared/models/basic_medical_record.dart';
@@ -25,7 +25,7 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
   List<BasicMedicalRecord> _medicalRecords = [];
   bool _showFilters = false;
   bool _loading = false;
-  bool _exactMatch = false;
+  bool _exactMatch = true;
   bool _searchByProductName = false;
   late TextEditingController _textEditingController;
 
@@ -37,16 +37,30 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
     });
     if(_input.isNotEmpty) {
       Database db = await _dbHandler.database;
-      String sql = '''
-      SELECT ${RootDatabaseModel.idFieldName}, 
+      String sqlForProductName = '''
+        SELECT ${RootDatabaseModel.idFieldName}, 
         ${Medicine.commonlyUsedNameFieldName},
         ${Medicine.productNameFieldName} 
-      FROM ${Medicine.databaseName()}
-      WHERE ${_searchByProductName ? Medicine.productNameFieldName : Medicine.commonlyUsedNameFieldName}  
-      LIKE ${_exactMatch ? "'$input%'" : "'%$input%'"}
-      LIMIT 10;
-    ''';
-      var queryResult = await db.rawQuery(sql);
+        FROM ${Medicine.databaseName()}
+        WHERE ${Medicine.productNameFieldName}  
+        LIKE ${_exactMatch ? "'$input%'" : "'%$input%'"}
+        LIMIT 10;
+      ''';
+      String windowedSqlForActiveSubstance = '''
+        SELECT ${RootDatabaseModel.idFieldName}, 
+        ${Medicine.commonlyUsedNameFieldName},
+        ${Medicine.productNameFieldName} 
+        FROM (
+          SELECT ${RootDatabaseModel.idFieldName}, ${Medicine.commonlyUsedNameFieldName}, ${Medicine.productNameFieldName},
+          ROW_NUMBER() OVER (PARTITION BY  ${Medicine.commonlyUsedNameFieldName} ORDER BY ${RootDatabaseModel.idFieldName}) rn
+          FROM ${Medicine.databaseName()}
+          WHERE ${Medicine.commonlyUsedNameFieldName} LIKE ${_exactMatch ? "'$input%'" : "'%$input%'"}
+        )
+        where rn = 1
+        LIMIT 10;
+      ''';
+
+      var queryResult = await db.rawQuery(_searchByProductName ? sqlForProductName : windowedSqlForActiveSubstance);
       var instances = queryResult.map((e) => BasicMedicalRecord.fromJson(e));
       setState(() {
         _medicalRecords = instances.toList();
@@ -65,6 +79,28 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
       _input = '';
       _medicalRecords = [];
     });
+  }
+
+  ListTile drugListTile(BasicMedicalRecord medicalRecord) {
+    onListTileTap() => Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => DosageCalculatorOtherInfo(
+              medicalRecord: medicalRecord
+          )
+      ),
+    );
+
+    return _searchByProductName ?
+      ListTile(
+      title: Text(medicalRecord.productName),
+      subtitle: Text(medicalRecord.commonlyUsedName),
+      onTap: onListTileTap
+    ) : ListTile(
+      title: Text(medicalRecord.commonlyUsedName),
+      subtitle: Text('e.g.: ${medicalRecord.productName}'),
+      onTap: onListTileTap,
+    );
   }
 
   @override
@@ -151,20 +187,7 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
                   child: ListView.builder(
                 itemBuilder: (context, index) => Card(
                   margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-                  child: ListTile(
-                    title: Text(_medicalRecords[index].commonlyUsedName),
-                    subtitle: Text(_medicalRecords[index].productName),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DosageCalculatorOtherInfo(
-                                medicalRecord: _medicalRecords[index]
-                            )
-                        ),
-                      );
-                    },
-                  ),
+                  child: drugListTile(_medicalRecords[index]),
                 ),
                 itemCount: _medicalRecords.length,
               )),

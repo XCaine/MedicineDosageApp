@@ -16,11 +16,11 @@ class ApiMedicineMapper {
       LogDistributor.getLoggerFor('ApiMedicineMapper');
 
   ApiMedicineMapper({required List<dynamic> incomingHeader}) {
-    parseHeader(incomingHeader);
-    buildIndexMap();
+    _parseHeader(incomingHeader);
+    _buildIndexMap();
   }
 
-  parseHeader(List<dynamic> incomingHeader) {
+  _parseHeader(List<dynamic> incomingHeader) {
     _logger.info('Parsing received CSV header');
     parsedHeader = [];
     for (String headerElement in incomingHeader) {
@@ -31,7 +31,7 @@ class ApiMedicineMapper {
     }
   }
 
-  buildIndexMap() {
+  _buildIndexMap() {
     _logger.info('Building index map');
     parsedHeader.asMap().forEach((index, headerFieldName) {
       var targetFieldName = _headerFieldsToModelMap[headerFieldName];
@@ -61,6 +61,8 @@ class ApiMedicineMapper {
   Medicine? map(List<dynamic> data) {
     final int dataLength = data.length;
     Map<String, dynamic> json = {};
+
+    //map all fields
     for (int index = 0; index <= dataLength - 1; index++) {
       final String? fieldName = _indexToTargetFieldMap[index];
       if (fieldName != null) {
@@ -68,17 +70,21 @@ class ApiMedicineMapper {
       }
     }
 
+    //validate fields
     if (!ApiMedicineFilter(medicineMap: json).isValid()) {
       return null;
     }
+
+    //parse and additionally validate packaging info
     String packagingInfo = json[Medicine.packagingFieldName];
-    Map<String, dynamic> packages =
-        PackagingOptionsParser(rawData: packagingInfo).parseToJson();
+    Map<String, dynamic> packages = PackagingOptionsParser(rawData: packagingInfo).parseToJson();
     if(packages[PackagingOption.rootJsonFieldName].isEmpty) {
       return null;
     }
     String jsonEncodedPackages = jsonEncode(packages);
     json[Medicine.packagingFieldName] = jsonEncodedPackages;
+
+    //return
     Medicine medicineInstance = Medicine.fromJson(json);
     return medicineInstance;
   }
