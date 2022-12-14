@@ -1,5 +1,4 @@
 import 'package:drugs_dosage_app/src/features/root/dosage_calculator_wizard/dosage_calculator_other_info.dart';
-import 'package:drugs_dosage_app/src/shared/database/database_facade.dart';
 import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/shared/models/basic_medical_record.dart';
 import 'package:drugs_dosage_app/src/shared/models/database/medicine.dart';

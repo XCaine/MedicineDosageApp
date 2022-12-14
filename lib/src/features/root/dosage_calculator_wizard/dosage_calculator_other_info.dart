@@ -203,7 +203,7 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
                                             context: context,
                                             initialDate: _searchWrapper!.dateStart!,
                                             firstDate: _searchWrapper!.dateStart!,
-                                            lastDate: DateTime(2100)
+                                            lastDate: _searchWrapper!.dateStart!.add(const Duration(days: 366))
                                         );
                                         if(pickedDate != null) {
                                           String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
@@ -223,7 +223,7 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
                         Expanded(
                             flex: 1,
                             child: IconButton(
-                              icon: const Icon(Icons.switch_access_shortcut),
+                              icon: const Icon(Icons.arrow_forward),
                               onPressed: () => setState(() {
                                 _searchWrapper!.searchByDates = !_searchWrapper!.searchByDates;
                               }),
@@ -260,7 +260,7 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
                         Expanded(
                           flex: 1,
                           child: IconButton(
-                            icon: const Icon(Icons.switch_access_shortcut),
+                            icon: const Icon(Icons.arrow_back),
                             onPressed: () => setState(() {
                               _searchWrapper!.searchByDates = !_searchWrapper!.searchByDates;
                             }),

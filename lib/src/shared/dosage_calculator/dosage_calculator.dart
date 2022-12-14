@@ -14,63 +14,63 @@ class DosageCalculator {
   static final Logger _logger = LogDistributor.getLoggerFor('DosageCalculator');
   final DosageSearchWrapper _searchWrapper;
   final DatabaseBroker _dbHandler = DatabaseBroker();
-  static const int _numberOfResults = 3;
+  static const int _maxNumberOfResults = 5;
 
   DosageCalculator({required DosageSearchWrapper searchWrapper})
       :_searchWrapper = searchWrapper;
 
   Future<DosageResultSetWrapper> findMatchingPackageSets() async {
     Database db = await _dbHandler.database;
-    var allPackages = await db.rawQuery('''
-      SELECT p.* FROM ${PackagingOption.databaseName()} p 
-      JOIN ${Medicine.databaseName()} m on m.${RootDatabaseModel.idFieldName} = p.${PackagingOption.medicineIdFieldName}
-      WHERE m.${Medicine.commonlyUsedNameFieldName} = '${_searchWrapper.selectedMedicine.commonlyUsedName}'
-    ''');
-    var allMedicines = await db.rawQuery('''
+    var distinctMedicines = await db.rawQuery('''
       SELECT DISTINCT m.* FROM ${Medicine.databaseName()} m 
       JOIN ${PackagingOption.databaseName()} p on m.${RootDatabaseModel.idFieldName} = p.${PackagingOption.medicineIdFieldName}
       WHERE m.${Medicine.commonlyUsedNameFieldName} = '${_searchWrapper.selectedMedicine.commonlyUsedName}'
+      AND m.${Medicine.potencyFieldName} = '${_searchWrapper.potency!}'
     ''');
-    List<PackagingOption> allMatchingPackageInstances = allPackages.map((package) => PackagingOption.fromJson(package)).toList();
-    List<Medicine> allMatchingMedicines = allMedicines.map((medicine) => Medicine.fromJson(medicine)).toList();
-
-    //skipping deduplication for now
-    var seen = <int>{};
-    var uniqueMatchingPackageInstances = allMatchingPackageInstances
-        .where((package) => seen.add(package.count!))
-        .toList();
-
-    int target = _searchWrapper.dosagesPerDay! *
-        (_searchWrapper.searchByDates ? _searchWrapper.dateEnd!.difference(_searchWrapper.dateStart!).inDays : _searchWrapper.numberOfDays!);
-    List<int> packageCounts = uniqueMatchingPackageInstances.map((package) => package.count!).toList();
-
-    List<List<int>> allOfferedOptions = DosageCalculationAlgorithm.apply(packageCounts, target);
+    List<Medicine> feasibleMedicineInstances = distinctMedicines.map((medicine) => Medicine.fromJson(medicine)).toList();
 
     List<DosageResultSet> results = [];
-    for(List<int> packagesForOption in allOfferedOptions) {
-      //TODO change firstWhere to all instances of a matching package variant from either medicine (for each name)
-      List<PackagingOption> packagesForResultWrapper = List.from(
-          packagesForOption.map(
-                  (singlePackageCount) => allMatchingPackageInstances
-                      .firstWhere((instance) => instance.count! == singlePackageCount)
-          )
-      );
-      List<Medicine> medicinesForResultWrapper = allMatchingMedicines.where(
-              (medicine) => packagesForResultWrapper.any((package) => package.medicineId == medicine.id)
-      ).toList();
+    for(Medicine medicineInstance in feasibleMedicineInstances) {
+      var allPackages = await db.rawQuery('''
+        SELECT p.* FROM ${PackagingOption.databaseName()} p 
+        JOIN ${Medicine.databaseName()} m on m.${RootDatabaseModel.idFieldName} = p.${PackagingOption.medicineIdFieldName}
+        WHERE m.${Medicine.commonlyUsedNameFieldName} = '${_searchWrapper.selectedMedicine.commonlyUsedName}'
+          AND m.${Medicine.potencyFieldName} = '${_searchWrapper.potency!}'
+          AND m.${Medicine.productNameFieldName} = '${medicineInstance.productName}' 
+      ''');
+      List<PackagingOption> feasiblePackageInstances = allPackages.map((package) => PackagingOption.fromJson(package)).toList();
 
-      var resultWrapper = DosageResultSet(
-          medicines: medicinesForResultWrapper,
-          packages: packagesForResultWrapper,
-          target: target
-      );
-      results.add(resultWrapper);
+      //deduplication
+      var seen = <int>{};
+      var uniqueMatchingPackageInstances = feasiblePackageInstances
+          .where((package) => seen.add(package.count!))
+          .toList();
+
+      int target = _searchWrapper.dosagesPerDay! *
+          (_searchWrapper.searchByDates ? _searchWrapper.dateEnd!.difference(_searchWrapper.dateStart!).inDays : _searchWrapper.numberOfDays!);
+      List<int> packageCounts = uniqueMatchingPackageInstances.map((package) => package.count!).toList();
+
+      List<List<int>> allOfferedOptions = DosageCalculationAlgorithm.apply(packageCounts, target);
+
+      for(List<int> packagesForOption in allOfferedOptions) {
+        List<PackagingOption> packagesForResultWrapper = List.from(
+            packagesForOption.map((singlePackageCount) => feasiblePackageInstances
+                    .firstWhere((instance) => instance.count! == singlePackageCount && instance.medicineId == medicineInstance.id)
+            )
+        );
+        var resultWrapper = DosageResultSet(
+            medicine: medicineInstance,
+            packages: packagesForResultWrapper,
+            packageVariants: packageCounts,
+            target: target
+        );
+        results.add(resultWrapper);
+      }
     }
 
     results.sort((a,b) => a.compareTo(b));
     DosageResultSetWrapper wrapper = DosageResultSetWrapper(
-        packageVariants: packageCounts,
-        resultSets: results.take(_numberOfResults).toList()
+        resultSets: results.take(_maxNumberOfResults).toList()
     );
 
     return wrapper;
