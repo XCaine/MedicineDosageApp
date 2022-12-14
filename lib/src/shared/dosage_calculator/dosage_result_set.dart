@@ -6,16 +6,18 @@ import 'package:logging/logging.dart';
 
 class DosageResultSet implements Comparable<DosageResultSet> {
   static final Logger _logger = LogDistributor.getLoggerFor('DosageResultsWrapper');
-  final List<Medicine> medicines;
+  final Medicine medicine;
   final List<PackagingOption> packages;
+  final List<int> packageVariants;
   final int target;
 
   //how many dosages are we losing on this set compared to target
   late final int redundancyFactor;
 
   DosageResultSet({
-    required this.medicines,
+    required this.medicine,
     required this.packages,
+    required this.packageVariants,
     required this.target
   }) {
     _calculateRedundancyFactor();

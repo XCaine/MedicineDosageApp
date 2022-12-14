@@ -12,10 +12,19 @@ class DosageCalculationAlgorithm {
     if(sizeVariants.isEmpty || total <= 0) {
       throw ArgumentError('Given arguments are invalid');
     }
-    var result = _applyInternal(sizeVariants, [CalculationModel([], total)]);
-    return result;
+    var finalResults = _applyInternal(sizeVariants, [CalculationModel([], total)]);
+
+    //deduplicate TODO optimize and add test cases
+    for(List<int> resultSet in finalResults) {
+      resultSet.sort((a,b) => a.compareTo(b));
+    }
+    final deduplicationSet = <List<int>>{};
+    finalResults.retainWhere((resultSet) => deduplicationSet.add(resultSet));
+
+    return finalResults;
   }
 
+  //TODO separate invocation options that are sources from invocation options that are results
   static List<List<int>> _applyInternal(List<int> sizeVariants, List<CalculationModel> models) {
     List<List<int>> finalResults = [];
 
@@ -26,8 +35,9 @@ class DosageCalculationAlgorithm {
       List<List<int>> invocationOptions = [List<int>.from(model.options)];
       int total = model.total;
       int biggestPackage = max(sizeVariants)!;
+      int smallestPackage = min(sizeVariants)!;
 
-      if (total < 0) {
+      if (total <= 0) {
         LogDistributor.getLoggerFor('DosageCalculationAlgorithm').finest('Ending processing');
       } else if(total >= 2 * biggestPackage) {
         //just add biggest package, we're guaranteed 2 more iterations in this case
@@ -38,6 +48,8 @@ class DosageCalculationAlgorithm {
         //exact match of one of available packages
         int package = sizeVariants.firstWhere((package) => package == total);
         invocationOptions.single.add(package);
+        int newTotal = total - package;
+        invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, newTotal)]);
       } else if(2 * biggestPackage > total && total > biggestPackage) {
         sizeVariants.sort((b,a)=>a.compareTo(b));
         //TODO be careful of how many packages available there are, SHOULD BE FIXED NOW
@@ -62,6 +74,10 @@ class DosageCalculationAlgorithm {
           invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions[0], newTotal1)]) +
               _applyInternal(sizeVariants, [CalculationModel(invocationOptions[1], newTotal2)]);
         }
+      } else if(2 * smallestPackage > total && total > smallestPackage && !sizeVariants.any((variant) => variant == 2 * smallestPackage) && !sizeVariants.any((variant) => (total - variant) <= 0 && variant < 2 * smallestPackage)) {
+        int newTotal = total - smallestPackage;
+        invocationOptions.single.add(smallestPackage);
+        invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, newTotal)]);
       } else {
         //total < biggestPackage
         //we get n closest matches of packages to total
@@ -78,29 +94,40 @@ class DosageCalculationAlgorithm {
           int package2 = nBestMatchingPackages[1];
           int newTotal2 = total - package2;
 
+          //both packages are sufficient, so it's enough to choose a single better one
           if(newTotal1 < 0 && newTotal2 < 0) {
             int chosenPackage = newTotal1 < newTotal2 ? package2 : package1;
             int chosenTotal = total - chosenPackage;
-            invocationOptions[0].add(chosenPackage);
-            invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions[0], chosenTotal)]);
+            invocationOptions.single.add(chosenPackage);
+            invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, chosenTotal)]);
           } else {
+            bool thereIsAVariantThatIsSufficient = sizeVariants.any((variant) => variant > total);
+
             invocationOptions.add(List<int>.from(invocationOptions[0]));
+            if(thereIsAVariantThatIsSufficient) {
+              invocationOptions.add(List<int>.from(invocationOptions[0]));
+            }
             invocationOptions[0].add(package1);
             invocationOptions[1].add(package2);
-            invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions[0], newTotal1)]) +
-                _applyInternal(sizeVariants, [CalculationModel(invocationOptions[1], newTotal2)]);
+
+            if(thereIsAVariantThatIsSufficient) {
+              sizeVariants.sort((a,b)=>a.compareTo(b));
+              int smallestSufficientPackage = sizeVariants.firstWhere((variant) => variant > total);
+              int totalForSmallestSufficientPackage = total - smallestSufficientPackage;
+
+              invocationOptions[2].add(smallestSufficientPackage);
+              invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions[0], newTotal1)]) +
+                  _applyInternal(sizeVariants, [CalculationModel(invocationOptions[1], newTotal2)]) +
+                  _applyInternal(sizeVariants, [CalculationModel(invocationOptions[2], totalForSmallestSufficientPackage)]);
+            } else {
+              invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions[0], newTotal1)]) +
+                  _applyInternal(sizeVariants, [CalculationModel(invocationOptions[1], newTotal2)]);
+            }
           }
         }
       }
       finalResults += invocationOptions;
     }
-
-    //deduplicate TODO optimize and test
-    for(List<int> resultSet in finalResults) {
-      resultSet.sort((a,b) => a.compareTo(b));
-    }
-    final deduplicationSet = <List<int>>{};
-    finalResults.retainWhere((resultSet) => deduplicationSet.add(resultSet));
 
     return finalResults;
   }

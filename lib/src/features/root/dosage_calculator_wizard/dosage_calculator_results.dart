@@ -19,7 +19,6 @@ class DosageCalculatorResult extends StatefulWidget {
 class _DosageCalculatorResultState extends State<DosageCalculatorResult> {
   static final _logger = LogDistributor.getLoggerFor('DosageCalculatorResult');
   List<DosageResultSet> _dosageResultWrappers = [];
-  List<int> _availablePackageSizes = [];
 
   bool _loading = false;
 
@@ -27,13 +26,11 @@ class _DosageCalculatorResultState extends State<DosageCalculatorResult> {
     setState(() {
       _loading = true;
     });
-
     var resultWrapper = await DosageCalculator(searchWrapper: widget.searchWrapper).findMatchingPackageSets();
 
     setState(() {
       _loading = false;
       _dosageResultWrappers = resultWrapper.resultSets;
-      _availablePackageSizes = resultWrapper.packageVariants;
     });
   }
 
@@ -44,11 +41,10 @@ class _DosageCalculatorResultState extends State<DosageCalculatorResult> {
       return map;
     });
     var buffer = StringBuffer();
+    buffer.write('Nazwa leku: ${model.medicine.productName}\n');
+    buffer.write('Wszystkie warianty opakowań: (${model.packageVariants.join(',')})\n');
     for (var key in countsMap.keys) {
       buffer.write('Package variant $key; count ${countsMap[key]}\n');
-      //current package count ==> key
-      List<Medicine> medicinesForPackage = model.medicines.where((medicine) => model.packages.firstWhere((package) => package.count! == key).medicineId == medicine.id).toList();
-      buffer.write('\t\tAvailable drugs: ${medicinesForPackage.join(',')}\n');
     }
     buffer.write('DEBUG Total dosages offered ${model.packages.map((package) => package.count!).sum}\n');
     buffer.write('Redundancy factor: ${model.redundancyFactor}\n');
@@ -86,7 +82,6 @@ class _DosageCalculatorResultState extends State<DosageCalculatorResult> {
                         child: Text(
                           'You searched for ${widget.searchWrapper.selectedMedicine.commonlyUsedName}\n'
                           'potency ${widget.searchWrapper.selectedMedicine.potency}\n'
-                          'package variants ${_availablePackageSizes.join(',')}\n'
                           'number of days ${widget.searchWrapper.searchByDates ? widget.searchWrapper.dateEnd!.difference(widget.searchWrapper.dateStart!).inDays : widget.searchWrapper.numberOfDays}\n'
                           'dosages per day ${widget.searchWrapper.dosagesPerDay}\n'
                           'dosages total: ${widget.searchWrapper.dosagesPerDay! * (widget.searchWrapper.searchByDates ? widget.searchWrapper.dateEnd!.difference(widget.searchWrapper.dateStart!).inDays : widget.searchWrapper.numberOfDays)!}\n',
