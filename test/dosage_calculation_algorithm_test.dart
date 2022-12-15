@@ -1,4 +1,4 @@
-import 'package:drugs_dosage_app/src/shared/dosage_calculator/dosage_calculation_algorithm.dart';
+import 'package:drugs_dosage_app/src/code/dosage_calculator/dosage_calculation_algorithm.dart';
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 

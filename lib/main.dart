@@ -1,8 +1,9 @@
-import 'package:drugs_dosage_app/src/shared/database/database.dart';
-import 'package:drugs_dosage_app/src/shared/logging/log_distributor.dart';
+import 'package:drugs_dosage_app/src/code/database/database.dart';
+import 'package:drugs_dosage_app/src/code/file_download/file_download_facade.dart';
+import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:flutter/material.dart';
 
-import 'src/shared/app.dart';
+import 'src/views/app.dart';
 
 //DB IS LOCATED IN data/data/com.pw.drugs_dosage_app/databases/medical_app_database.db
 void main() {
@@ -14,5 +15,6 @@ void main() {
   LogDistributor.initialize();
   WidgetsFlutterBinding.ensureInitialized();
   DatabaseBroker.initialize();
+  FileDownloadFacade.initialize();
   runApp(const MyApp());
 }
