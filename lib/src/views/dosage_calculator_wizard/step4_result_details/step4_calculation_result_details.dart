@@ -29,11 +29,12 @@ class _CalculationResultDetailsState extends State<CalculationResultDetails> {
       body: Column(
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   flex: 4,
                   child: Card(
-                    margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+                    margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
                     child: ListTile(
                       title: Text(_getFormattedChosenPackages()),
                       subtitle: const Text('wybrane opakowania'),
@@ -43,7 +44,7 @@ class _CalculationResultDetailsState extends State<CalculationResultDetails> {
                 Expanded(
                   flex: 2,
                   child: Card(
-                    margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
+                    margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
                     child: ListTile(
                       title: Center(child: Text('${widget.resultModel.target}')),
                       subtitle: const Text('całkowita liczba dawek'),

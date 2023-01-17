@@ -18,7 +18,7 @@ class DatabasePackagingOptionHandler
 
   Future<List<PackagingOption>> getPackagingOptions() async {
     Future<List<PackagingOption>> packagingOptions = super.getObjects(
-        PackagingOption.databaseName(),
+        PackagingOption.tableName(),
         (queryResult) => PackagingOption.fromJson(queryResult));
     return packagingOptions;
   }

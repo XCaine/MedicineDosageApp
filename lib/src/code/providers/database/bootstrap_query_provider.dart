@@ -6,7 +6,7 @@ import 'package:drugs_dosage_app/src/code/providers/abstract_provider.dart';
 class BootstrapQueryProvider implements AbstractProvider {
 
   final String _medicineQuery = '''
-    CREATE TABLE ${Medicine.databaseName()}(
+    CREATE TABLE ${Medicine.tableName()}(
       ${RootDatabaseModel.idFieldName} INTEGER PRIMARY KEY, 
       ${Medicine.productIdentifierFieldName} VARCHAR(255) UNIQUE, 
       ${Medicine.productNameFieldName} VARCHAR(255),
@@ -22,13 +22,13 @@ class BootstrapQueryProvider implements AbstractProvider {
     ''';
 
   final String _packagingOptionQuery = '''
-      CREATE TABLE ${PackagingOption.databaseName()} (
+      CREATE TABLE ${PackagingOption.tableName()} (
       ${RootDatabaseModel.idFieldName} INTEGER PRIMARY KEY,
       ${PackagingOption.medicineIdFieldName} INTEGER,
       ${PackagingOption.categoryFieldName} VARCHAR(255),
       ${PackagingOption.rawCountFieldName} VARCHAR(255),
       ${PackagingOption.countFieldName} INTEGER,
-      FOREIGN KEY(${PackagingOption.medicineIdFieldName}) REFERENCES ${Medicine.databaseName()}(${RootDatabaseModel.idFieldName}) ON DELETE CASCADE ON UPDATE CASCADE
+      FOREIGN KEY(${PackagingOption.medicineIdFieldName}) REFERENCES ${Medicine.tableName()}(${RootDatabaseModel.idFieldName}) ON DELETE CASCADE ON UPDATE CASCADE
     );
     ''';
 

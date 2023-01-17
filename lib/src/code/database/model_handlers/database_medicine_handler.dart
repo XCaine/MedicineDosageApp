@@ -31,13 +31,13 @@ class DatabaseMedicineHandler extends AbstractDatabaseQueryHandler<Medicine> {
         _logger.info('Iteration $currentCount/$iterations. Loading $chunkSize medical records per iteration');
         await db.transaction((Transaction txn) async {
           for (Medicine medicine in medicineGroup) {
-            await txn.insert(Medicine.databaseName(), medicine.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+            await txn.insert(Medicine.tableName(), medicine.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
             //inserting related packages
             int lastId = await getLastInsertedRowId(txn);
             var packages = packagingMapper.mapToJson(medicine.packaging);
             for (var package in packages) {
               package[PackagingOption.medicineIdFieldName] = lastId;
-              await txn.insert(PackagingOption.databaseName(), package);
+              await txn.insert(PackagingOption.tableName(), package);
             }
           }
         });
@@ -51,7 +51,7 @@ class DatabaseMedicineHandler extends AbstractDatabaseQueryHandler<Medicine> {
 
   Future<List<Medicine>> getMedicines() async {
     Future<List<Medicine>> medicines =
-        super.getObjects(Medicine.databaseName(), (queryResult) => Medicine.fromJson(queryResult));
+        super.getObjects(Medicine.tableName(), (queryResult) => Medicine.fromJson(queryResult));
     return medicines;
   }
 

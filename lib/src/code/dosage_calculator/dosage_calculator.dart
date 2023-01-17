@@ -28,8 +28,8 @@ class DosageCalculator {
     Database db = await _dbHandler.database;
 
     var distinctMedicines = await db.rawQuery('''
-      SELECT DISTINCT m.* FROM ${Medicine.databaseName()} m 
-      JOIN ${PackagingOption.databaseName()} p on m.${RootDatabaseModel.idFieldName} = p.${PackagingOption.medicineIdFieldName}
+      SELECT DISTINCT m.* FROM ${Medicine.tableName()} m 
+      JOIN ${PackagingOption.tableName()} p on m.${RootDatabaseModel.idFieldName} = p.${PackagingOption.medicineIdFieldName}
       WHERE m.${Medicine.commonlyUsedNameFieldName} = '${_searchWrapper.selectedMedicine.commonlyUsedName}'
       AND m.${Medicine.potencyFieldName} = '${_searchWrapper.potency!}'
     ''');
@@ -39,8 +39,8 @@ class DosageCalculator {
     for(Medicine medicineInstance in feasibleMedicineInstances) {
       try {
         var allPackages = await db.rawQuery('''
-        SELECT p.* FROM ${PackagingOption.databaseName()} p 
-        JOIN ${Medicine.databaseName()} m on m.${RootDatabaseModel.idFieldName} = p.${PackagingOption.medicineIdFieldName}
+        SELECT p.* FROM ${PackagingOption.tableName()} p 
+        JOIN ${Medicine.tableName()} m on m.${RootDatabaseModel.idFieldName} = p.${PackagingOption.medicineIdFieldName}
         WHERE m.${RootDatabaseModel.idFieldName} = ${medicineInstance.id}
           AND m.${Medicine.commonlyUsedNameFieldName} = '${_searchWrapper.selectedMedicine.commonlyUsedName}'
           AND m.${Medicine.potencyFieldName} = '${_searchWrapper.potency!}'

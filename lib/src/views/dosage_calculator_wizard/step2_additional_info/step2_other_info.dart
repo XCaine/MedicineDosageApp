@@ -46,7 +46,7 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
 
   Future<void> fetchFullMedicineData(BasicMedicalRecord record) async {
     var db = await _dbHandler.database;
-    var result = await db.query(Medicine.databaseName(), where: 'id = ?', whereArgs: [record.id]);
+    var result = await db.query(Medicine.tableName(), where: 'id = ?', whereArgs: [record.id]);
     setState(() {
       Medicine medicine = Medicine.fromJson(result.single);
       _searchWrapper = DosageSearchWrapper(selectedMedicine: medicine);
@@ -57,7 +57,7 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
     var db = await _dbHandler.database;
     String sql = '''
       SELECT ${Medicine.potencyFieldName}
-      FROM ${Medicine.databaseName()}
+      FROM ${Medicine.tableName()}
       WHERE ${Medicine.commonlyUsedNameFieldName} = '${_searchWrapper!.selectedMedicine.commonlyUsedName}' 
       AND ${Medicine.potencyFieldName} LIKE '$input%'
     ''';

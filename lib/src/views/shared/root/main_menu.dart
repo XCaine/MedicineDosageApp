@@ -1,3 +1,4 @@
+import 'package:drugs_dosage_app/src/views/manage_medications/manage_medications.dart';
 import 'package:drugs_dosage_app/src/views/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

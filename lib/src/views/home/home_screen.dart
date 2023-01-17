@@ -14,11 +14,13 @@ class _HomeScreenState extends State<HomeScreen> {
   static const String _bmiCalculator = 'bmiCalculator';
   static const String _dosageCalculator = 'dosageCalculator';
   static const String _settings = 'settings';
+  static const String _manageMedications = 'manageMedications';
   static const Map<String, String> _routerOptionsMap = {
     _drugsScreen: Constants.drugsScreenRoute,
     _bmiCalculator: Constants.bmiCalculatorScreenRoute,
     _dosageCalculator: Constants.drugDosageCalculatorScreenRoute,
-    _settings: Constants.settingsScreenRoute
+    _settings: Constants.settingsScreenRoute,
+    _manageMedications: Constants.manageMedicationScreenRoute,
   };
 
 
@@ -36,6 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
       case _settings:
         resultIcon = const Icon(Icons.settings);
+        break;
+      case _manageMedications:
+        resultIcon = const Icon(Icons.edit);
         break;
     }
     return resultIcon;
@@ -56,6 +61,9 @@ class _HomeScreenState extends State<HomeScreen> {
       case _settings:
         result = 'Ustawienia';
         break;
+      case _manageMedications:
+        result = 'Zarządzanie lekami';
+        break;
     }
     return result;
   }
@@ -63,7 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void _navigateToScreen(BuildContext context, String link) {
     String destination = _routerOptionsMap[link]!;
     context.go(destination);
-    //Navigator.pop(context);
   }
 
   Widget _menuLink(String link) {
@@ -107,7 +114,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [_menuLink(_bmiCalculator), _menuLink(_settings)],
+              children: [_menuLink(_bmiCalculator), _menuLink(_manageMedications)],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [_menuLink(_settings)],
             ),
           ],
         ),

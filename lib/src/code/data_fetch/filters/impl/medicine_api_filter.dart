@@ -26,7 +26,8 @@ class ApiMedicineFilter {
     String? commonlyUsedName = _medicineMap[Medicine.commonlyUsedNameFieldName];
     return commonlyUsedName != null &&
         commonlyUsedName.isNotEmpty &&
-        commonlyUsedName != '-';
+        commonlyUsedName != '-' &&
+        commonlyUsedName.toLowerCase() != 'produkt złożony';
   }
 
   final List<String> _validPharmaceuticalFormPatterns = ['czopki', 'globulki', 'kapsułk', 'tabletk'];
