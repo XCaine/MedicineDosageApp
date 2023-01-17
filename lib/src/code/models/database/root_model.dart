@@ -9,5 +9,5 @@ abstract class RootDatabaseModel {
 
   Map<String, dynamic> toMap();
 
-  String getDatabaseName();
+  String getTableName();
 }

@@ -1,3 +1,4 @@
+import 'package:drugs_dosage_app/src/code/browser_launchers/pdf_launcher.dart';
 import 'package:drugs_dosage_app/src/views/shared/widgets/custom_snack_bar.dart';
 import 'package:drugs_dosage_app/src/code/database/database.dart';
 import 'package:drugs_dosage_app/src/code/file_download/file_download_facade.dart';
@@ -27,7 +28,7 @@ class _DrugDetailState extends State<DrugDetail> {
     try {
       final db = await _dbHandler.database;
       List<Map<String, dynamic>> rawPackages = await db.rawQuery(
-          'select * from ${PackagingOption.databaseName()} where ${PackagingOption.medicineIdFieldName} = ${_medicine.id}');
+          'select * from ${PackagingOption.tableName()} where ${PackagingOption.medicineIdFieldName} = ${_medicine.id}');
       List<PackagingOption> packageInstances = [];
       for (Map<String, Object?> package in rawPackages) {
         packageInstances.add(PackagingOption.fromJson(package));
@@ -41,6 +42,10 @@ class _DrugDetailState extends State<DrugDetail> {
     } catch (e, stackTrace) {
       _logger.severe('Could not fetch package data from db for medicine ${_medicine.id}', e, stackTrace);
     }
+  }
+
+  void _lauchPdf(String url) {
+    PdfLauncher.launch(url);
   }
 
   void _downloadPdf(BuildContext context, String url, String docType) {
@@ -91,9 +96,9 @@ class _DrugDetailState extends State<DrugDetail> {
                       child: ListTile(
                           title: Row(
                         children: [
-                          const Text('Ściągnij\nulotkę'),
+                          const Text('Otwórz\nulotkę'),
                           IconButton(
-                              onPressed: () => _downloadPdf(context, _medicine.flyer!, 'ulotka'),
+                              onPressed: () => _lauchPdf(_medicine.flyer!),//_downloadPdf(context, _medicine.flyer!, 'ulotka'),
                               icon: const Icon(Icons.picture_as_pdf_sharp)),
                         ],
                       )),
@@ -107,9 +112,9 @@ class _DrugDetailState extends State<DrugDetail> {
                       child: ListTile(
                           title: Row(
                         children: [
-                          const Text('Ściągnij\ncharakterystykę'),
+                          const Text('Otwórz\ncharakterystykę'),
                           IconButton(
-                              onPressed: () => _downloadPdf(context, _medicine.characteristics!, 'charakterystyka'),
+                              onPressed: () => _lauchPdf(_medicine.characteristics!),//_downloadPdf(context, _medicine.characteristics!, 'charakterystyka'),
                               icon: const Icon(Icons.picture_as_pdf_sharp)),
                         ],
                       )),

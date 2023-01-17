@@ -1,5 +1,4 @@
 import 'package:drugs_dosage_app/src/code/database/database.dart';
-import 'package:drugs_dosage_app/src/code/file_download/file_download_facade.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +14,5 @@ void main() {
   LogDistributor.initialize();
   WidgetsFlutterBinding.ensureInitialized();
   DatabaseBroker.initialize();
-  FileDownloadFacade.initialize();
   runApp(const MyApp());
 }

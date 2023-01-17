@@ -51,6 +51,7 @@ dependencies:
   collection: ^1.16.0
   flowder: ^0.2.0
   path_provider: ^2.0.11
+  url_launcher: ^6.1.7
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,5 @@
 import 'package:drugs_dosage_app/src/code/models/dosage_search.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 
 class SearchInputDataSummary extends StatefulWidget {
   const SearchInputDataSummary({Key? key, required this.searchWrapper}) : super(key: key);

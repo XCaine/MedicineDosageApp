@@ -44,7 +44,7 @@ class _DrugsListState extends State<DrugsList> {
       SELECT ${RootDatabaseModel.idFieldName}, 
         ${Medicine.commonlyUsedNameFieldName},
         ${Medicine.productNameFieldName} 
-      FROM ${Medicine.databaseName()}
+      FROM ${Medicine.tableName()}
       WHERE ${_searchByProductName ? Medicine.productNameFieldName : Medicine.commonlyUsedNameFieldName}  
       LIKE ${_exactMatch ? "'$input%'" : "'%$input%'"}
       LIMIT 10;
@@ -63,7 +63,7 @@ class _DrugsListState extends State<DrugsList> {
 
   _checkIfThereAreDrugsInDatabase() async {
     Database db = await _dbHandler.database;
-    String sql = 'select count(*) as count from ${Medicine.databaseName()}';
+    String sql = 'select count(*) as count from ${Medicine.tableName()}';
     var result = (await db.rawQuery(sql)).single;
     int count = result['count'] as int;
     setState(() {
@@ -166,7 +166,7 @@ class _DrugsListState extends State<DrugsList> {
                           title: Text(_medicalRecords[index].commonlyUsedName),
                           subtitle: Text(_medicalRecords[index].productName),
                           onTap: () async {
-                            var medicineJson = (await (await _dbHandler.database).query(Medicine.databaseName(),
+                            var medicineJson = (await (await _dbHandler.database).query(Medicine.tableName(),
                                     where: 'id = ?', whereArgs: [_medicalRecords[index].id]))
                                 .single;
                             Medicine medicine = Medicine.fromJson(medicineJson);
@@ -188,62 +188,3 @@ class _DrugsListState extends State<DrugsList> {
             : const NoDrugsInDatabase());
   }
 }
-
-/*class DrugsList extends StatefulWidget {
-  const DrugsList({Key? key}) : super(key: key);
-
-  @override
-  State<DrugsList> createState() => _DrugsListState();
-}
-
-class _DrugsListState extends State<DrugsList> {
-  final DatabaseFacade _dbClient = DatabaseFacade();
-  late Future<List<Medicine>> _medicineList;
-
-  @override
-  void initState() {
-    super.initState();
-    _medicineList = _dbClient.getMedicine();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Widget noDrugsScreen = const Center(
-      child: Text('Brak leków'),
-    );
-
-    Widget drugsList = FutureBuilder<List<Medicine>>(
-      builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.data!.isEmpty) {
-            return noDrugsScreen;
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text('${snapshot.data?[index].productName}\t${snapshot.data?[index].createTime}'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => DrugDetail(medicine: snapshot.data![index])),
-                    );
-                  },
-                );
-              },
-            );
-          }
-        } else if (snapshot.hasError) {
-          return const Center(
-            child: Text('Failed to fetch medicine data from database'),
-          );
-        } else {
-          return const CircularProgressIndicator();
-        }
-      },
-      future: _medicineList,
-    );
-
-    return RootLayout(child: drugsList);
-  }
-}*/

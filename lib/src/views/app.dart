@@ -1,6 +1,7 @@
 import 'package:drugs_dosage_app/src/views/bmi_calculator/bmi_calculator_screen.dart';
 import 'package:drugs_dosage_app/src/views/drugs_search/drugs_search.dart';
 import 'package:drugs_dosage_app/src/views/home/home_screen.dart';
+import 'package:drugs_dosage_app/src/views/manage_medications/manage_medications.dart';
 import 'package:drugs_dosage_app/src/views/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -57,6 +58,12 @@ class _MyAppState extends State<MyApp> {
       builder: (BuildContext context, GoRouterState state) {
         return const Settings();
       }
+    ),
+    GoRoute(
+      path: Constants.manageMedicationScreenRoute,
+        builder: (BuildContext context, GoRouterState state) {
+          return const ManageMedications();
+        }
     )
   ]);
 }

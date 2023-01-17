@@ -1,7 +1,7 @@
 import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
 
 class Medicine extends RootDatabaseModel {
-  static const String _databaseName = 'medicine';
+  static const String _tableName = 'medicine';
 
   static const String productIdentifierFieldName = 'productIdentifier';
   static const String productNameFieldName = 'productName';
@@ -75,12 +75,12 @@ class Medicine extends RootDatabaseModel {
   }
 
   @override
-  String getDatabaseName() {
-    return databaseName();
+  String getTableName() {
+    return tableName();
   }
 
-  static String databaseName() {
-    return _databaseName;
+  static String tableName() {
+    return _tableName;
   }
 
   @override

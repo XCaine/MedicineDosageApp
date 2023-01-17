@@ -1,7 +1,7 @@
 import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
 
 class PackagingOption extends RootDatabaseModel {
-  static const String _databaseName = 'packaging';
+  static const String _tableName = 'packaging';
 
   static const rootJsonFieldName = 'packages';
 
@@ -35,12 +35,12 @@ class PackagingOption extends RootDatabaseModel {
   }
 
   @override
-  String getDatabaseName() {
-    return databaseName();
+  String getTableName() {
+    return tableName();
   }
 
-  static String databaseName() {
-    return _databaseName;
+  static String tableName() {
+    return _tableName;
   }
 
   @override

@@ -43,7 +43,7 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
         SELECT ${RootDatabaseModel.idFieldName}, 
         ${Medicine.commonlyUsedNameFieldName},
         ${Medicine.productNameFieldName} 
-        FROM ${Medicine.databaseName()}
+        FROM ${Medicine.tableName()}
         WHERE ${Medicine.productNameFieldName}  
         LIKE ${_exactMatch ? "'$input%'" : "'%$input%'"}
         LIMIT 10;
@@ -55,7 +55,7 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
         FROM (
           SELECT ${RootDatabaseModel.idFieldName}, ${Medicine.commonlyUsedNameFieldName}, ${Medicine.productNameFieldName},
           ROW_NUMBER() OVER (PARTITION BY  ${Medicine.commonlyUsedNameFieldName} ORDER BY ${RootDatabaseModel.idFieldName}) rn
-          FROM ${Medicine.databaseName()}
+          FROM ${Medicine.tableName()}
           WHERE ${Medicine.commonlyUsedNameFieldName} LIKE ${_exactMatch ? "'$input%'" : "'%$input%'"}
         )
         where rn = 1
@@ -76,7 +76,7 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
 
   _checkIfThereAreDrugsInDatabase() async {
     Database db = await _dbHandler.database;
-    String sql = 'select count(*) as count from ${Medicine.databaseName()}';
+    String sql = 'select count(*) as count from ${Medicine.tableName()}';
     var result = (await db.rawQuery(sql)).single;
     int count = result['count'] as int;
     setState(() {

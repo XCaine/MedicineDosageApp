@@ -29,7 +29,7 @@ class DatabaseBroker {
     String databasePath =
         join(await sqflite.getDatabasesPath(), Constants.databaseName);
     //TODO REMOVE database delete
-    await _dropDatabaseIfExists(databasePath);
+    //await _dropDatabaseIfExists(databasePath);
 
     Future<sqflite.Database> database = sqflite.openDatabase(
       databasePath,
@@ -64,7 +64,7 @@ class DatabaseBroker {
           sqflite.ConflictAlgorithm.replace]) async {
     final db = await database;
 
-    await db.insert(object.getDatabaseName(), object.toMap(),
+    await db.insert(object.getTableName(), object.toMap(),
         conflictAlgorithm: conflictAlgorithm);
   }
 
@@ -74,7 +74,7 @@ class DatabaseBroker {
     if (objects.isEmpty) {
       return;
     }
-    final tableName = objects.first.getDatabaseName();
+    final tableName = objects.first.getTableName();
     final db = await database;
 
     sqflite.Batch batch = db.batch();
@@ -129,7 +129,7 @@ class DatabaseBroker {
     assert(object.id != null, 'ID cannot be null');
     final db = await database;
     object.updateTime = DateTime.now();
-    await db.update(object.getDatabaseName(), object.toMap(),
+    await db.update(object.getTableName(), object.toMap(),
         where: 'id = ?', whereArgs: [object.id]);
   }
 
@@ -137,7 +137,7 @@ class DatabaseBroker {
     assert(object.id != null, 'ID cannot be null');
     final db = await database;
     await db.delete(
-      object.getDatabaseName(),
+      object.getTableName(),
       where: 'id = ?',
       whereArgs: [object.id],
     );
