@@ -35,6 +35,7 @@ class DosageCalculationAlgorithm {
     for(CalculationModel model in models) {
 
       List<List<int>> invocationOptions = [List<int>.from(model.options)];
+      List<List<int>> tempResults = invocationOptions;
       int total = model.total;
       int biggestPackage = max(sizeVariants)!;
       int smallestPackage = min(sizeVariants)!;
@@ -45,16 +46,15 @@ class DosageCalculationAlgorithm {
         //just add biggest package, we're guaranteed 2 more iterations in this case
         invocationOptions.single.add(biggestPackage);
         int newTotal = total - biggestPackage;
-        invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, newTotal)]);
+        tempResults = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, newTotal)]);
       } else if(sizeVariants.any((package) => package == total)) {
         //exact match of one of available packages
         int package = sizeVariants.firstWhere((package) => package == total);
         invocationOptions.single.add(package);
         int newTotal = total - package;
-        invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, newTotal)]);
+        tempResults = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, newTotal)]);
       } else if(2 * biggestPackage > total && total > biggestPackage) {
         sizeVariants.sort((b,a)=>a.compareTo(b));
-        //TODO be careful of how many packages available there are, SHOULD BE FIXED NOW
         List<int> nBiggestPackages = sizeVariants.take(2).toList();
         int biggestPackage = nBiggestPackages.first;
         int secondBiggestPackage = nBiggestPackages.length == 1 ? nBiggestPackages.first : nBiggestPackages.skip(1).first;
@@ -62,19 +62,19 @@ class DosageCalculationAlgorithm {
           //just one case
           int newTotal = total - biggestPackage;
           invocationOptions.single.add(biggestPackage);
-          invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, newTotal)]);
+          tempResults = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, newTotal)]);
         } else {
           //two cases -> to handle
           invocationOptions.add(List<int>.from(invocationOptions[0])); //make duplicate
-          int package1 = nBiggestPackages[0];
-          int newTotal1 = total - package1;
-          int package2 = nBiggestPackages[1];
-          int newTotal2 = total - package2;
+          int firstPackage = nBiggestPackages[0];
+          int firstNewTotal = total - firstPackage;
+          int secondPackage = nBiggestPackages[1];
+          int secondNewTotal = total - secondPackage;
 
-          invocationOptions[0].add(package1);
-          invocationOptions[1].add(package2);
-          invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions[0], newTotal1)]) +
-              _applyInternal(sizeVariants, [CalculationModel(invocationOptions[1], newTotal2)]);
+          invocationOptions[0].add(firstPackage);
+          invocationOptions[1].add(secondPackage);
+          tempResults = _applyInternal(sizeVariants, [CalculationModel(invocationOptions[0], firstNewTotal)]) +
+              _applyInternal(sizeVariants, [CalculationModel(invocationOptions[1], secondNewTotal)]);
         }
       } else if(2 * smallestPackage > total && total > smallestPackage && !sizeVariants.any((variant) => (total - variant) <= 0 && variant < 2 * smallestPackage)) {
         int newSmallestPackageTotal = total - smallestPackage;
@@ -85,11 +85,11 @@ class DosageCalculationAlgorithm {
           invocationOptions.add(List<int>.from(invocationOptions[0]));
           invocationOptions[0].add(smallestPackage);
           invocationOptions[1].add(equivalent2xPackage);
-          invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions[0], newSmallestPackageTotal)]) +
+          tempResults = _applyInternal(sizeVariants, [CalculationModel(invocationOptions[0], newSmallestPackageTotal)]) +
               _applyInternal(sizeVariants, [CalculationModel(invocationOptions[1], newTotalForEquivalent)]);
         } else {
           invocationOptions.single.add(smallestPackage);
-          invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, newSmallestPackageTotal)]);
+          tempResults = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, newSmallestPackageTotal)]);
         }
 
       } else {
@@ -100,20 +100,20 @@ class DosageCalculationAlgorithm {
           int package = nBestMatchingPackages[0];
           int newTotal = total - package;
           invocationOptions.single.add(package);
-          invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, newTotal)]);
+          tempResults = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, newTotal)]);
         } else {
           //two cases
-          int package1 = nBestMatchingPackages[0];
-          int newTotal1 = total - package1;
-          int package2 = nBestMatchingPackages[1];
-          int newTotal2 = total - package2;
+          int firstPackage = nBestMatchingPackages[0];
+          int firstNewTotal = total - firstPackage;
+          int secondPackage = nBestMatchingPackages[1];
+          int secondNewTotal = total - secondPackage;
 
           //both packages are sufficient, so it's enough to choose a single better one
-          if(newTotal1 < 0 && newTotal2 < 0) {
-            int chosenPackage = newTotal1 < newTotal2 ? package2 : package1;
+          if(firstNewTotal < 0 && secondNewTotal < 0) {
+            int chosenPackage = firstNewTotal < secondNewTotal ? secondPackage : firstPackage;
             int chosenTotal = total - chosenPackage;
             invocationOptions.single.add(chosenPackage);
-            invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, chosenTotal)]);
+            tempResults = _applyInternal(sizeVariants, [CalculationModel(invocationOptions.single, chosenTotal)]);
           } else {
             bool thereIsAVariantThatIsSufficient = sizeVariants.any((variant) => variant > total);
 
@@ -121,8 +121,8 @@ class DosageCalculationAlgorithm {
             if(thereIsAVariantThatIsSufficient) {
               invocationOptions.add(List<int>.from(invocationOptions[0]));
             }
-            invocationOptions[0].add(package1);
-            invocationOptions[1].add(package2);
+            invocationOptions[0].add(firstPackage);
+            invocationOptions[1].add(secondPackage);
 
             if(thereIsAVariantThatIsSufficient) {
               sizeVariants.sort((a,b)=>a.compareTo(b));
@@ -130,17 +130,17 @@ class DosageCalculationAlgorithm {
               int totalForSmallestSufficientPackage = total - smallestSufficientPackage;
 
               invocationOptions[2].add(smallestSufficientPackage);
-              invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions[0], newTotal1)]) +
-                  _applyInternal(sizeVariants, [CalculationModel(invocationOptions[1], newTotal2)]) +
+              tempResults = _applyInternal(sizeVariants, [CalculationModel(invocationOptions[0], firstNewTotal)]) +
+                  _applyInternal(sizeVariants, [CalculationModel(invocationOptions[1], secondNewTotal)]) +
                   _applyInternal(sizeVariants, [CalculationModel(invocationOptions[2], totalForSmallestSufficientPackage)]);
             } else {
-              invocationOptions = _applyInternal(sizeVariants, [CalculationModel(invocationOptions[0], newTotal1)]) +
-                  _applyInternal(sizeVariants, [CalculationModel(invocationOptions[1], newTotal2)]);
+              tempResults = _applyInternal(sizeVariants, [CalculationModel(invocationOptions[0], firstNewTotal)]) +
+                  _applyInternal(sizeVariants, [CalculationModel(invocationOptions[1], secondNewTotal)]);
             }
           }
         }
       }
-      finalResults += invocationOptions;
+      finalResults += tempResults;
     }
 
     return finalResults;
