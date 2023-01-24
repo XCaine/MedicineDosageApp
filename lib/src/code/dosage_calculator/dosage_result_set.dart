@@ -1,13 +1,13 @@
 import 'package:collection/collection.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/code/models/database/medicine.dart';
-import 'package:drugs_dosage_app/src/code/models/database/packaging_option.dart';
+import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
+import 'package:drugs_dosage_app/src/code/models/database/package.dart';
 import 'package:logging/logging.dart';
 
 class DosageResultSet implements Comparable<DosageResultSet> {
   static final Logger _logger = LogDistributor.getLoggerFor('DosageResultsWrapper');
-  final Medicine medicine;
-  final List<PackagingOption> packages;
+  final Medication medicine;
+  final List<Package> packages;
   final List<int> packageVariants;
   final int target;
 

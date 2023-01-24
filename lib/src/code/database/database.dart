@@ -104,6 +104,22 @@ class DatabaseBroker {
     return List.generate(queryResult.length, (i) => constructorCallback(queryResult[i]));
   }
 
+  Future<void> update<T extends RootDatabaseModel>(T object) async {
+    assert(object.id != null, 'ID cannot be null');
+    object.updateTime = DateTime.now();
+    await database.update(object.getTableName(), object.toMap(),
+        where: 'id = ?', whereArgs: [object.id]);
+  }
+
+  Future<void> delete<T extends RootDatabaseModel>(T object) async {
+    assert(object.id != null, 'ID cannot be null');
+    await database.delete(
+      object.getTableName(),
+      where: 'id = ?',
+      whereArgs: [object.id],
+    );
+  }
+
   Future<List<T>> query<T extends RootDatabaseModel>(
       String tableName, T Function(Map<String, dynamic>) constructorCallback,
       {bool? distinct,
@@ -124,21 +140,5 @@ class DatabaseBroker {
         limit: limit,
         offset: offset);
     return List.generate(queryResult.length, (i) => constructorCallback(queryResult[i]));
-  }
-
-  Future<void> update<T extends RootDatabaseModel>(T object) async {
-    assert(object.id != null, 'ID cannot be null');
-    object.updateTime = DateTime.now();
-    await database.update(object.getTableName(), object.toMap(),
-        where: 'id = ?', whereArgs: [object.id]);
-  }
-
-  Future<void> delete<T extends RootDatabaseModel>(T object) async {
-    assert(object.id != null, 'ID cannot be null');
-    await database.delete(
-      object.getTableName(),
-      where: 'id = ?',
-      whereArgs: [object.id],
-    );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
 
-class Medicine extends RootDatabaseModel {
+class Medication extends RootDatabaseModel {
   static const String _tableName = 'medicine';
 
   static const String productIdentifierFieldName = 'productIdentifier';
@@ -27,7 +27,7 @@ class Medicine extends RootDatabaseModel {
   final String? flyer; //Ulotka
   final String? characteristics; //Charakterystyka
 
-  Medicine({
+  Medication({
     super.id,
     required this.productIdentifier,
     required this.productName,
@@ -41,8 +41,8 @@ class Medicine extends RootDatabaseModel {
     this.characteristics,
   });
 
-  factory Medicine.fromJson(Map<String, dynamic> json) {
-    return Medicine(
+  factory Medication.fromJson(Map<String, dynamic> json) {
+    return Medication(
       id: json[RootDatabaseModel.idFieldName],
       productIdentifier: json[productIdentifierFieldName],
       productName: json[productNameFieldName],

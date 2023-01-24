@@ -1,3 +1,3 @@
 abstract class AbstractProvider<T> {
-  T provide();
+  Iterable<T> provide();
 }

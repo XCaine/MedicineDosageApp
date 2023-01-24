@@ -1,25 +1,25 @@
-import 'package:drugs_dosage_app/src/code/browser_launchers/pdf_launcher.dart';
+import 'package:drugs_dosage_app/src/code/browser_file_launchers/pdf_launcher.dart';
 import 'package:drugs_dosage_app/src/views/shared/widgets/custom_snack_bar.dart';
 import 'package:drugs_dosage_app/src/code/database/database.dart';
 import 'package:drugs_dosage_app/src/code/file_download/file_download_facade.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/code/models/database/medicine.dart';
-import 'package:drugs_dosage_app/src/code/models/database/packaging_option.dart';
+import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
+import 'package:drugs_dosage_app/src/code/models/database/package.dart';
 import 'package:drugs_dosage_app/src/code/constants/drug_categories.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
 class DrugDetail extends StatefulWidget {
   const DrugDetail({Key? key, required this.medicine}) : super(key: key);
-  final Medicine medicine;
+  final Medication medicine;
 
   @override
   State<StatefulWidget> createState() => _DrugDetailState();
 }
 
 class _DrugDetailState extends State<DrugDetail> {
-  late Medicine _medicine;
-  final List<PackagingOption> _packages = [];
+  late Medication _medicine;
+  final List<Package> _packages = [];
   String _drugCategoryDescription = '';
   final _dbHandler = DatabaseBroker();
   static final Logger _logger = LogDistributor.getLoggerFor('DrugDetail');
@@ -28,10 +28,10 @@ class _DrugDetailState extends State<DrugDetail> {
     try {
       final db = _dbHandler.database;
       List<Map<String, dynamic>> rawPackages = await db.rawQuery(
-          'select * from ${PackagingOption.tableName()} where ${PackagingOption.medicineIdFieldName} = ${_medicine.id}');
-      List<PackagingOption> packageInstances = [];
+          'select * from ${Package.tableName()} where ${Package.medicineIdFieldName} = ${_medicine.id}');
+      List<Package> packageInstances = [];
       for (Map<String, Object?> package in rawPackages) {
-        packageInstances.add(PackagingOption.fromJson(package));
+        packageInstances.add(Package.fromJson(package));
       }
       setState(() {
         _packages.addAll(packageInstances);

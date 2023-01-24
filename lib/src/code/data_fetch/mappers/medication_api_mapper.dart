@@ -1,21 +1,21 @@
 import 'dart:convert';
 
 import 'package:diacritic/diacritic.dart';
-import 'package:drugs_dosage_app/src/code/data_fetch/packaging_options_parser.dart';
+import 'package:drugs_dosage_app/src/code/data_fetch/packages_parser.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/code/models/database/medicine.dart';
-import 'package:drugs_dosage_app/src/code/models/database/packaging_option.dart';
+import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
+import 'package:drugs_dosage_app/src/code/models/database/package.dart';
 import 'package:logging/logging.dart';
 
-import '../filters/impl/medicine_api_filter.dart';
+import '../filters/impl/medication_api_filter.dart';
 
-class ApiMedicineMapper {
+class ApiMedicationMapper {
   late final List<dynamic> parsedHeader;
   final Map<int, String> _indexToTargetFieldMap = {};
   static final Logger _logger =
       LogDistributor.getLoggerFor('ApiMedicineMapper');
 
-  ApiMedicineMapper({required List<dynamic> incomingHeader}) {
+  ApiMedicationMapper({required List<dynamic> incomingHeader}) {
     _parseHeader(incomingHeader);
     _buildIndexMap();
   }
@@ -44,21 +44,21 @@ class ApiMedicineMapper {
   }
 
   final Map<String, String> _headerFieldsToModelMap = {
-    'identyfikatorproduktuleczniczego': Medicine.productIdentifierFieldName,
-    'nazwaproduktuleczniczego': Medicine.productNameFieldName,
-    'nazwapowszechniestosowana': Medicine.commonlyUsedNameFieldName,
-    'rodzajpreparatu': Medicine.medicineTypeFieldName,
-    'gatunkidocelowe': Medicine.targetSpeciesFieldName,
-    'moc': Medicine.potencyFieldName,
-    'postacfarmaceutyczna': Medicine.pharmaceuticalFormFieldName,
-    'waznoscpozwolenia': Medicine.permitValidityFieldName,
-    'podmiotodpowiedzialny': Medicine.responsiblePartyFieldName,
-    'opakowanie': Medicine.packagingFieldName,
-    'ulotka': Medicine.flyerFieldName,
-    'charakterystyka': Medicine.characteristicsFieldName,
+    'identyfikatorproduktuleczniczego': Medication.productIdentifierFieldName,
+    'nazwaproduktuleczniczego': Medication.productNameFieldName,
+    'nazwapowszechniestosowana': Medication.commonlyUsedNameFieldName,
+    'rodzajpreparatu': Medication.medicineTypeFieldName,
+    'gatunkidocelowe': Medication.targetSpeciesFieldName,
+    'moc': Medication.potencyFieldName,
+    'postacfarmaceutyczna': Medication.pharmaceuticalFormFieldName,
+    'waznoscpozwolenia': Medication.permitValidityFieldName,
+    'podmiotodpowiedzialny': Medication.responsiblePartyFieldName,
+    'opakowanie': Medication.packagingFieldName,
+    'ulotka': Medication.flyerFieldName,
+    'charakterystyka': Medication.characteristicsFieldName,
   };
 
-  Medicine? map(List<dynamic> data) {
+  Medication? map(List<dynamic> data) {
     final int dataLength = data.length;
     Map<String, dynamic> json = {};
 
@@ -71,21 +71,21 @@ class ApiMedicineMapper {
     }
 
     //validate fields
-    if (!ApiMedicineFilter(medicineMap: json).isValid()) {
+    if (!ApiMedicationFilter(medicineMap: json).isValid()) {
       return null;
     }
 
     //parse and additionally validate packaging info
-    String packagingInfo = json[Medicine.packagingFieldName];
-    Map<String, dynamic> packages = PackagingOptionsParser(rawData: packagingInfo).parseToJson();
-    if(packages[PackagingOption.rootJsonFieldName].isEmpty) {
+    String packagingInfo = json[Medication.packagingFieldName];
+    Map<String, dynamic> packages = PackagesParser(rawData: packagingInfo).parseToJson();
+    if(packages[Package.rootJsonFieldName].isEmpty) {
       return null;
     }
     String jsonEncodedPackages = jsonEncode(packages);
-    json[Medicine.packagingFieldName] = jsonEncodedPackages;
+    json[Medication.packagingFieldName] = jsonEncodedPackages;
 
     //return
-    Medicine medicineInstance = Medicine.fromJson(json);
+    Medication medicineInstance = Medication.fromJson(json);
     return medicineInstance;
   }
 }

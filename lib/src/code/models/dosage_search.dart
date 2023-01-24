@@ -1,9 +1,9 @@
-import 'package:drugs_dosage_app/src/code/models/database/medicine.dart';
+import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
 
 class DosageSearchWrapper {
   DosageSearchWrapper({required this.selectedMedicine});
 
-  Medicine selectedMedicine;
+  Medication selectedMedicine;
   String? potency;
   int? dosagesPerDay;
   DateTime? dateStart;
@@ -13,7 +13,7 @@ class DosageSearchWrapper {
 
   factory DosageSearchWrapper.fromJson(Map<String, dynamic> medicineJson) {
     return DosageSearchWrapper(
-        selectedMedicine: Medicine.fromJson(medicineJson)
+        selectedMedicine: Medication.fromJson(medicineJson)
     );
   }
 

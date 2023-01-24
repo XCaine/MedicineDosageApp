@@ -1,15 +1,15 @@
 import 'dart:convert';
 
 import 'package:csv/csv.dart';
-import 'package:drugs_dosage_app/src/code/data_fetch/mappers/medicine_api_mapper.dart';
+import 'package:drugs_dosage_app/src/code/data_fetch/mappers/medication_api_mapper.dart';
 import 'package:drugs_dosage_app/src/code/database/database_facade.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/code/models/database/medicine.dart';
+import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
 import 'package:drugs_dosage_app/src/code/providers/abstract_loader.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 
-class RegisteredMedicineLoader implements AbstractLoader<Medicine> {
+class RegisteredMedicationLoader implements AbstractLoader<Medication> {
   final _apiUrl = 'https://api.dane.gov.pl/resources/29618,wykaz-produktow-leczniczych-plik-w-formacie-csv/file';
   static final Logger _logger = LogDistributor.getLoggerFor('RegisteredMedicineLoader');
 
@@ -32,12 +32,12 @@ class RegisteredMedicineLoader implements AbstractLoader<Medicine> {
 
     List<dynamic> headerData = decodedCsv.first;
 
-    ApiMedicineMapper medicineMapper = ApiMedicineMapper(incomingHeader: headerData);
+    ApiMedicationMapper medicineMapper = ApiMedicationMapper(incomingHeader: headerData);
     List<List<dynamic>> instances = decodedCsv.skip(1).toList();
-    List<Medicine> medicineList = [];
+    List<Medication> medicineList = [];
     _logger.info('Beginning mapping of received data to DataModel objects');
     for (List<dynamic> instanceData in instances) {
-      Medicine? medicineInstance = medicineMapper.map(instanceData);
+      Medication? medicineInstance = medicineMapper.map(instanceData);
       if (medicineInstance != null) {
         medicineList.add(medicineInstance);
       }

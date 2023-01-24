@@ -3,12 +3,12 @@ import 'package:drugs_dosage_app/src/code/dosage_calculator/dosage_calculation_a
 import 'package:drugs_dosage_app/src/code/dosage_calculator/dosage_result_set.dart';
 import 'package:drugs_dosage_app/src/code/dosage_calculator/dosage_result_set_wrapper.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/code/models/database/packaging_option.dart';
+import 'package:drugs_dosage_app/src/code/models/database/package.dart';
 import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
 import 'package:drugs_dosage_app/src/code/models/dosage_search.dart';
 import 'package:logging/logging.dart';
 import 'package:sqflite/sqlite_api.dart';
-import '../models/database/medicine.dart';
+import '../models/database/medication.dart';
 
 enum DosageCalculatorMode {
   bestMatchesAcrossMultipleDrugs,
@@ -28,25 +28,25 @@ class DosageCalculator {
     Database db = _dbHandler.database;
 
     var distinctMedicines = await db.rawQuery('''
-      SELECT DISTINCT m.* FROM ${Medicine.tableName()} m 
-      JOIN ${PackagingOption.tableName()} p on m.${RootDatabaseModel.idFieldName} = p.${PackagingOption.medicineIdFieldName}
-      WHERE m.${Medicine.commonlyUsedNameFieldName} = '${_searchWrapper.selectedMedicine.commonlyUsedName}'
-      AND m.${Medicine.potencyFieldName} = '${_searchWrapper.potency!}'
+      SELECT DISTINCT m.* FROM ${Medication.tableName()} m 
+      JOIN ${Package.tableName()} p on m.${RootDatabaseModel.idFieldName} = p.${Package.medicineIdFieldName}
+      WHERE m.${Medication.commonlyUsedNameFieldName} = '${_searchWrapper.selectedMedicine.commonlyUsedName}'
+      AND m.${Medication.potencyFieldName} = '${_searchWrapper.potency!}'
     ''');
-    List<Medicine> feasibleMedicineInstances = distinctMedicines.map((medicine) => Medicine.fromJson(medicine)).toList();
+    List<Medication> feasibleMedicineInstances = distinctMedicines.map((medicine) => Medication.fromJson(medicine)).toList();
 
     List<DosageResultSet> results = [];
-    for(Medicine medicineInstance in feasibleMedicineInstances) {
+    for(Medication medicineInstance in feasibleMedicineInstances) {
       try {
         var allPackages = await db.rawQuery('''
-        SELECT p.* FROM ${PackagingOption.tableName()} p 
-        JOIN ${Medicine.tableName()} m on m.${RootDatabaseModel.idFieldName} = p.${PackagingOption.medicineIdFieldName}
+        SELECT p.* FROM ${Package.tableName()} p 
+        JOIN ${Medication.tableName()} m on m.${RootDatabaseModel.idFieldName} = p.${Package.medicineIdFieldName}
         WHERE m.${RootDatabaseModel.idFieldName} = ${medicineInstance.id}
-          AND m.${Medicine.commonlyUsedNameFieldName} = '${_searchWrapper.selectedMedicine.commonlyUsedName}'
-          AND m.${Medicine.potencyFieldName} = '${_searchWrapper.potency!}'
-          AND m.${Medicine.productNameFieldName} = '${medicineInstance.productName}' 
+          AND m.${Medication.commonlyUsedNameFieldName} = '${_searchWrapper.selectedMedicine.commonlyUsedName}'
+          AND m.${Medication.potencyFieldName} = '${_searchWrapper.potency!}'
+          AND m.${Medication.productNameFieldName} = '${medicineInstance.productName}' 
       ''');
-        List<PackagingOption> feasiblePackageInstances = allPackages.map((package) => PackagingOption.fromJson(package)).toList();
+        List<Package> feasiblePackageInstances = allPackages.map((package) => Package.fromJson(package)).toList();
 
         //deduplication
         var seen = <int>{};
@@ -61,7 +61,7 @@ class DosageCalculator {
         List<List<int>> allOfferedOptions = DosageCalculationAlgorithm.apply(packageCounts, target);
 
         for(List<int> packagesForOption in allOfferedOptions) {
-          List<PackagingOption> packagesForResultWrapper = List.from(
+          List<Package> packagesForResultWrapper = List.from(
               packagesForOption.map((singlePackageCount) => feasiblePackageInstances
                   .firstWhere((instance) => instance.count! == singlePackageCount && instance.medicineId == medicineInstance.id)
               )

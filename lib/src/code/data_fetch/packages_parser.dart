@@ -1,16 +1,16 @@
 import 'dart:convert';
 
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/code/models/database/packaging_option.dart';
+import 'package:drugs_dosage_app/src/code/models/database/package.dart';
 import 'package:drugs_dosage_app/src/code/constants/drug_categories.dart';
 import 'package:logging/logging.dart';
 
 ///parser for raw data coming from API
-class PackagingOptionsParser {
-  static final Logger _logger = LogDistributor.getLoggerFor('PackagingOptionsParser');
+class PackagesParser {
+  static final Logger _logger = LogDistributor.getLoggerFor('PackagesParser');
   final String _rawData;
 
-  PackagingOptionsParser({required rawData}) : _rawData = rawData;
+  PackagesParser({required rawData}) : _rawData = rawData;
 
   static const String _metadata = 'packagingFirstLine';
   static const String _deleted = 'skasowane';
@@ -21,7 +21,7 @@ class PackagingOptionsParser {
     List<Map<String, dynamic>> packageList = _parseInternal();
     packageList = _onlyValid(packageList);
     Map<String, dynamic> json = {
-      PackagingOption.rootJsonFieldName: packageList
+      Package.rootJsonFieldName: packageList
     };
     return json;
   }
@@ -33,13 +33,13 @@ class PackagingOptionsParser {
       bool packageDeleted = metadata.contains(_deleted);
       bool isValidDrugType = DrugCategories.validDrugCategories
           .any((validDrugType) => metadata.contains(validDrugType));
-      bool countValid = singlePackage[PackagingOption.countFieldName] != null;
+      bool countValid = singlePackage[Package.countFieldName] != null;
 
       if(!packageDeleted && isValidDrugType && countValid) {
         validatedJsonPackages.add({
-          PackagingOption.categoryFieldName: singlePackage[PackagingOption.categoryFieldName],
-          PackagingOption.rawCountFieldName: singlePackage[PackagingOption.rawCountFieldName],
-          PackagingOption.countFieldName: singlePackage[PackagingOption.countFieldName]
+          Package.categoryFieldName: singlePackage[Package.categoryFieldName],
+          Package.rawCountFieldName: singlePackage[Package.rawCountFieldName],
+          Package.countFieldName: singlePackage[Package.countFieldName]
         });
       }
     }
@@ -84,7 +84,7 @@ class PackagingOptionsParser {
 
     var seen = <int>{};
     var deduplicatedPackagesJson = packagesJson
-        .where((packageJson) => packageJson[PackagingOption.countFieldName] != null && seen.add(packageJson[PackagingOption.countFieldName]))
+        .where((packageJson) => packageJson[Package.countFieldName] != null && seen.add(packageJson[Package.countFieldName]))
         .toList();
 
     return deduplicatedPackagesJson;
@@ -109,10 +109,10 @@ class PackagingOptionsParser {
     //    selectedCategory = category;
     //  }
     //}
-    json[PackagingOption.categoryFieldName] = selectedCategory;
+    json[Package.categoryFieldName] = selectedCategory;
     json[_metadata] = metadata;
-    json[PackagingOption.rawCountFieldName] = rawCount;
-    json[PackagingOption.countFieldName] = count;
+    json[Package.rawCountFieldName] = rawCount;
+    json[Package.countFieldName] = count;
     return json;
   }
 }

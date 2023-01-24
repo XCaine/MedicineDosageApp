@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 class LogDistributor {
-  //there is a nice different example in dart.dev/guides/languages/language-tour#constructors
 
   static void initialize() {
     Logger.root.level = Level.INFO;
