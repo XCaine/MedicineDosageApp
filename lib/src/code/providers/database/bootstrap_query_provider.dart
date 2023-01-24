@@ -1,34 +1,34 @@
-import 'package:drugs_dosage_app/src/code/models/database/medicine.dart';
-import 'package:drugs_dosage_app/src/code/models/database/packaging_option.dart';
+import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
+import 'package:drugs_dosage_app/src/code/models/database/package.dart';
 import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
 import 'package:drugs_dosage_app/src/code/providers/abstract_provider.dart';
 
-class BootstrapQueryProvider implements AbstractProvider {
+class BootstrapQueryProvider implements AbstractProvider<String> {
 
   final String _medicineQuery = '''
-    CREATE TABLE ${Medicine.tableName()}(
+    CREATE TABLE ${Medication.tableName()}(
       ${RootDatabaseModel.idFieldName} INTEGER PRIMARY KEY, 
-      ${Medicine.productIdentifierFieldName} VARCHAR(255) UNIQUE, 
-      ${Medicine.productNameFieldName} VARCHAR(255),
-      ${Medicine.commonlyUsedNameFieldName} VARCHAR(255),
-      ${Medicine.potencyFieldName} VARCHAR(255),
-      ${Medicine.pharmaceuticalFormFieldName} VARCHAR(255),
-      ${Medicine.permitValidityFieldName} VARCHAR(255),
-      ${Medicine.responsiblePartyFieldName} VARCHAR(255),
-      ${Medicine.packagingFieldName} TEXT,
-      ${Medicine.flyerFieldName} VARCHAR(255),
-      ${Medicine.characteristicsFieldName} VARCHAR(255)
+      ${Medication.productIdentifierFieldName} VARCHAR(255) UNIQUE, 
+      ${Medication.productNameFieldName} VARCHAR(255),
+      ${Medication.commonlyUsedNameFieldName} VARCHAR(255),
+      ${Medication.potencyFieldName} VARCHAR(255),
+      ${Medication.pharmaceuticalFormFieldName} VARCHAR(255),
+      ${Medication.permitValidityFieldName} VARCHAR(255),
+      ${Medication.responsiblePartyFieldName} VARCHAR(255),
+      ${Medication.packagingFieldName} TEXT,
+      ${Medication.flyerFieldName} VARCHAR(255),
+      ${Medication.characteristicsFieldName} VARCHAR(255)
     );
     ''';
 
   final String _packagingOptionQuery = '''
-      CREATE TABLE ${PackagingOption.tableName()} (
+      CREATE TABLE ${Package.tableName()} (
       ${RootDatabaseModel.idFieldName} INTEGER PRIMARY KEY,
-      ${PackagingOption.medicineIdFieldName} INTEGER,
-      ${PackagingOption.categoryFieldName} VARCHAR(255),
-      ${PackagingOption.rawCountFieldName} VARCHAR(255),
-      ${PackagingOption.countFieldName} INTEGER,
-      FOREIGN KEY(${PackagingOption.medicineIdFieldName}) REFERENCES ${Medicine.tableName()}(${RootDatabaseModel.idFieldName}) ON DELETE CASCADE ON UPDATE CASCADE
+      ${Package.medicineIdFieldName} INTEGER,
+      ${Package.categoryFieldName} VARCHAR(255),
+      ${Package.rawCountFieldName} VARCHAR(255),
+      ${Package.countFieldName} INTEGER,
+      FOREIGN KEY(${Package.medicineIdFieldName}) REFERENCES ${Medication.tableName()}(${RootDatabaseModel.idFieldName}) ON DELETE CASCADE ON UPDATE CASCADE
     );
     ''';
 

@@ -2,7 +2,7 @@ import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/step2_additi
 import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/shared/close_wizard_dialog.dart';
 import 'package:drugs_dosage_app/src/code/database/database.dart';
 import 'package:drugs_dosage_app/src/code/models/basic_medical_record.dart';
-import 'package:drugs_dosage_app/src/code/models/database/medicine.dart';
+import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
 import 'package:drugs_dosage_app/src/code/models/dosage_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,9 +46,9 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
 
   Future<void> fetchFullMedicineData(BasicMedicalRecord record) async {
     var db = _dbHandler.database;
-    var result = await db.query(Medicine.tableName(), where: 'id = ?', whereArgs: [record.id]);
+    var result = await db.query(Medication.tableName(), where: 'id = ?', whereArgs: [record.id]);
     setState(() {
-      Medicine medicine = Medicine.fromJson(result.single);
+      Medication medicine = Medication.fromJson(result.single);
       _searchWrapper = DosageSearchWrapper(selectedMedicine: medicine);
     });
   }
@@ -56,13 +56,13 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
   Future<Iterable<String>> _potencyOptionsForAutocomplete(String input) async {
     var db = _dbHandler.database;
     String sql = '''
-      SELECT ${Medicine.potencyFieldName}
-      FROM ${Medicine.tableName()}
-      WHERE ${Medicine.commonlyUsedNameFieldName} = '${_searchWrapper!.selectedMedicine.commonlyUsedName}' 
-      AND ${Medicine.potencyFieldName} LIKE '$input%'
+      SELECT ${Medication.potencyFieldName}
+      FROM ${Medication.tableName()}
+      WHERE ${Medication.commonlyUsedNameFieldName} = '${_searchWrapper!.selectedMedicine.commonlyUsedName}' 
+      AND ${Medication.potencyFieldName} LIKE '$input%'
     ''';
     var queryResult = await db.rawQuery(sql);
-    var suggestedPotencies = queryResult.map((e) => e[Medicine.potencyFieldName] as String);
+    var suggestedPotencies = queryResult.map((e) => e[Medication.potencyFieldName] as String);
     return suggestedPotencies.toSet();
   }
 

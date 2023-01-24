@@ -1,13 +1,13 @@
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/code/models/database/medicine.dart';
+import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
 import 'package:logging/logging.dart';
 
-class ApiMedicineFilter {
+class ApiMedicationFilter {
   final Map<String, dynamic> _medicineMap;
   static final Logger _logger =
       LogDistributor.getLoggerFor("ApiMedicineFilter");
 
-  ApiMedicineFilter({required Map<String, dynamic> medicineMap})
+  ApiMedicationFilter({required Map<String, dynamic> medicineMap})
       : _medicineMap = medicineMap;
 
   bool isValid() {
@@ -23,7 +23,7 @@ class ApiMedicineFilter {
   }
 
   bool _commonlyUsedNameValid() {
-    String? commonlyUsedName = _medicineMap[Medicine.commonlyUsedNameFieldName];
+    String? commonlyUsedName = _medicineMap[Medication.commonlyUsedNameFieldName];
     return commonlyUsedName != null &&
         commonlyUsedName.isNotEmpty &&
         commonlyUsedName != '-' &&
@@ -32,19 +32,19 @@ class ApiMedicineFilter {
 
   final List<String> _validPharmaceuticalFormPatterns = ['czopki', 'globulki', 'kapsułk', 'tabletk'];
   bool _pharmaceuticalFormValid() {
-    String? pharmaceuticalForm = _medicineMap[Medicine.pharmaceuticalFormFieldName];
+    String? pharmaceuticalForm = _medicineMap[Medication.pharmaceuticalFormFieldName];
     return pharmaceuticalForm != null &&
         pharmaceuticalForm.isNotEmpty &&
         _validPharmaceuticalFormPatterns.any((pattern) => pharmaceuticalForm.toLowerCase().startsWith(pattern));
   }
 
   bool _medicineTypeValid() {
-    String? medicineType = _medicineMap[Medicine.medicineTypeFieldName];
+    String? medicineType = _medicineMap[Medication.medicineTypeFieldName];
     return medicineType != null && medicineType == 'Ludzki';
   }
 
   bool _targetSpeciesValid() {
-    String? targetSpecies = _medicineMap[Medicine.targetSpeciesFieldName];
+    String? targetSpecies = _medicineMap[Medication.targetSpeciesFieldName];
     return targetSpecies == null || targetSpecies.isEmpty;
   }
 
@@ -52,12 +52,12 @@ class ApiMedicineFilter {
   //5 mg + 0.2 mg   -> no
   final RegExp _potencyRegex = RegExp(r"^(\d+(,\d+)?) (mcg|g|mg)$");
   bool _potencyValid() {
-    String? potency = _medicineMap[Medicine.potencyFieldName];
+    String? potency = _medicineMap[Medication.potencyFieldName];
     return potency != null && potency.isNotEmpty && potency != '-' && _potencyRegex.hasMatch(potency);
   }
 
   bool _permitValidityValid() {
-    String? permitValidity = _medicineMap[Medicine.permitValidityFieldName];
+    String? permitValidity = _medicineMap[Medication.permitValidityFieldName];
     bool result = false;
     if (permitValidity == null || permitValidity.isEmpty) {
       result = false;
@@ -78,7 +78,7 @@ class ApiMedicineFilter {
   }
 
   bool _packagingValid() {
-    String? packaging = _medicineMap[Medicine.packagingFieldName];
+    String? packaging = _medicineMap[Medication.packagingFieldName];
     return packaging != null && packaging.isNotEmpty;
   }
 }

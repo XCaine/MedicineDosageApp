@@ -1,6 +1,6 @@
 import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
 
-class PackagingOption extends RootDatabaseModel {
+class Package extends RootDatabaseModel {
   static const String _tableName = 'packaging';
 
   static const rootJsonFieldName = 'packages';
@@ -16,7 +16,7 @@ class PackagingOption extends RootDatabaseModel {
   String rawCount;
   int? count;
 
-  PackagingOption(
+  Package(
       {super.id,
       required this.medicineId,
       required this.category,
@@ -24,8 +24,8 @@ class PackagingOption extends RootDatabaseModel {
       this.count});
 
   @override
-  factory PackagingOption.fromJson(Map<String, dynamic> json) {
-    return PackagingOption(
+  factory Package.fromJson(Map<String, dynamic> json) {
+    return Package(
       id: json[RootDatabaseModel.idFieldName],
       medicineId: json[medicineIdFieldName],
       category: json[categoryFieldName],

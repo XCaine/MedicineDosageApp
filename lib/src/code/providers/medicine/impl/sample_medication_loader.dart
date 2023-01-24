@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:drugs_dosage_app/src/code/database/database_facade.dart';
 import 'package:drugs_dosage_app/src/code/io/json_file_reader.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/code/models/database/medicine.dart';
+import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
 import 'package:drugs_dosage_app/src/code/providers/abstract_loader.dart';
 
-import '../../../data_fetch/packaging_options_parser.dart';
+import '../../../data_fetch/packages_parser.dart';
 
-class SampleMedicineLoader implements AbstractLoader<Medicine> {
+class SampleMedicationLoader implements AbstractLoader<Medication> {
   static final _logger = LogDistributor.getLoggerFor('SampleMedicineLoader');
 
   @override
@@ -20,15 +20,15 @@ class SampleMedicineLoader implements AbstractLoader<Medicine> {
       _logger.warning('Nothing was read from file $filePath');
       return;
     }
-    List<Medicine> medicineList = [];
+    List<Medication> medicineList = [];
     _logger.info('Creating Medicine instances');
     for(Map<String, dynamic> jsonInstance in data) {
-      String packagingInfo = jsonInstance[Medicine.packagingFieldName];
+      String packagingInfo = jsonInstance[Medication.packagingFieldName];
       Map<String, dynamic> packages =
-      PackagingOptionsParser(rawData: packagingInfo).parseToJson();
+      PackagesParser(rawData: packagingInfo).parseToJson();
       String jsonEncodedPackages = jsonEncode(packages);
-      jsonInstance[Medicine.packagingFieldName] = jsonEncodedPackages;
-      Medicine instance = Medicine.fromJson(jsonInstance);
+      jsonInstance[Medication.packagingFieldName] = jsonEncodedPackages;
+      Medication instance = Medication.fromJson(jsonInstance);
       medicineList.add(instance);
     }
     try {

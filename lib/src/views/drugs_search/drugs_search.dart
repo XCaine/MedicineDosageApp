@@ -3,7 +3,7 @@ import 'package:drugs_dosage_app/src/code/database/commons/drugs_in_database_ver
 import 'package:drugs_dosage_app/src/code/database/database.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/code/models/basic_medical_record.dart';
-import 'package:drugs_dosage_app/src/code/models/database/medicine.dart';
+import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
 import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
 import 'package:drugs_dosage_app/src/views/drugs_search/drug_search_result_detail.dart';
 import 'package:flutter/material.dart';
@@ -47,10 +47,10 @@ class _DrugsListState extends State<DrugsList> {
       Database db = _dbHandler.database;
       String sql = '''
       SELECT ${RootDatabaseModel.idFieldName}, 
-        ${Medicine.commonlyUsedNameFieldName},
-        ${Medicine.productNameFieldName} 
-      FROM ${Medicine.tableName()}
-      WHERE ${_searchMethod == _SearchMethod.byProductName ? Medicine.productNameFieldName : Medicine.commonlyUsedNameFieldName}  
+        ${Medication.commonlyUsedNameFieldName},
+        ${Medication.productNameFieldName} 
+      FROM ${Medication.tableName()}
+      WHERE ${_searchMethod == _SearchMethod.byProductName ? Medication.productNameFieldName : Medication.commonlyUsedNameFieldName}  
       LIKE ${_matchType == _MatchType.exact ? "'$input%'" : "'%$input%'"}
       LIMIT 30;
     ''';
@@ -189,22 +189,25 @@ class _DrugsListState extends State<DrugsList> {
                         ],
                       ),
                     ),
-                  TextField(
-                    decoration: InputDecoration(
-                        hintText: _searchMethod == _SearchMethod.byProductName ? "Nazwa produktu" : "Substancja czynna",
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Theme.of(context).dividerColor),
-                        ),
-                        prefixIcon: IconButton(
-                            icon: _showFilters ? const Icon(Icons.filter_alt) : const Icon(Icons.filter_alt_outlined),
-                            onPressed: () => setState(() => _showFilters = !_showFilters)),
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () => _onInputClear(),
-                        )),
-                    controller: _textEditingController,
-                    onChanged: _searchForPrompts,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: TextField(
+                      decoration: InputDecoration(
+                          labelText: _searchMethod == _SearchMethod.byProductName ? "Nazwa produktu" : "Substancja czynna",
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                          ),
+                          prefixIcon: IconButton(
+                              icon: _showFilters ? const Icon(Icons.filter_alt) : const Icon(Icons.filter_alt_outlined),
+                              onPressed: () => setState(() => _showFilters = !_showFilters)),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () => _onInputClear(),
+                          )),
+                      controller: _textEditingController,
+                      onChanged: _searchForPrompts,
+                    ),
                   ),
                   if (_loading)
                     const Center(
@@ -219,10 +222,10 @@ class _DrugsListState extends State<DrugsList> {
                           title: Text(_medicalRecords[index].commonlyUsedName),
                           subtitle: Text(_medicalRecords[index].productName),
                           onTap: () async {
-                            var medicineJson = (await _dbHandler.database.query(Medicine.tableName(),
+                            var medicineJson = (await _dbHandler.database.query(Medication.tableName(),
                                     where: 'id = ?', whereArgs: [_medicalRecords[index].id]))
                                 .single;
-                            Medicine medicine = Medicine.fromJson(medicineJson);
+                            Medication medicine = Medication.fromJson(medicineJson);
                             if (!mounted) return;
                             Navigator.push(
                               context,

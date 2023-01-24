@@ -4,7 +4,7 @@ import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/step2_additi
 import 'package:drugs_dosage_app/src/code/database/database.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/code/models/basic_medical_record.dart';
-import 'package:drugs_dosage_app/src/code/models/database/medicine.dart';
+import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
 import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -47,22 +47,22 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
       Database db = _dbHandler.database;
       String sqlForProductName = '''
         SELECT ${RootDatabaseModel.idFieldName}, 
-        ${Medicine.commonlyUsedNameFieldName},
-        ${Medicine.productNameFieldName} 
-        FROM ${Medicine.tableName()}
-        WHERE ${Medicine.productNameFieldName}  
+        ${Medication.commonlyUsedNameFieldName},
+        ${Medication.productNameFieldName} 
+        FROM ${Medication.tableName()}
+        WHERE ${Medication.productNameFieldName}  
         LIKE ${_matchType == _MatchType.exact ? "'$input%'" : "'%$input%'"}
         LIMIT 30;
       ''';
       String windowedSqlForActiveSubstance = '''
         SELECT ${RootDatabaseModel.idFieldName}, 
-        ${Medicine.commonlyUsedNameFieldName},
-        ${Medicine.productNameFieldName} 
+        ${Medication.commonlyUsedNameFieldName},
+        ${Medication.productNameFieldName} 
         FROM (
-          SELECT ${RootDatabaseModel.idFieldName}, ${Medicine.commonlyUsedNameFieldName}, ${Medicine.productNameFieldName},
-          ROW_NUMBER() OVER (PARTITION BY  ${Medicine.commonlyUsedNameFieldName} ORDER BY ${RootDatabaseModel.idFieldName}) rn
-          FROM ${Medicine.tableName()}
-          WHERE ${Medicine.commonlyUsedNameFieldName} LIKE ${_matchType == _MatchType.exact ? "'$input%'" : "'%$input%'"}
+          SELECT ${RootDatabaseModel.idFieldName}, ${Medication.commonlyUsedNameFieldName}, ${Medication.productNameFieldName},
+          ROW_NUMBER() OVER (PARTITION BY  ${Medication.commonlyUsedNameFieldName} ORDER BY ${RootDatabaseModel.idFieldName}) rn
+          FROM ${Medication.tableName()}
+          WHERE ${Medication.commonlyUsedNameFieldName} LIKE ${_matchType == _MatchType.exact ? "'$input%'" : "'%$input%'"}
         )
         where rn = 1
         LIMIT 30;
@@ -225,22 +225,25 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
                         ],
                       ),
                     ),
-                  TextField(
-                    decoration: InputDecoration(
-                        hintText: _searchMethod == _SearchMethod.byProductName ? "Nazwa produktu" : "Substancja czynna",
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Theme.of(context).dividerColor),
-                        ),
-                        prefixIcon: IconButton(
-                            icon: _showFilters ? const Icon(Icons.filter_alt) : const Icon(Icons.filter_alt_outlined),
-                            onPressed: () => setState(() => _showFilters = !_showFilters)),
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () => _onInputClear(),
-                        )),
-                    controller: _textEditingController,
-                    onChanged: _searchForPrompts,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: TextField(
+                      decoration: InputDecoration(
+                          labelText: _searchMethod == _SearchMethod.byProductName ? "Nazwa produktu" : "Substancja czynna",
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                          ),
+                          prefixIcon: IconButton(
+                              icon: _showFilters ? const Icon(Icons.filter_alt) : const Icon(Icons.filter_alt_outlined),
+                              onPressed: () => setState(() => _showFilters = !_showFilters)),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () => _onInputClear(),
+                          )),
+                      controller: _textEditingController,
+                      onChanged: _searchForPrompts,
+                    ),
                   ),
                   if (_loading)
                     const Center(

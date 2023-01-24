@@ -1,5 +1,5 @@
 import 'package:drugs_dosage_app/src/views/shared/widgets/custom_snack_bar.dart';
-import 'package:drugs_dosage_app/src/code/providers/medicine/impl/registered_medicine_loader.dart';
+import 'package:drugs_dosage_app/src/code/providers/medicine/impl/registered_medication_loader.dart';
 import 'package:flutter/material.dart';
 
 class MedicalDataButton extends StatefulWidget {
@@ -17,7 +17,7 @@ class _MedicalDataButtonState extends State<MedicalDataButton> {
       _loading = true;
     });
     showSnackBar() => CustomSnackBar.show(context, 'Zakończono ładowanie danych medycznych');
-    await RegisteredMedicineLoader().load(onFinishCallback: () => showSnackBar());
+    await RegisteredMedicationLoader().load(onFinishCallback: () => showSnackBar());
     setState(() {
       _loading = false;
     });
