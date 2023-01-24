@@ -1,5 +1,5 @@
 import 'package:drugs_dosage_app/src/code/constants/constants.dart';
-import 'package:drugs_dosage_app/src/views/drugs_search/drug_detail.dart';
+import 'package:drugs_dosage_app/src/code/database/commons/drugs_in_database_verifier.dart';
 import 'package:drugs_dosage_app/src/code/database/database.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/code/models/basic_medical_record.dart';
@@ -20,6 +20,10 @@ class DrugsList extends StatefulWidget {
   State<DrugsList> createState() => _DrugsListState();
 }
 
+enum _SearchMethod { byActiveSubstanceName, byProductName }
+
+enum _MatchType { exact, flexible }
+
 class _DrugsListState extends State<DrugsList> {
   static final Logger _logger = LogDistributor.getLoggerFor('DosageCalculatorSearch');
   final DatabaseBroker _dbHandler = DatabaseBroker();
@@ -27,10 +31,11 @@ class _DrugsListState extends State<DrugsList> {
   List<BasicMedicalRecord> _medicalRecords = [];
   bool _showFilters = false;
   bool _loading = false;
-  bool _exactMatch = true;
-  bool _searchByProductName = false;
   bool _drugsPresentInDatabase = false;
   late TextEditingController _textEditingController;
+
+  _SearchMethod _searchMethod = _SearchMethod.byActiveSubstanceName;
+  _MatchType _matchType = _MatchType.exact;
 
   void _searchForPrompts(String input) async {
     setState(() {
@@ -39,15 +44,15 @@ class _DrugsListState extends State<DrugsList> {
       _loading = true;
     });
     if (_input.isNotEmpty) {
-      Database db = await _dbHandler.database;
+      Database db = _dbHandler.database;
       String sql = '''
       SELECT ${RootDatabaseModel.idFieldName}, 
         ${Medicine.commonlyUsedNameFieldName},
         ${Medicine.productNameFieldName} 
       FROM ${Medicine.tableName()}
-      WHERE ${_searchByProductName ? Medicine.productNameFieldName : Medicine.commonlyUsedNameFieldName}  
-      LIKE ${_exactMatch ? "'$input%'" : "'%$input%'"}
-      LIMIT 10;
+      WHERE ${_searchMethod == _SearchMethod.byProductName ? Medicine.productNameFieldName : Medicine.commonlyUsedNameFieldName}  
+      LIKE ${_matchType == _MatchType.exact ? "'$input%'" : "'%$input%'"}
+      LIMIT 30;
     ''';
       var queryResult = await db.rawQuery(sql);
       var instances = queryResult.map((e) => BasicMedicalRecord.fromJson(e));
@@ -62,12 +67,9 @@ class _DrugsListState extends State<DrugsList> {
   }
 
   _checkIfThereAreDrugsInDatabase() async {
-    Database db = await _dbHandler.database;
-    String sql = 'select count(*) as count from ${Medicine.tableName()}';
-    var result = (await db.rawQuery(sql)).single;
-    int count = result['count'] as int;
+    bool drugsPresentInDatabase = await DrugsInDatabaseVerifier().anyDrugsInDatabase;
     setState(() {
-      _drugsPresentInDatabase = count != 0;
+      _drugsPresentInDatabase = drugsPresentInDatabase;
     });
   }
 
@@ -98,47 +100,98 @@ class _DrugsListState extends State<DrugsList> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Baza leków - Wyszukaj lek'),
-          actions: [
-            IconButton(
-                onPressed: () => context.go(Constants.homeScreenRoute),
-                icon: const Icon(Icons.home))
-          ],
+          actions: [IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))],
         ),
         //drawer: const MainMenu(),
         body: _drugsPresentInDatabase
             ? Column(
                 children: [
                   if (_showFilters)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            const Text('Sposób wyszukiwania'),
-                            Switch(
-                                value: _searchByProductName,
-                                onChanged: (e) => setState(
-                                    () => {_searchByProductName = !_searchByProductName, _searchForPrompts(_input)})),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const Text(
-                              'Dokładne dopasowanie',
+                    IntrinsicHeight(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              children: [
+                                const ListTile(
+                                  visualDensity: VisualDensity(vertical: -4),
+                                  title: Text('Sposób wyszukiwana', style: TextStyle(fontWeight: FontWeight.bold)),
+                                ),
+                                ListTile(
+                                  dense: true,
+                                  title: const Text('Po substancji czynnej'),
+                                  leading: Radio(
+                                    value: _SearchMethod.byActiveSubstanceName,
+                                    groupValue: _searchMethod,
+                                    onChanged: (e) => setState(() {
+                                      _searchMethod = _searchMethod == _SearchMethod.byProductName
+                                          ? _SearchMethod.byActiveSubstanceName
+                                          : _SearchMethod.byProductName;
+                                      _searchForPrompts(_input);
+                                    }),
+                                  ),
+                                ),
+                                ListTile(
+                                  dense: true,
+                                  title: const Text('Po nazwie produktu'),
+                                  leading: Radio(
+                                    value: _SearchMethod.byProductName,
+                                    groupValue: _searchMethod,
+                                    onChanged: (e) => setState(() {
+                                      _searchMethod = _searchMethod == _SearchMethod.byProductName
+                                          ? _SearchMethod.byActiveSubstanceName
+                                          : _SearchMethod.byProductName;
+                                      _searchForPrompts(_input);
+                                    }),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Switch(
-                                value: _exactMatch,
-                                onChanged: (e) =>
-                                    setState(() => {_exactMatch = !_exactMatch, _searchForPrompts(_input)})),
-                          ],
-                        ),
-                      ],
+                          ),
+                          const VerticalDivider(
+                            thickness: 2,
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                const ListTile(
+                                  visualDensity: VisualDensity(vertical: -4),
+                                  title: Text('Sposób dopasowania', style: TextStyle(fontWeight: FontWeight.bold)),
+                                ),
+                                ListTile(
+                                  dense: true,
+                                    title: const Text('Dokładne dopasowanie'),
+                                    leading: Radio(
+                                      value: _MatchType.exact,
+                                      groupValue: _matchType,
+                                      onChanged: (e) => setState(() {
+                                        _matchType =
+                                            _matchType == _MatchType.exact ? _MatchType.flexible : _MatchType.exact;
+                                        _searchForPrompts(_input);
+                                      }),
+                                    )),
+                                ListTile(
+                                  dense: true,
+                                    title: const Text('Elastyczne dopasowanie'),
+                                    leading: Radio(
+                                      value: _MatchType.flexible,
+                                      groupValue: _matchType,
+                                      onChanged: (e) => setState(() {
+                                        _matchType =
+                                            _matchType == _MatchType.exact ? _MatchType.flexible : _MatchType.exact;
+                                        _searchForPrompts(_input);
+                                      }),
+                                    )),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   TextField(
                     decoration: InputDecoration(
-                        hintText: _searchByProductName ? "Nazwa produktu" : "Substancja czynna",
+                        hintText: _searchMethod == _SearchMethod.byProductName ? "Nazwa produktu" : "Substancja czynna",
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Theme.of(context).dividerColor),
@@ -166,7 +219,7 @@ class _DrugsListState extends State<DrugsList> {
                           title: Text(_medicalRecords[index].commonlyUsedName),
                           subtitle: Text(_medicalRecords[index].productName),
                           onTap: () async {
-                            var medicineJson = (await (await _dbHandler.database).query(Medicine.tableName(),
+                            var medicineJson = (await _dbHandler.database.query(Medicine.tableName(),
                                     where: 'id = ?', whereArgs: [_medicalRecords[index].id]))
                                 .single;
                             Medicine medicine = Medicine.fromJson(medicineJson);

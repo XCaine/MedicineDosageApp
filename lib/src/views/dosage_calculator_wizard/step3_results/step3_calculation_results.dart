@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/shared/utility_string_formatter.dart';
 import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/step3_results/search_input_data_summary.dart';
 import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/shared/close_wizard_dialog.dart';

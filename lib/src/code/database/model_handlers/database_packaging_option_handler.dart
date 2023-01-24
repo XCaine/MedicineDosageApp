@@ -1,11 +1,10 @@
-import 'package:drugs_dosage_app/src/code/database/abstract_database_query_handler.dart';
+import 'package:drugs_dosage_app/src/code/database/base_database_query_handler.dart';
 import 'package:drugs_dosage_app/src/code/models/database/packaging_option.dart';
 
 //TODO relationships with medicine are not handled, so e.g. it may be possible to delete all
 // packages and related medicine would stay intact
 class DatabasePackagingOptionHandler
-    extends AbstractDatabaseQueryHandler<PackagingOption> {
-  DatabasePackagingOptionHandler({required super.databaseBroker});
+    extends BaseDatabaseQueryHandler<PackagingOption> {
 
   Future<void> insertPackagingOption(PackagingOption packagingOption) async {
     super.insertObject(packagingOption);

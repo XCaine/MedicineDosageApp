@@ -26,7 +26,7 @@ class _DrugDetailState extends State<DrugDetail> {
 
   void _loadPackageDetails() async {
     try {
-      final db = await _dbHandler.database;
+      final db = _dbHandler.database;
       List<Map<String, dynamic>> rawPackages = await db.rawQuery(
           'select * from ${PackagingOption.tableName()} where ${PackagingOption.medicineIdFieldName} = ${_medicine.id}');
       List<PackagingOption> packageInstances = [];
@@ -44,7 +44,7 @@ class _DrugDetailState extends State<DrugDetail> {
     }
   }
 
-  void _lauchPdf(String url) {
+  void _launchPdf(String url) {
     PdfLauncher.launch(url);
   }
 
@@ -96,9 +96,9 @@ class _DrugDetailState extends State<DrugDetail> {
                       child: ListTile(
                           title: Row(
                         children: [
-                          const Text('Otwórz\nulotkę'),
+                          const Text('Pobierz\nulotkę'),
                           IconButton(
-                              onPressed: () => _lauchPdf(_medicine.flyer!),//_downloadPdf(context, _medicine.flyer!, 'ulotka'),
+                              onPressed: () => _launchPdf(_medicine.flyer!),//_downloadPdf(context, _medicine.flyer!, 'ulotka'),
                               icon: const Icon(Icons.picture_as_pdf_sharp)),
                         ],
                       )),
@@ -112,9 +112,9 @@ class _DrugDetailState extends State<DrugDetail> {
                       child: ListTile(
                           title: Row(
                         children: [
-                          const Text('Otwórz\ncharakterystykę'),
+                          const Text('Pobierz\ncharakterystykę'),
                           IconButton(
-                              onPressed: () => _lauchPdf(_medicine.characteristics!),//_downloadPdf(context, _medicine.characteristics!, 'charakterystyka'),
+                              onPressed: () => _launchPdf(_medicine.characteristics!),//_downloadPdf(context, _medicine.characteristics!, 'charakterystyka'),
                               icon: const Icon(Icons.picture_as_pdf_sharp)),
                         ],
                       )),
@@ -127,76 +127,3 @@ class _DrugDetailState extends State<DrugDetail> {
     );
   }
 }
-
-/*class DrugDetail extends StatelessWidget {
-  const DrugDetail({Key? key, required this.medicine}) : super(key: key);
-
-  final Medicine medicine;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Szczegóły leku'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              children: [
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: ListTile(
-                    title: Text(medicine.productName),
-                    subtitle: const Text('nazwa produktu'),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: ListTile(
-                    title: Text(medicine.commonlyUsedName),
-                    subtitle: const Text('substancja czynna'),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: ListTile(
-                    title: Text(medicine.potency),
-                    subtitle: const Text('moc'),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: ListTile(
-                    title: Text(medicine.pharmaceuticalForm),
-                    subtitle: const Text('forma farmaceutyczna'),
-                  ),
-                ),
-                Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: ListTile(
-                    title: Text(medicine.packaging),
-                    subtitle: const Text('opakowanie'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}*/
-/*
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const ClampingScrollPhysics(),
-                  itemCount: _packages.length,
-                  itemBuilder: (context, index) => {
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * _packages.length,
-                      child: const ListTile(title: Text((_packages[index]).freeText))
-                    )
-    },
-                    ),
-* */

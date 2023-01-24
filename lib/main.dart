@@ -14,5 +14,5 @@ void main() {
   LogDistributor.initialize();
   WidgetsFlutterBinding.ensureInitialized();
   DatabaseBroker.initialize();
-  runApp(const MyApp());
+  runApp(const MedicalCalculatorApp());
 }

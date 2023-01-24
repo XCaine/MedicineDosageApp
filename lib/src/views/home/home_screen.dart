@@ -97,7 +97,6 @@ class _HomeScreenState extends State<HomeScreen> {
           )),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,10 +115,10 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [_menuLink(_bmiCalculator), _menuLink(_manageMedications)],
             ),
-            Row(
+/*            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [_menuLink(_settings)],
-            ),
+            ),*/
           ],
         ),
       ),

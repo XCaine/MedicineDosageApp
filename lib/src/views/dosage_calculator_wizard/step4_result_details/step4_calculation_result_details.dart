@@ -1,7 +1,7 @@
 import 'package:drugs_dosage_app/src/code/constants/constants.dart';
 import 'package:drugs_dosage_app/src/code/dosage_calculator/dosage_result_set.dart';
 import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/shared/utility_string_formatter.dart';
-import 'package:drugs_dosage_app/src/views/drugs_search/drug_detail.dart';
+import 'package:drugs_dosage_app/src/views/shared/drug_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

@@ -1,4 +1,5 @@
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
+import 'package:logging/logging.dart';
 import 'package:quiver/iterables.dart';
 
 class CalculationModel {
@@ -8,6 +9,8 @@ class CalculationModel {
 }
 
 class DosageCalculationAlgorithm {
+  static final Logger _logger = LogDistributor.getLoggerFor('DosageCalculationAlgorithm');
+
   static List<List<int>> apply(List<int> sizeVariants, int total) {
     if(sizeVariants.isEmpty || total <= 0) {
       throw ArgumentError('Given arguments are invalid');
@@ -37,7 +40,7 @@ class DosageCalculationAlgorithm {
       int smallestPackage = min(sizeVariants)!;
 
       if (total <= 0) {
-        LogDistributor.getLoggerFor('DosageCalculationAlgorithm').finest('Ending processing');
+        _logger.finest('Ending processing');
       } else if(total >= 2 * biggestPackage) {
         //just add biggest package, we're guaranteed 2 more iterations in this case
         invocationOptions.single.add(biggestPackage);

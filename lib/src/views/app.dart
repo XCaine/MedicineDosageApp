@@ -2,26 +2,27 @@ import 'package:drugs_dosage_app/src/views/bmi_calculator/bmi_calculator_screen.
 import 'package:drugs_dosage_app/src/views/drugs_search/drugs_search.dart';
 import 'package:drugs_dosage_app/src/views/home/home_screen.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/manage_medications.dart';
-import 'package:drugs_dosage_app/src/views/settings/settings_screen.dart';
+import 'package:drugs_dosage_app/src/ztemp/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../code/constants/constants.dart';
 import 'dosage_calculator_wizard/step1_search/step1_medicine_search.dart';
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MedicalCalculatorApp extends StatefulWidget {
+  const MedicalCalculatorApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<MedicalCalculatorApp> createState() => _MedicalCalculatorAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MedicalCalculatorAppState extends State<MedicalCalculatorApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       routerConfig: _router,
-      title: 'SuperDawka',
+      title: 'Kalkulator Medyczny',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

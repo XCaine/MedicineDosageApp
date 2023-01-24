@@ -45,7 +45,7 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
   }
 
   Future<void> fetchFullMedicineData(BasicMedicalRecord record) async {
-    var db = await _dbHandler.database;
+    var db = _dbHandler.database;
     var result = await db.query(Medicine.tableName(), where: 'id = ?', whereArgs: [record.id]);
     setState(() {
       Medicine medicine = Medicine.fromJson(result.single);
@@ -54,7 +54,7 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
   }
 
   Future<Iterable<String>> _potencyOptionsForAutocomplete(String input) async {
-    var db = await _dbHandler.database;
+    var db = _dbHandler.database;
     String sql = '''
       SELECT ${Medicine.potencyFieldName}
       FROM ${Medicine.tableName()}

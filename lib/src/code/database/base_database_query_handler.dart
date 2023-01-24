@@ -2,10 +2,14 @@ import 'package:drugs_dosage_app/src/code/database/database.dart';
 import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
 import 'package:sqflite/sqlite_api.dart';
 
-abstract class AbstractDatabaseQueryHandler<T extends RootDatabaseModel> {
+class BaseDatabaseQueryHandler<T extends RootDatabaseModel> {
   final DatabaseBroker databaseBroker;
 
-  AbstractDatabaseQueryHandler({required this.databaseBroker});
+  BaseDatabaseQueryHandler() : databaseBroker = DatabaseBroker();
+
+  Database get database {
+    return databaseBroker.database;
+  }
 
   Future<int> getLastInsertedRowId([Transaction? txn]) async {
     int lastId;
@@ -13,8 +17,7 @@ abstract class AbstractDatabaseQueryHandler<T extends RootDatabaseModel> {
       var lastIdResultSet = await txn.rawQuery('SELECT last_insert_rowid()');
       lastId = (lastIdResultSet.single)['last_insert_rowid()'] as int;
     } else {
-      Database db = await databaseBroker.database;
-      var lastIdResultSet = await db.rawQuery('SELECT last_insert_rowid()');
+      var lastIdResultSet = await database.rawQuery('SELECT last_insert_rowid()');
       lastId = (lastIdResultSet.single)['last_insert_rowid()'] as int;
     }
     return lastId;
