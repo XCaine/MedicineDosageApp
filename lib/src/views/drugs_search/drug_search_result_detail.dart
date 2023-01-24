@@ -1,6 +1,8 @@
+import 'package:drugs_dosage_app/src/code/constants/constants.dart';
 import 'package:drugs_dosage_app/src/code/models/database/medicine.dart';
-import 'package:drugs_dosage_app/src/views/drugs_search/drug_detail.dart';
+import 'package:drugs_dosage_app/src/views/shared/drug_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class DrugSearchResultDetail extends StatefulWidget {
   const DrugSearchResultDetail({Key? key, required this.medicine}) : super(key: key);
@@ -16,6 +18,7 @@ class _DrugSearchResultDetailState extends State<DrugSearchResultDetail> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Szczegóły leku'),
+          actions: [IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))],
         ),
         body: Column(
           children: [DrugDetail(medicine: widget.medicine)],

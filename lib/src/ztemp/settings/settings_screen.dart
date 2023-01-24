@@ -1,5 +1,5 @@
 import 'package:drugs_dosage_app/src/code/constants/constants.dart';
-import 'package:drugs_dosage_app/src/views/settings/medical_data_fetch/medical_data_fetch_button.dart';
+import 'package:drugs_dosage_app/src/ztemp/settings/medical_data_fetch/medical_data_fetch_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

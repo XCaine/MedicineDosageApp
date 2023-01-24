@@ -17,15 +17,12 @@ class _BmiCalculatorState extends State<BmiCalculator> {
 
   double? _bmi;
 
-  // the message at the beginning
   String _message = 'Wprowadź swoją wagę i wzrost';
 
-  // This function is triggered when the user pressess the "Calculate" button
-  void _calculate() {
+  void _calculateBmi() {
     final double? height = double.tryParse(_heightController.value.text);
     final double? weight = double.tryParse(_weightController.value.text);
 
-    // Check if the inputs are valid
     if (height == null || height <= 0 || weight == null || weight <= 0) {
       setState(() {
         _message = "Waga lub wzrost są niepoprawne";
@@ -36,21 +33,21 @@ class _BmiCalculatorState extends State<BmiCalculator> {
     setState(() {
       _bmi = weight / (heightInMeters * heightInMeters);
       if (_bmi! < 16.0) {
-        _message = "Underweight (Severe thinness)";
+        _message = "Znaczna niedowaga";
       } else if (_bmi! < 16.9) {
-        _message = "Underweight (Moderate thinness)";
+        _message = "Niedowaga";
       } else if (_bmi! < 18.4) {
-        _message = "Underweight (Mild thinness)";
+        _message = "Lekka niedowaga";
       } else if (_bmi! < 24.9) {
-        _message = "Normal range";
+        _message = "Poprawna waga";
       } else if (_bmi! < 29.9) {
-        _message = "Overweight (Pre-obese)";
+        _message = "Nadwaga";
       } else if (_bmi! < 34.9) {
-        _message = 'Obese (Class I)';
+        _message = 'Otyłość (klasa I)';
       } else if (_bmi! < 39.9) {
-        _message = 'Obese (Class II)';
+        _message = 'Otyłość (klasa II)';
       } else {
-        _message = 'Obese (Class III)';
+        _message = 'Otyłość (klasa III)';
       }
     });
   }
@@ -90,7 +87,7 @@ class _BmiCalculatorState extends State<BmiCalculator> {
                   controller: _weightController,
                 ),
                 ElevatedButton(
-                  onPressed: _calculate,
+                  onPressed: _calculateBmi,
                   child: const Text('Oblicz'),
                 ),
                 const SizedBox(

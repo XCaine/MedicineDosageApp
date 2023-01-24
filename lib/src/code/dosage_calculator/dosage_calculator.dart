@@ -25,7 +25,7 @@ class DosageCalculator {
       :_searchWrapper = searchWrapper;
 
   Future<DosageResultSetWrapper> findMatchingPackageSets(DosageCalculatorMode mode) async {
-    Database db = await _dbHandler.database;
+    Database db = _dbHandler.database;
 
     var distinctMedicines = await db.rawQuery('''
       SELECT DISTINCT m.* FROM ${Medicine.tableName()} m 

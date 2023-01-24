@@ -10,11 +10,17 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 import '../constants/constants.dart';
 
 class DatabaseBroker {
-  Future<sqflite.Database> database;
+  late final sqflite.Database database;
   static final Logger _logger = LogDistributor.getLoggerFor('DatabaseHandler');
   static DatabaseBroker? _instance;
 
-  DatabaseBroker._internal() : database = _initDatabase();
+  DatabaseBroker._internal() {
+    try {
+      _initDatabase();
+    } catch(e, stackTrace) {
+      _logger.severe('Database initialization failed', stackTrace);
+    }
+  }
 
   factory DatabaseBroker() {
     _instance ??= DatabaseBroker._internal();
@@ -25,13 +31,13 @@ class DatabaseBroker {
     return DatabaseBroker();
   }
 
-  static Future<sqflite.Database> _initDatabase() async {
+  _initDatabase() async {
     String databasePath =
         join(await sqflite.getDatabasesPath(), Constants.databaseName);
     //TODO REMOVE database delete
     //await _dropDatabaseIfExists(databasePath);
 
-    Future<sqflite.Database> database = sqflite.openDatabase(
+    sqflite.Database database = await sqflite.openDatabase(
       databasePath,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
@@ -45,7 +51,7 @@ class DatabaseBroker {
       },
       version: 1,
     );
-    return database;
+    this.database = database;
   }
 
   static Future<void> _dropDatabaseIfExists(String databasePath) async {
@@ -62,9 +68,8 @@ class DatabaseBroker {
   Future<void> insert<T extends RootDatabaseModel>(T object,
       [sqflite.ConflictAlgorithm conflictAlgorithm =
           sqflite.ConflictAlgorithm.replace]) async {
-    final db = await database;
 
-    await db.insert(object.getTableName(), object.toMap(),
+    await database.insert(object.getTableName(), object.toMap(),
         conflictAlgorithm: conflictAlgorithm);
   }
 
@@ -75,9 +80,8 @@ class DatabaseBroker {
       return;
     }
     final tableName = objects.first.getTableName();
-    final db = await database;
 
-    sqflite.Batch batch = db.batch();
+    sqflite.Batch batch = database.batch();
     for (var element in objects) {
       batch.insert(tableName, element.toMap(),
           conflictAlgorithm: conflictAlgorithm);
@@ -87,18 +91,16 @@ class DatabaseBroker {
 
   Future<T> get<T extends RootDatabaseModel>(String tableName,
       T Function(Map<String, dynamic>) constructorCallback, String id) async {
-    final db = await database;
     final Map<String, dynamic> queryResult =
-        (await db.query(tableName, where: 'id = ?', whereArgs: [id])).single;
+        (await database.query(tableName, where: 'id = ?', whereArgs: [id])).single;
     T instance = constructorCallback(queryResult);
     return instance;
   }
 
   Future<List<T>> getAll<T extends RootDatabaseModel>(String tableName,
       T Function(Map<String, dynamic>) constructorCallback) async {
-    final db = await database;
 
-    final List<Map<String, dynamic>> queryResult = await db.query(tableName);
+    final List<Map<String, dynamic>> queryResult = await database.query(tableName);
     return List.generate(queryResult.length, (i) => constructorCallback(queryResult[i]));
   }
 
@@ -112,8 +114,7 @@ class DatabaseBroker {
       String? orderBy,
       int? limit,
       int? offset}) async {
-    final db = await database;
-    final List<Map<String, dynamic>> queryResult = await db.query(tableName,
+    final List<Map<String, dynamic>> queryResult = await database.query(tableName,
         distinct: distinct,
         where: where,
         whereArgs: whereArgs,
@@ -127,16 +128,14 @@ class DatabaseBroker {
 
   Future<void> update<T extends RootDatabaseModel>(T object) async {
     assert(object.id != null, 'ID cannot be null');
-    final db = await database;
     object.updateTime = DateTime.now();
-    await db.update(object.getTableName(), object.toMap(),
+    await database.update(object.getTableName(), object.toMap(),
         where: 'id = ?', whereArgs: [object.id]);
   }
 
   Future<void> delete<T extends RootDatabaseModel>(T object) async {
     assert(object.id != null, 'ID cannot be null');
-    final db = await database;
-    await db.delete(
+    await database.delete(
       object.getTableName(),
       where: 'id = ?',
       whereArgs: [object.id],

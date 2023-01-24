@@ -1,5 +1,5 @@
 import 'package:drugs_dosage_app/src/code/data_fetch/mappers/packaging_option_api_mapper.dart';
-import 'package:drugs_dosage_app/src/code/database/abstract_database_query_handler.dart';
+import 'package:drugs_dosage_app/src/code/database/base_database_query_handler.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/code/models/database/medicine.dart';
 import 'package:quiver/iterables.dart';
@@ -7,10 +7,8 @@ import 'package:sqflite/sqlite_api.dart';
 
 import '../../models/database/packaging_option.dart';
 
-class DatabaseMedicineHandler extends AbstractDatabaseQueryHandler<Medicine> {
+class DatabaseMedicineHandler extends BaseDatabaseQueryHandler<Medicine> {
   static final _logger = LogDistributor.getLoggerFor('DatabaseMedicineHandler');
-
-  DatabaseMedicineHandler({required super.databaseBroker});
 
   Future<void> insertMedicine(Medicine medicine) async {
     super.insertObject(medicine);
@@ -18,7 +16,7 @@ class DatabaseMedicineHandler extends AbstractDatabaseQueryHandler<Medicine> {
 
   //for registered medicine loader
   Future<void> insertMedicineList(List<Medicine> medicineList) async {
-    Database db = await databaseBroker.database;
+    Database db = databaseBroker.database;
     ApiPackagingOptionMapper packagingMapper = ApiPackagingOptionMapper();
     int chunkSize = 500;
     var partitionedMedicineList = partition(medicineList, chunkSize);

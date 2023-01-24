@@ -52,6 +52,7 @@ dependencies:
   flowder: ^0.2.0
   path_provider: ^2.0.11
   url_launcher: ^6.1.7
+  flutter_form_builder: ^7.7.0
 
 dev_dependencies:
   flutter_test:
