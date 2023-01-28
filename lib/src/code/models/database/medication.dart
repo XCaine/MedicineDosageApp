@@ -1,7 +1,7 @@
 import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
 
 class Medication extends RootDatabaseModel {
-  static const String _tableName = 'medicine';
+  static const String _tableName = 'medication';
 
   static const String productIdentifierFieldName = 'productIdentifier';
   static const String productNameFieldName = 'productName';
@@ -39,6 +39,7 @@ class Medication extends RootDatabaseModel {
     required this.packaging,
     this.flyer,
     this.characteristics,
+    super.isCustom = 1
   });
 
   factory Medication.fromJson(Map<String, dynamic> json) {
@@ -70,6 +71,7 @@ class Medication extends RootDatabaseModel {
       packagingFieldName: packaging,
       flyerFieldName: flyer,
       characteristicsFieldName: characteristics,
+      RootDatabaseModel.isCustomFieldName: isCustom
     };
     return map;
   }

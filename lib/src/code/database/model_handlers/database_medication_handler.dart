@@ -2,6 +2,7 @@ import 'package:drugs_dosage_app/src/code/data_fetch/mappers/packages_api_mapper
 import 'package:drugs_dosage_app/src/code/database/base_database_query_handler.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
+import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
 import 'package:quiver/iterables.dart';
 import 'package:sqflite/sqlite_api.dart';
 
@@ -9,10 +10,6 @@ import '../../models/database/package.dart';
 
 class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
   static final _logger = LogDistributor.getLoggerFor('DatabaseMedicineHandler');
-
-  Future<void> insertMedicine(Medication medicine) async {
-    super.insertObject(medicine);
-  }
 
   //for registered medicine loader
   Future<void> insertMedicineList(List<Medication> medicineList) async {
@@ -29,11 +26,13 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
         _logger.info('Iteration $currentCount/$iterations. Loading $chunkSize medical records per iteration');
         await db.transaction((Transaction txn) async {
           for (Medication medicine in medicineGroup) {
+            medicine.isCustom = 0;
             await txn.insert(Medication.tableName(), medicine.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
             //inserting related packages
             int lastId = await getLastInsertedRowId(txn);
             var packages = packagingMapper.mapToJson(medicine.packaging);
             for (var package in packages) {
+              package[RootDatabaseModel.isCustomFieldName] = 0;
               package[Package.medicineIdFieldName] = lastId;
               await txn.insert(Package.tableName(), package);
             }
@@ -47,17 +46,4 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
     _logger.info('Database load took ${(end.difference(start)).inSeconds} s');
   }
 
-  Future<List<Medication>> getMedicines() async {
-    Future<List<Medication>> medicines =
-        super.getObjects(Medication.tableName(), (queryResult) => Medication.fromJson(queryResult));
-    return medicines;
-  }
-
-  Future<void> updateMedicine(Medication medicine) async {
-    super.updateObject(medicine);
-  }
-
-  Future<void> deleteMedicine(Medication medicine) async {
-    super.deleteObject(medicine);
-  }
 }

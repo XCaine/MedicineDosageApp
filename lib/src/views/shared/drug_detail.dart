@@ -54,7 +54,7 @@ class _DrugDetailState extends State<DrugDetail> {
     String fileName = '${productNameWithNoWhitespaces}_$docType.pdf';
 
     showSnackBar() => CustomSnackBar.show(context, 'Zakończono ściąganie pliku\n $fileName');
-    FileDownloadFacade.startDownload(url, fileName, showSnackBar);
+    //FileDownloadFacade.startDownload(url, fileName, showSnackBar);
   }
 
   EdgeInsets _edgeInsetsForCards() => const EdgeInsets.symmetric(vertical: 2, horizontal: 6);

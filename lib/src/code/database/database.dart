@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
+import 'package:drugs_dosage_app/src/code/models/database/app_metadata.dart';
 import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
 import 'package:drugs_dosage_app/src/code/providers/database/bootstrap_query_provider.dart';
 import 'package:logging/logging.dart';
@@ -35,7 +36,7 @@ class DatabaseBroker {
     String databasePath =
         join(await sqflite.getDatabasesPath(), Constants.databaseName);
     //TODO REMOVE database delete
-    //await _dropDatabaseIfExists(databasePath);
+    await _dropDatabaseIfExists(databasePath);
 
     sqflite.Database database = await sqflite.openDatabase(
       databasePath,
@@ -43,7 +44,6 @@ class DatabaseBroker {
         await db.execute('PRAGMA foreign_keys = ON');
       },
       onCreate: (db, version) async {
-        _logger.info('Database successfully created');
         List<String> bootstrapQueries = BootstrapQueryProvider().provide();
         for(String query in bootstrapQueries) {
           await db.execute(query);
@@ -52,6 +52,12 @@ class DatabaseBroker {
       version: 1,
     );
     this.database = database;
+
+    int metadataValuesCount = await getCountOf(AppMetadata.tableName());
+    if(metadataValuesCount == 0) {
+      insert(AppMetadata(initialLoadDone: 0));
+    }
+    _logger.info('Database successfully created');
   }
 
   static Future<void> _dropDatabaseIfExists(String databasePath) async {
@@ -63,6 +69,13 @@ class DatabaseBroker {
         _logger.severe('Failed to delete database', e, stackTrace);
       }
     }
+  }
+
+  Future<int> getCountOf(String tableName) async {
+    var result = (await database
+        .rawQuery('select count(*) as count from ${AppMetadata.tableName()}')).single;
+    int count = result['count'] as int;
+    return count;
   }
 
   Future<void> insert<T extends RootDatabaseModel>(T object,

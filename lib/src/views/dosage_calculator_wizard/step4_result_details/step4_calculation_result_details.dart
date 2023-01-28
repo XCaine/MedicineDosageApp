@@ -29,7 +29,7 @@ class _CalculationResultDetailsState extends State<CalculationResultDetails> {
       body: Column(
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
                   flex: 4,
