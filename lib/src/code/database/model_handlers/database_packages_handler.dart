@@ -7,26 +7,26 @@ class DatabasePackagesHandler
     extends BaseDatabaseQueryHandler<Package> {
 
   Future<void> insertPackagingOption(Package packagingOption) async {
-    super.insertObject(packagingOption);
+    databaseBroker.insert(packagingOption);
   }
 
   Future<void> insertPackagingOptionList(
       List<Package> packagingOptionList) async {
-    super.insertObjectList(packagingOptionList);
+    databaseBroker.insertAll(packagingOptionList);
   }
 
   Future<List<Package>> getPackagingOptions() async {
-    Future<List<Package>> packagingOptions = super.getObjects(
+    Future<List<Package>> packagingOptions = databaseBroker.getAll(
         Package.tableName(),
         (queryResult) => Package.fromJson(queryResult));
     return packagingOptions;
   }
 
   Future<void> updatePackagingOption(Package packagingOption) async {
-    super.updateObject(packagingOption);
+    databaseBroker.update(packagingOption);
   }
 
   Future<void> deletePackagingOption(Package packagingOption) async {
-    super.deleteObject(packagingOption);
+    databaseBroker.delete(packagingOption);
   }
 }

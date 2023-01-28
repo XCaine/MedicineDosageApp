@@ -78,7 +78,7 @@ class ApiMedicationMapper {
     //parse and additionally validate packaging info
     String packagingInfo = json[Medication.packagingFieldName];
     Map<String, dynamic> packages = PackagesParser(rawData: packagingInfo).parseToJson();
-    if(packages[Package.rootJsonFieldName].isEmpty) {
+    if(packages[Package.jsonIdentifierFieldName].isEmpty) {
       return null;
     }
     String jsonEncodedPackages = jsonEncode(packages);

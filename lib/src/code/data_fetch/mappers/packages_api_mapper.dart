@@ -6,7 +6,7 @@ class ApiPackagesMapper {
   List<Package> mapToInstances(String packageData, int medicineId) {
     Map<String, dynamic> decodedPackageData = json.decode(packageData);
     List<dynamic> packages =
-        decodedPackageData[Package.rootJsonFieldName];
+        decodedPackageData[Package.jsonIdentifierFieldName];
 
     List<Package> instances = [];
     for (dynamic package in packages) {
@@ -19,7 +19,7 @@ class ApiPackagesMapper {
   List<dynamic> mapToJson(String packageData) {
     Map<String, dynamic> decodedPackageData = json.decode(packageData);
     List<dynamic> packages =
-        decodedPackageData[Package.rootJsonFieldName];
+        decodedPackageData[Package.jsonIdentifierFieldName];
     return packages;
   }
 }

@@ -1,9 +1,9 @@
 import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
 
 class Package extends RootDatabaseModel {
-  static const String _tableName = 'packaging';
+  static const String _tableName = 'package';
 
-  static const rootJsonFieldName = 'packages';
+  static const String jsonIdentifierFieldName = 'packages';
 
   static const String medicineIdFieldName = 'medicineId';
   static const String categoryFieldName = 'category';
@@ -11,17 +11,18 @@ class Package extends RootDatabaseModel {
   static const String rawCountFieldName = 'rawCount';
 
   //foreign key
-  int medicineId;
-  String category;
-  String rawCount;
-  int? count;
+  final int medicineId;
+  final String category;
+  final String rawCount;
+  final int? count;
 
   Package(
       {super.id,
       required this.medicineId,
       required this.category,
       required this.rawCount,
-      this.count});
+      this.count,
+      super.isCustom = 1});
 
   @override
   factory Package.fromJson(Map<String, dynamic> json) {
@@ -48,7 +49,8 @@ class Package extends RootDatabaseModel {
     final map = {
       medicineIdFieldName: medicineId,
       categoryFieldName: category,
-      countFieldName: count
+      countFieldName: count,
+      RootDatabaseModel.isCustomFieldName: isCustom
     };
     return map;
   }

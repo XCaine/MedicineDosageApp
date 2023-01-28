@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
-import 'package:flowder/flowder.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileDownloadFacade {
+  /*
   static final _logger = LogDistributor.getLoggerFor('FileDownloadFacade');
 
   static late final String _path;
@@ -49,8 +49,5 @@ class FileDownloadFacade {
     DownloaderCore core = await Flowder.download(url, options);
     return core;
   }
-
-
-
-
+*/
 }

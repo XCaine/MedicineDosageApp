@@ -21,7 +21,7 @@ class PackagesParser {
     List<Map<String, dynamic>> packageList = _parseInternal();
     packageList = _onlyValid(packageList);
     Map<String, dynamic> json = {
-      Package.rootJsonFieldName: packageList
+      Package.jsonIdentifierFieldName: packageList
     };
     return json;
   }
