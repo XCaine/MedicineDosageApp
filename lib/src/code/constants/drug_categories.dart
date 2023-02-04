@@ -1,8 +1,10 @@
 class DrugCategories {
-  static final List<String> drugCategories =
+  static final List<String> categoryNames =
       categoryExplanationMap.keys.toList();
 
-  static const List<String> validDrugCategories = ['rp', 'rpz', 'rpw'];
+  static final List<String> categoryExplanations = categoryExplanationMap.values.toList();
+
+  static const List<String> validOnes = ['rp', 'rpz', 'rpw'];
 
   static const Map<String, String> categoryExplanationMap = {
     'otc': 'otc - wydawane bez przepisu lekarza',

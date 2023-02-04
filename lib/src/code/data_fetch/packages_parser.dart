@@ -31,7 +31,7 @@ class PackagesParser {
     for (Map<String, dynamic> singlePackage in allPackages) {
       String metadata = (singlePackage[_metadata] as String);
       bool packageDeleted = metadata.contains(_deleted);
-      bool isValidDrugType = DrugCategories.validDrugCategories
+      bool isValidDrugType = DrugCategories.validOnes
           .any((validDrugType) => metadata.contains(validDrugType));
       bool countValid = singlePackage[Package.countFieldName] != null;
 
@@ -99,7 +99,7 @@ class PackagesParser {
     //'20 kaps.' -> 20
     int? count = int.tryParse(rawCount.split(' ').first);
 
-    String selectedCategory = DrugCategories.drugCategories.firstWhere(
+    String selectedCategory = DrugCategories.categoryNames.firstWhere(
         (cat) => metadata.contains(cat),
         orElse: () => ''
     );

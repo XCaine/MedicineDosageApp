@@ -1,9 +1,9 @@
 import 'package:drugs_dosage_app/src/code/constants/constants.dart';
 import 'package:drugs_dosage_app/src/code/database/commons/drugs_in_database_verifier.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
-import 'package:drugs_dosage_app/src/views/manage_medications/add_medication.dart';
-import 'package:drugs_dosage_app/src/views/manage_medications/modify_medication.dart';
-import 'package:drugs_dosage_app/src/views/manage_medications/remove_medication.dart';
+import 'package:drugs_dosage_app/src/views/manage_medications/add_medication/add_medication.dart';
+import 'package:drugs_dosage_app/src/views/manage_medications/modify_medication/modify_medication.dart';
+import 'package:drugs_dosage_app/src/views/manage_medications/remove_medication/remove_medication.dart';
 import 'package:drugs_dosage_app/src/views/shared/widgets/no_drugs_in_database.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
