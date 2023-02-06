@@ -1,7 +1,5 @@
 import 'package:drugs_dosage_app/src/code/browser_file_launchers/pdf_launcher.dart';
-import 'package:drugs_dosage_app/src/views/shared/widgets/custom_snack_bar.dart';
 import 'package:drugs_dosage_app/src/code/database/database.dart';
-import 'package:drugs_dosage_app/src/code/file_download/file_download_facade.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
 import 'package:drugs_dosage_app/src/code/models/database/package.dart';
@@ -46,15 +44,6 @@ class _DrugDetailState extends State<DrugDetail> {
 
   void _launchPdf(String url) {
     PdfLauncher.launch(url);
-  }
-
-  void _downloadPdf(BuildContext context, String url, String docType) {
-    _logger.info('Starting to download file from $url');
-    String productNameWithNoWhitespaces = _medicine.productName.replaceAll(' ', '');
-    String fileName = '${productNameWithNoWhitespaces}_$docType.pdf';
-
-    showSnackBar() => CustomSnackBar.show(context, 'Zakończono ściąganie pliku\n $fileName');
-    //FileDownloadFacade.startDownload(url, fileName, showSnackBar);
   }
 
   EdgeInsets _edgeInsetsForCards() => const EdgeInsets.symmetric(vertical: 2, horizontal: 6);

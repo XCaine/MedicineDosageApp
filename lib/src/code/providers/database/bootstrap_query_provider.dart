@@ -8,7 +8,7 @@ class BootstrapQueryProvider implements AbstractProvider<String> {
   final String _medicineQuery = '''
     CREATE TABLE ${Medication.tableName()}(
       ${RootDatabaseModel.idFieldName} INTEGER PRIMARY KEY, 
-      ${Medication.productIdentifierFieldName} VARCHAR(255) UNIQUE, 
+      ${Medication.productIdentifierFieldName} VARCHAR(255), 
       ${Medication.productNameFieldName} VARCHAR(255),
       ${Medication.commonlyUsedNameFieldName} VARCHAR(255),
       ${Medication.potencyFieldName} VARCHAR(255),

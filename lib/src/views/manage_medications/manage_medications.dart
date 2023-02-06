@@ -71,8 +71,8 @@ class _ManageMedicationsState extends State<ManageMedications> {
             ? ListView(
                 children: [
                   medicationAdministrationOption('Dodaj lek', Icons.add, const AddMedication()),
-                  medicationAdministrationOption('Usuń lek', Icons.remove, const RemoveMedication()),
-                  medicationAdministrationOption('Zmodyfikuj lek', Icons.edit, const ModifyMedication()),
+                  if(_drugsPresentInDatabase) medicationAdministrationOption('Usuń lek', Icons.remove, const RemoveMedication()),
+                  if(_drugsPresentInDatabase) medicationAdministrationOption('Zmodyfikuj lek', Icons.edit, const ModifyMedication()),
                 ],
               )
             : const NoDrugsInDatabase());
