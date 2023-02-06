@@ -21,6 +21,6 @@ class _RemoveMedicationState extends State<RemoveMedication> {
           title: const Text('Usuń lek'),
           actions: [IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))],
         ),
-        body: Text('test'));
+        body: const Text('test'));
   }
 }

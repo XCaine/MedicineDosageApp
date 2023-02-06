@@ -21,6 +21,6 @@ class _ModifyMedicationState extends State<ModifyMedication> {
           title: const Text('Zmodyfikuj lek'),
           actions: [IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))],
         ),
-        body: Text('test'));
+        body: const Text('test'));
   }
 }

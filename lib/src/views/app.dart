@@ -1,6 +1,7 @@
 import 'package:drugs_dosage_app/src/views/bmi_calculator/bmi_calculator_screen.dart';
 import 'package:drugs_dosage_app/src/views/drugs_search/drugs_search.dart';
 import 'package:drugs_dosage_app/src/views/home/home_screen.dart';
+import 'package:drugs_dosage_app/src/views/manage_medications/add_medication/add_medication_confirmation.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/manage_medications.dart';
 import 'package:drugs_dosage_app/src/ztemp/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
@@ -64,6 +65,12 @@ class _MedicalCalculatorAppState extends State<MedicalCalculatorApp> {
       path: Constants.manageMedicationScreenRoute,
         builder: (BuildContext context, GoRouterState state) {
           return const ManageMedications();
+        }
+    ),
+    GoRoute(
+        path: Constants.addMedicationConfirmationScreenRoute,
+        builder: (BuildContext context, GoRouterState state) {
+          return const AddMedicationConfirmation();
         }
     )
   ]);

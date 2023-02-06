@@ -12,7 +12,7 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
   static final _logger = LogDistributor.getLoggerFor('DatabaseMedicineHandler');
 
   //for registered medicine loader
-  Future<void> insertMedicineList(List<Medication> medicineList) async {
+  Future<bool> insertMedicineList(List<Medication> medicineList, {bool custom = true}) async {
     Database db = databaseBroker.database;
     ApiPackagesMapper packagingMapper = ApiPackagesMapper();
     int chunkSize = 500;
@@ -26,7 +26,7 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
         _logger.info('Iteration $currentCount/$iterations. Loading $chunkSize medical records per iteration');
         await db.transaction((Transaction txn) async {
           for (Medication medicine in medicineGroup) {
-            medicine.isCustom = 0;
+            medicine.isCustom = custom ? 1 : 0;
             await txn.insert(Medication.tableName(), medicine.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
             //inserting related packages
             int lastId = await getLastInsertedRowId(txn);
@@ -40,10 +40,12 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
         });
       } catch (e, stackTrace) {
         _logger.severe('Error during inserting medicine group', e, stackTrace);
+        return false;
       }
     }
     var end = DateTime.now();
     _logger.info('Database load took ${(end.difference(start)).inSeconds} s');
+    return true;
   }
 
 }

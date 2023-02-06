@@ -36,7 +36,7 @@ class DatabaseBroker {
     String databasePath =
         join(await sqflite.getDatabasesPath(), Constants.databaseName);
     //TODO REMOVE database delete
-    //await _dropDatabaseIfExists(databasePath);
+    await _dropDatabaseIfExists(databasePath);
 
     sqflite.Database database = await sqflite.openDatabase(
       databasePath,
