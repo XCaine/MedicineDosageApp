@@ -130,7 +130,7 @@ class _ModifyMedicationState extends State<ModifyMedication> {
     setState(() {
       _formKey = GlobalKey<FormBuilderState>();
       packageCountInputFocusNode = FocusNode();
-      packages = widget.packages.map((package) => package.count.toString()).toList();
+      packages = widget.packages.map((package) => package.count.toString()).toSet().toList();
     });
   }
 
