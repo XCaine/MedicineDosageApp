@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 class CloseWizardDialog {
 
-  static void show(BuildContext context, String content) {
+  static Future<void> show(BuildContext context, String content, String confirmMessage, Function onConfirmAction) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -19,9 +19,9 @@ class CloseWizardDialog {
             ),
             TextButton(
                 onPressed: () {
-                  context.go(Constants.homeScreenRoute);
+                  onConfirmAction();
                 },
-                child: const Text('Zamknij')
+                child: Text(confirmMessage)
             ),
           ],
         );

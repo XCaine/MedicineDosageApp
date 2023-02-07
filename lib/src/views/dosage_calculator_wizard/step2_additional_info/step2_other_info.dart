@@ -1,3 +1,4 @@
+import 'package:drugs_dosage_app/src/code/constants/constants.dart';
 import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/step2_additional_info/other_info_form_handler.dart';
 import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/shared/close_wizard_dialog.dart';
 import 'package:drugs_dosage_app/src/code/database/database.dart';
@@ -6,6 +7,7 @@ import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
 import 'package:drugs_dosage_app/src/code/models/dosage_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class DosageCalculatorOtherInfo extends StatefulWidget {
@@ -73,13 +75,17 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
         title: const Text('Wypełnij szczegóły'),
         actions: [
           IconButton(
-              onPressed: () => CloseWizardDialog.show(context, 'Czy na pewno chcesz wyjść?\nWprowadzone informacje nie zostaną zapisane'),
+              onPressed: () => CloseWizardDialog.show(
+                  context,
+                  'Czy na pewno chcesz wyjść?\nWprowadzone informacje nie zostaną zapisane',
+                  'Zamknij',
+                  () => context.go(Constants.homeScreenRoute)),
               icon: const Icon(Icons.close))
         ],
       ),
       body: _searchWrapper != null
           ? SingleChildScrollView(
-            child: Form(
+              child: Form(
                 key: _formKey,
                 child: Column(
                   children: [
@@ -107,6 +113,7 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
                         fieldViewBuilder: (BuildContext context, TextEditingController textEditingController,
                             FocusNode focusNode, VoidCallback onFieldSubmitted) {
                           return TextFormField(
+                            readOnly: true,
                             controller: textEditingController,
                             focusNode: focusNode,
                             onChanged: (String value) {
@@ -118,10 +125,7 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
                                 suffixIcon: IconButton(
                                   icon: const Icon(Icons.clear),
-                                  onPressed: () => {
-                                    textEditingController.clear(),
-                                    focusNode.unfocus()
-                                  },
+                                  onPressed: () => {textEditingController.clear(), focusNode.unfocus()},
                                 )),
                           );
                         },
@@ -138,9 +142,7 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
                         },
                         keyboardType: TextInputType.number,
                         //TODO allow input with parts, one digit after comma (maybe only a half)
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         validator: (value) => _formHandler.validate(value),
                         decoration: InputDecoration(
                           //TODO add validation - not more than 50 per day
@@ -149,126 +151,127 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
                         ),
                       ),
                     ),
-                    _searchWrapper!.searchByDates ? Row(
-                      children: [
-                        Expanded(
-                            flex: 5,
-                            child: Column(
-                              children: [
-                                TextFormField(
-                                controller: _firstDateController, //editing controller of this TextField
-                                decoration: const InputDecoration(
-                                    icon: Icon(Icons.calendar_today), //icon of text field
-                                    labelText: "Data początkowa" //label text of field
-                                ),
-                                validator: (value) => _formHandler.validate(value),
-                                readOnly: true,
-                                onTap: () async {
-                                  DateTime? pickedDate = await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime(2000),
-                                      lastDate: DateTime(2100)
-                                  );
-                                  if(pickedDate != null) {
-                                    String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
-                                    setState(() {
-                                      if(_searchWrapper!.dateEnd != null &&
-                                          pickedDate.compareTo(_searchWrapper!.dateEnd!) > 0) {
-                                        _lastDateController.clear();
-                                        _searchWrapper!.dateEnd = null;
-                                      }
-                                      _firstDateController.text = formattedDate;
-                                      _searchWrapper!.dateStart = pickedDate;
-                                    });
-                                  }
-                                }
-                            ),
-                                if(_searchWrapper!.dateStart != null)
-                                  TextFormField(
-                                      controller: _lastDateController, //editing controller of this TextField
-                                      decoration: const InputDecoration(
-                                          icon: Icon(Icons.calendar_today), //icon of text field
-                                          //TODO not later than 1 year after starting date
-                                          labelText: "Data końcowa" //label text of field
-                                      ),
-                                      validator: (value) {
-                                        if (_searchWrapper!.searchByDates && (value == null || value.isEmpty)) {
-                                          return 'pole jest puste';
-                                        }
-                                        return null;
-                                      },
-                                      readOnly: true,
-                                      onTap: () async {
-                                        DateTime? pickedDate = await showDatePicker(
-                                            context: context,
-                                            initialDate: _searchWrapper!.dateStart!.add(const Duration(days: 1)),
-                                            firstDate: _searchWrapper!.dateStart!.add(const Duration(days: 1)),
-                                            lastDate: _searchWrapper!.dateStart!.add(const Duration(days: 366))
-                                        );
-                                        if(pickedDate != null) {
-                                          String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
-                                          setState(() {
-                                            _lastDateController.text = formattedDate;
-                                            _searchWrapper!.dateEnd = pickedDate;
-                                            if(_searchWrapper!.dateStart != null) {
-                                              _searchWrapper!.numberOfDays = _searchWrapper!.dateEnd!.difference(_searchWrapper!.dateStart!).inDays;
+                    _searchWrapper!.searchByDates
+                        ? Row(
+                            children: [
+                              Expanded(
+                                flex: 5,
+                                child: Column(
+                                  children: [
+                                    TextFormField(
+                                        controller: _firstDateController,
+                                        //editing controller of this TextField
+                                        decoration: const InputDecoration(
+                                            icon: Icon(Icons.calendar_today), //icon of text field
+                                            labelText: "Data początkowa" //label text of field
+                                            ),
+                                        validator: (value) => _formHandler.validate(value),
+                                        readOnly: true,
+                                        onTap: () async {
+                                          DateTime? pickedDate = await showDatePicker(
+                                              context: context,
+                                              initialDate: DateTime.now(),
+                                              firstDate: DateTime(2000),
+                                              lastDate: DateTime(2100));
+                                          if (pickedDate != null) {
+                                            String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+                                            setState(() {
+                                              if (_searchWrapper!.dateEnd != null &&
+                                                  pickedDate.compareTo(_searchWrapper!.dateEnd!) > 0) {
+                                                _lastDateController.clear();
+                                                _searchWrapper!.dateEnd = null;
+                                              }
+                                              _firstDateController.text = formattedDate;
+                                              _searchWrapper!.dateStart = pickedDate;
+                                            });
+                                          }
+                                        }),
+                                    if (_searchWrapper!.dateStart != null)
+                                      TextFormField(
+                                          controller: _lastDateController,
+                                          //editing controller of this TextField
+                                          decoration: const InputDecoration(
+                                              icon: Icon(Icons.calendar_today), //icon of text field
+                                              //TODO not later than 1 year after starting date
+                                              labelText: "Data końcowa" //label text of field
+                                              ),
+                                          validator: (value) {
+                                            if (_searchWrapper!.searchByDates && (value == null || value.isEmpty)) {
+                                              return 'pole jest puste';
                                             }
-                                          });
-                                        }
-                                      }
-                                  ),
-                              ],
-                            ),
-                        ),
-                        Expanded(
-                            flex: 1,
-                            child: IconButton(
-                              icon: const Icon(Icons.change_circle_outlined),
-                              onPressed: () => setState(() {
-                                _searchWrapper!.searchByDates = !_searchWrapper!.searchByDates;
-                              }),
-                            ),
-                        ),
-                      ],
-                    ) :
-                    Row(
-                      children: [
-                        Expanded(
-                            flex: 5,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 0.0),
-                              child: TextFormField(
-                                onChanged: (String value) => setState(() {
-                                  _searchWrapper!.numberOfDays = int.tryParse(value);
-                                }),
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                validator: (value) {
-                                  if (!_searchWrapper!.searchByDates && (value == null || value.isEmpty)) {
-                                    return 'pole jest puste';
-                                  }
-                                  return null;
-                                },
-                                decoration: InputDecoration(
-                                  //TODO max 366
-                                  labelText: 'ilość dni',
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
+                                            return null;
+                                          },
+                                          readOnly: true,
+                                          onTap: () async {
+                                            DateTime? pickedDate = await showDatePicker(
+                                                context: context,
+                                                initialDate: _searchWrapper!.dateStart!.add(const Duration(days: 1)),
+                                                firstDate: _searchWrapper!.dateStart!.add(const Duration(days: 1)),
+                                                lastDate: _searchWrapper!.dateStart!.add(const Duration(days: 366)));
+                                            if (pickedDate != null) {
+                                              String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+                                              setState(() {
+                                                _lastDateController.text = formattedDate;
+                                                _searchWrapper!.dateEnd = pickedDate;
+                                                if (_searchWrapper!.dateStart != null) {
+                                                  _searchWrapper!.numberOfDays = _searchWrapper!.dateEnd!
+                                                      .difference(_searchWrapper!.dateStart!)
+                                                      .inDays;
+                                                }
+                                              });
+                                            }
+                                          }),
+                                  ],
                                 ),
                               ),
-                            ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: IconButton(
-                            icon: const Icon(Icons.change_circle_outlined),
-                            onPressed: () => setState(() {
-                              _searchWrapper!.searchByDates = !_searchWrapper!.searchByDates;
-                            }),
+                              Expanded(
+                                flex: 1,
+                                child: IconButton(
+                                  icon: const Icon(Icons.change_circle_outlined),
+                                  onPressed: () => setState(() {
+                                    _searchWrapper!.searchByDates = !_searchWrapper!.searchByDates;
+                                  }),
+                                ),
+                              ),
+                            ],
+                          )
+                        : Row(
+                            children: [
+                              Expanded(
+                                flex: 5,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 0.0),
+                                  child: TextFormField(
+                                    onChanged: (String value) => setState(() {
+                                      _searchWrapper!.numberOfDays = int.tryParse(value);
+                                    }),
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                    validator: (value) {
+                                      if (!_searchWrapper!.searchByDates && (value == null || value.isEmpty)) {
+                                        return 'pole jest puste';
+                                      }
+                                      return null;
+                                    },
+                                    decoration: InputDecoration(
+                                      //TODO max 366
+                                      labelText: 'ilość dni',
+                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: IconButton(
+                                  icon: const Icon(Icons.change_circle_outlined),
+                                  onPressed: () => setState(() {
+                                    _searchWrapper!.searchByDates = !_searchWrapper!.searchByDates;
+                                  }),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: ElevatedButton(
@@ -279,7 +282,7 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
                   ],
                 ),
               ),
-          )
+            )
           : const Center(
               child: CircularProgressIndicator(),
             ),

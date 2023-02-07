@@ -12,7 +12,7 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
   static final _logger = LogDistributor.getLoggerFor('DatabaseMedicineHandler');
 
   //for registered medicine loader
-  Future<bool> insertMedicineList(List<Medication> medicineList, {bool custom = true}) async {
+  Future<bool> insertMedicineList(List<Medication> medicineList, {bool custom = true, Function(String)? setMessageOnProgress}) async {
     Database db = databaseBroker.database;
     ApiPackagesMapper packagingMapper = ApiPackagesMapper();
     int chunkSize = 500;
@@ -23,6 +23,13 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
     for (List<Medication> medicineGroup in partitionedMedicineList) {
       try {
         currentCount++;
+        if (setMessageOnProgress != null) {
+          try{
+            setMessageOnProgress('Ładowanie - część $currentCount z $iterations');
+          } catch (e, stackTrace) {
+            _logger.warning('Cannot execute callback to set the loading message');
+          }
+        }
         _logger.info('Iteration $currentCount/$iterations. Loading $chunkSize medical records per iteration');
         await db.transaction((Transaction txn) async {
           for (Medication medicine in medicineGroup) {

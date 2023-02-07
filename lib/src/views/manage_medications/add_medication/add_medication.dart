@@ -6,6 +6,7 @@ import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
 import 'package:drugs_dosage_app/src/code/models/database/package.dart';
 import 'package:drugs_dosage_app/src/code/shared/map_util.dart';
 import 'package:drugs_dosage_app/src/code/shared/medication_package_json_generator.dart';
+import 'package:drugs_dosage_app/src/views/manage_medications/add_medication/add_medication_confirmation.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/add_medication/add_medication_dao.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/add_medication/add_medication_form_validators.dart';
 import 'package:flutter/material.dart';
@@ -27,20 +28,17 @@ class _AddMedicationState extends State<AddMedication> {
 
   List<String> packages = [];
 
-  final List<String> availablePotencyUnits = [
-    'mcg',
-    'mg',
-    'g'
-  ];
+  final List<String> availablePotencyUnits = ['mcg', 'mg', 'g'];
 
-  final _addMedicationDao = AddMedicationDao();
+  final addMedicationDao = AddMedicationDao();
   bool productIdentifierAlreadyExists = false;
+  late FocusNode packageCountInputFocusNode;
 
   String get addedPackagesTitle {
     return packages.isEmpty ? 'Brak dodanych opakowań' : 'Dodane opakowania';
   }
 
-  Future<bool> validateAndCommitRecord(BuildContext context) async {
+  Future<bool> validateAndCommitRecord() async {
     var validationStatus = await validate();
     if (validationStatus == null || !validationStatus) {
       return false;
@@ -50,7 +48,6 @@ class _AddMedicationState extends State<AddMedication> {
     var originalCategory = MapUtil.reverse(DrugCategories.categoryExplanationMap)[category] ?? '';
 
     String packageDataForMedication = MedicationPackageJsonGenerator.generate(packages, originalCategory);
-    List<Medication> medications = [];
     _logger.info(packageDataForMedication);
 
     var medicationInstance = Medication(
@@ -61,13 +58,14 @@ class _AddMedicationState extends State<AddMedication> {
         packaging: packageDataForMedication,
         permitValidity: 'Bezterminowe',
         potency: _formKey.currentState!.fields[Medication.potencyFieldName]!.value);
-    medications.add(medicationInstance);
 
     var status = false;
     try {
-      var status = await DatabaseFacade.medicineHandler.insertMedicineList(medications);
-      if (status) {
-        context.go(Constants.addMedicationConfirmationScreenRoute);
+      status = await DatabaseFacade().medicineHandler.insertMedicineList([medicationInstance]);
+      var insertedMedicationWithId =
+          await addMedicationDao.getMedicationByProductIdentifier(medicationInstance.productIdentifier);
+      if (status && insertedMedicationWithId != null) {
+        goToConfirmationPage(insertedMedicationWithId);
       }
     } catch (e, stackTrace) {
       _logger.severe('Commit of medical records failed', stackTrace);
@@ -76,10 +74,15 @@ class _AddMedicationState extends State<AddMedication> {
     return status;
   }
 
+  void goToConfirmationPage(Medication medication) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => AddMedicationConfirmation(medication: medication)));
+  }
+
   Future<bool?> validate() async {
     String? productIdentifier = _formKey.currentState?.fields[Medication.productIdentifierFieldName]?.value;
     if (productIdentifier != null && productIdentifier != '') {
-      bool exists = await _addMedicationDao.anotherMedicationWithSameProductIdentifierExists(productIdentifier);
+      bool exists = await addMedicationDao.anotherMedicationWithSameProductIdentifierExists(productIdentifier);
       setState(() {
         productIdentifierAlreadyExists = exists;
       });
@@ -99,13 +102,13 @@ class _AddMedicationState extends State<AddMedication> {
     var value = _formKey.currentState!.fields[Package.countFieldName]?.value.toString();
     //hack for validating with same function the 'adding' field and the whole collection
     var doValidateHack = false;
-    if(packages.isEmpty) {
+    if (packages.isEmpty) {
       doValidateHack = true;
       packages.add('');
     }
     bool? validationResult = _formKey.currentState!.fields[Package.countFieldName]?.validate();
 
-    if(doValidateHack) {
+    if (doValidateHack) {
       packages.removeAt(0);
     }
 
@@ -116,7 +119,7 @@ class _AddMedicationState extends State<AddMedication> {
       });
     }
 
-    _formKey.currentState!.fields[Package.countFieldName]!.requestFocus();
+    packageCountInputFocusNode.requestFocus();
   }
 
   void removePackageOption(int index) {
@@ -137,7 +140,14 @@ class _AddMedicationState extends State<AddMedication> {
     super.initState();
     setState(() {
       _formKey = GlobalKey<FormBuilderState>();
+      packageCountInputFocusNode = FocusNode();
     });
+  }
+
+  @override
+  void dispose() {
+    packageCountInputFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -194,38 +204,34 @@ class _AddMedicationState extends State<AddMedication> {
                   Row(
                     children: [
                       Expanded(
-                          flex: 3,
-                          child: FormBuilderTextField(
-                              name: Medication.potencyFieldName,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              decoration: const InputDecoration(
-                                  labelText: 'Moc'
-                              ),
-                              validator: AddMedicationFormValidators.requiredFieldWithPolishExplanation()
-                          ),
+                        flex: 3,
+                        child: FormBuilderTextField(
+                            name: Medication.potencyFieldName,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(labelText: 'Moc'),
+                            validator: AddMedicationFormValidators.requiredFieldWithPolishExplanation()),
                       ),
                       Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 11),
-                            child: FormBuilderDropdown(
-                              name: 'potencyUnit',
-                              initialValue: 'mg',
-                              items: availablePotencyUnits.map((unit) => DropdownMenuItem(
-                                  alignment: AlignmentDirectional.center,
-                                  value: unit,
-                                  child: Text(unit)
-                              )).toList(),
-                              validator: AddMedicationFormValidators.requiredFieldWithPolishExplanation(),
-                            ),
-                          )
-                      )
+                        padding: const EdgeInsets.only(top: 11),
+                        child: FormBuilderDropdown(
+                          name: 'potencyUnit',
+                          initialValue: 'mg',
+                          items: availablePotencyUnits
+                              .map((unit) => DropdownMenuItem(
+                                  alignment: AlignmentDirectional.center, value: unit, child: Text(unit)))
+                              .toList(),
+                          validator: AddMedicationFormValidators.requiredFieldWithPolishExplanation(),
+                        ),
+                      ))
                     ],
                   ),
                   FormBuilderTextField(
                     name: Package.countFieldName,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    focusNode: packageCountInputFocusNode,
                     decoration: InputDecoration(
                         labelText: 'Wariant opakowania',
                         suffix: IconButton(onPressed: addPackagingOption, icon: const Icon(Icons.add))),
@@ -275,7 +281,7 @@ class _AddMedicationState extends State<AddMedication> {
             ),
             ElevatedButton(
               onPressed: () async {
-                await validateAndCommitRecord(context);
+                await validateAndCommitRecord();
               },
               child: const Text(
                 'Kontynuuj',

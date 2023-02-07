@@ -4,7 +4,6 @@ import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/add_medication/add_medication.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/modify_medication/modify_medication.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/remove_medication/remove_medication.dart';
-import 'package:drugs_dosage_app/src/views/shared/widgets/no_drugs_in_database.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
@@ -33,10 +32,11 @@ class _ManageMedicationsState extends State<ManageMedications> {
     super.initState();
   }
 
-  GestureDetector medicationAdministrationOption(String title, IconData iconData, StatefulWidget targetWidget) {
+  GestureDetector medicationAdministrationOption(String title, IconData iconData, StatefulWidget targetWidget, [Color? color]) {
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => targetWidget)),
       child: Card(
+        color: color,
         elevation: 3,
         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
         child: SizedBox(
@@ -67,14 +67,13 @@ class _ManageMedicationsState extends State<ManageMedications> {
           title: const Text('Zarządzanie lekami'),
           actions: [IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))],
         ),
-        body: _drugsPresentInDatabase
-            ? ListView(
+        body: ListView(
                 children: [
-                  medicationAdministrationOption('Dodaj lek', Icons.add, const AddMedication()),
-                  if(_drugsPresentInDatabase) medicationAdministrationOption('Usuń lek', Icons.remove, const RemoveMedication()),
-                  if(_drugsPresentInDatabase) medicationAdministrationOption('Zmodyfikuj lek', Icons.edit, const ModifyMedication()),
+                  medicationAdministrationOption('Dodaj lek', Icons.add, const AddMedication(), Colors.green[300]),
+                  if(_drugsPresentInDatabase) medicationAdministrationOption('Zmodyfikuj lek', Icons.edit, const ModifyMedication(), Colors.yellow[300]),
+                  if(_drugsPresentInDatabase) medicationAdministrationOption('Usuń lek', Icons.remove, const RemoveMedication(), Colors.red[300]),
                 ],
               )
-            : const NoDrugsInDatabase());
+    );
   }
 }

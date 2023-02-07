@@ -33,7 +33,7 @@ class SampleMedicationLoader implements AbstractLoader<Medication> {
     }
     try {
       _logger.info('Inserting sample data to db');
-      DatabaseFacade.medicineHandler.insertMedicineList(medicineList, custom: false);
+      DatabaseFacade().medicineHandler.insertMedicineList(medicineList, custom: false);
       _logger.info('Finished loading sample records into database');
     } catch(e, stackTrace) {
       String msg = 'Could not load sample medicine data';

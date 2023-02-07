@@ -5,7 +5,9 @@ class Constants {
   static const String drugDosageCalculatorScreenRoute = '/dosage_calculator';
   static const String settingsScreenRoute = '/settings';
   static const String manageMedicationScreenRoute = '/manage_medications';
-  static const String addMedicationConfirmationScreenRoute = '/medication_added';
 
   static const String databaseName = 'medical_app_database.db';
+
+  static const String sourceMedicationsFileAddress =
+      'https://api.dane.gov.pl/resources/29618,wykaz-produktow-leczniczych-plik-w-formacie-csv/file';
 }
