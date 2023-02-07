@@ -80,7 +80,7 @@ class RegisteredMedicationLoader implements AbstractLoader<Medication> {
       _logger.info('Inserting medical records into database');
       await DatabaseFacade()
           .medicineHandler
-          .insertMedicineList(medicineList, custom: false, setMessageOnProgress: setMessageOnProgress);
+          .insertMedicationsWithPackages(medicineList, custom: false, setMessageOnProgress: setMessageOnProgress);
       AppMetadataDao().setInitialLoadStatus(newStatus: true);
       _logger.info('Loaded medical records into database');
     } catch (e, stackTrace) {

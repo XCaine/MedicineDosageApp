@@ -2,7 +2,7 @@ import 'package:drugs_dosage_app/src/code/constants/constants.dart';
 import 'package:drugs_dosage_app/src/code/database/commons/drugs_in_database_verifier.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/add_medication/add_medication.dart';
-import 'package:drugs_dosage_app/src/views/manage_medications/modify_medication/modify_medication.dart';
+import 'package:drugs_dosage_app/src/views/manage_medications/modify_medication/modify_medication_search.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/remove_medication/remove_medication.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -70,7 +70,7 @@ class _ManageMedicationsState extends State<ManageMedications> {
         body: ListView(
                 children: [
                   medicationAdministrationOption('Dodaj lek', Icons.add, const AddMedication(), Colors.green[300]),
-                  if(_drugsPresentInDatabase) medicationAdministrationOption('Zmodyfikuj lek', Icons.edit, const ModifyMedication(), Colors.yellow[300]),
+                  if(_drugsPresentInDatabase) medicationAdministrationOption('Zmodyfikuj lek', Icons.edit, const ModifyMedicationSearch(), Colors.yellow[300]),
                   if(_drugsPresentInDatabase) medicationAdministrationOption('Usuń lek', Icons.remove, const RemoveMedication(), Colors.red[300]),
                 ],
               )

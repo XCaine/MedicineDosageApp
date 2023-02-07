@@ -4,29 +4,29 @@ import 'package:drugs_dosage_app/src/code/database/database.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/code/models/basic_medical_record.dart';
 import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
+import 'package:drugs_dosage_app/src/code/models/database/package.dart';
 import 'package:drugs_dosage_app/src/code/models/database/root_model.dart';
-import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/shared/close_wizard_dialog.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/manage_medications_dao.dart';
-import 'package:drugs_dosage_app/src/views/shared/widgets/custom_snack_bar.dart';
+import 'package:drugs_dosage_app/src/views/manage_medications/modify_medication/modify_medication.dart';
 import 'package:drugs_dosage_app/src/views/shared/widgets/no_drugs_in_database.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logging/logging.dart';
 import 'package:sqflite/sqlite_api.dart';
 
-class RemoveMedication extends StatefulWidget {
-  const RemoveMedication({Key? key}) : super(key: key);
+class ModifyMedicationSearch extends StatefulWidget {
+  const ModifyMedicationSearch({Key? key}) : super(key: key);
 
   @override
-  State<RemoveMedication> createState() => _RemoveMedicationState();
+  State<ModifyMedicationSearch> createState() => _ModifyMedicationSearchState();
 }
 
 enum _SearchMethod { byActiveSubstanceName, byProductName }
 
 enum _MatchType { exact, flexible }
 
-class _RemoveMedicationState extends State<RemoveMedication> {
-  static final Logger _logger = LogDistributor.getLoggerFor("RemoveMedication");
+class _ModifyMedicationSearchState extends State<ModifyMedicationSearch> {
+  static final Logger _logger = LogDistributor.getLoggerFor("ModifyMedication");
   final DatabaseBroker _dbHandler = DatabaseBroker();
   String _input = '';
   List<BasicMedicalRecord> _medicalRecords = [];
@@ -84,18 +84,6 @@ class _RemoveMedicationState extends State<RemoveMedication> {
     });
   }
 
-  void deleteMedication(BasicMedicalRecord medicalRecord) {
-    CloseWizardDialog.show(
-        context,
-        'Czy na pewno chcesz usunąć ${medicalRecord.productName}',
-        'Tak, usuń ${medicalRecord.productName}',
-        () => {_manageMedicationsDao.deleteMedication(medicalRecord.id), showSnackBar(medicalRecord.productName)});
-  }
-
-  void showSnackBar(String medicationName) {
-    CustomSnackBar.show(context, 'Lek $medicationName został usunięty');
-  }
-
   @override
   void initState() {
     _textEditingController = TextEditingController();
@@ -109,11 +97,32 @@ class _RemoveMedicationState extends State<RemoveMedication> {
     super.dispose();
   }
 
+  void proceedToMedicationModification(BasicMedicalRecord medicalRecord) async {
+    var medicationWithPackagesPair = await _manageMedicationsDao.getMedicationWithPackagesById(medicalRecord.id);
+    var medication = medicationWithPackagesPair.first;
+    var packages = medicationWithPackagesPair.second;
+    if(medication != null && packages.isNotEmpty) {
+      gotToModifyMedicationScreen(medication, packages);
+    }
+
+  }
+
+  gotToModifyMedicationScreen(Medication medication, List<Package> packages) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => ModifyMedication(
+                medication: medication,
+                packages: packages,
+              )),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Wyszukaj lek do usunięcia'),
+          title: const Text('Wyszukaj lek do zmiany'),
           actions: [IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))],
         ),
         //drawer: const MainMenu(),
@@ -234,15 +243,9 @@ class _RemoveMedicationState extends State<RemoveMedication> {
                       itemBuilder: (context, index) => Card(
                         margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                         child: ListTile(
-                          title: Text(_medicalRecords[index].commonlyUsedName),
-                          subtitle: Text(_medicalRecords[index].productName),
-                          trailing: IconButton(
-                            onPressed: () => deleteMedication(_medicalRecords[index]),
-                            icon: const Icon(
-                              Icons.remove_circle_outline,
-                              color: Colors.red,
-                            ),
-                          ),
+                            title: Text(_medicalRecords[index].commonlyUsedName),
+                            subtitle: Text(_medicalRecords[index].productName),
+                            onTap: () => proceedToMedicationModification(_medicalRecords[index]),
                         ),
                       ),
                       itemCount: _medicalRecords.length,

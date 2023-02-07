@@ -12,7 +12,8 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
   static final _logger = LogDistributor.getLoggerFor('DatabaseMedicineHandler');
 
   //for registered medicine loader
-  Future<bool> insertMedicineList(List<Medication> medicineList, {bool custom = true, Function(String)? setMessageOnProgress}) async {
+  Future<bool> insertMedicationsWithPackages(List<Medication> medicineList,
+      {bool custom = true, Function(String)? setMessageOnProgress}) async {
     Database db = databaseBroker.database;
     ApiPackagesMapper packagingMapper = ApiPackagesMapper();
     int chunkSize = 500;
@@ -24,7 +25,7 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
       try {
         currentCount++;
         if (setMessageOnProgress != null) {
-          try{
+          try {
             setMessageOnProgress('Ładowanie - część $currentCount z $iterations');
           } catch (e, stackTrace) {
             _logger.warning('Cannot execute callback to set the loading message');
@@ -39,7 +40,7 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
             int lastId = await getLastInsertedRowId(txn);
             var packages = packagingMapper.mapToJson(medicine.packaging);
             for (var package in packages) {
-              package[RootDatabaseModel.isCustomFieldName] = 0;
+              package[RootDatabaseModel.isCustomFieldName] = medicine.isCustom;
               package[Package.medicineIdFieldName] = lastId;
               await txn.insert(Package.tableName(), package);
             }
@@ -55,4 +56,37 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
     return true;
   }
 
+  Future<bool> updateMedicationWithPackages(Medication medication, List<Package> originalPackages,
+      {bool custom = true}) async {
+    Database db = databaseBroker.database;
+    ApiPackagesMapper packagingMapper = ApiPackagesMapper();
+
+    try {
+      await db.transaction((Transaction txn) async {
+        medication.isCustom = custom ? 1 : 0;
+        await txn.update(Medication.tableName(),
+            medication.toMap(),
+            conflictAlgorithm:
+            ConflictAlgorithm.replace,
+            where: '${RootDatabaseModel.idFieldName} = ?',
+            whereArgs: [medication.id]
+        );
+        var packages = packagingMapper.mapToJson(medication.packaging);
+        for (var originalPackage in originalPackages) {
+          await txn.delete(Package.tableName(),
+              where: '${RootDatabaseModel.idFieldName} = ?', whereArgs: [originalPackage.id]);
+        }
+        for (var package in packages) {
+          package[RootDatabaseModel.isCustomFieldName] = medication.isCustom;
+          package[Package.medicineIdFieldName] = medication.id;
+          await txn.insert(Package.tableName(), package);
+        }
+      });
+    } catch (e, stackTrace) {
+      _logger.severe('Error during updating medication', e, stackTrace);
+      return false;
+    }
+
+    return true;
+  }
 }
