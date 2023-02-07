@@ -7,8 +7,8 @@ import 'package:drugs_dosage_app/src/code/models/database/package.dart';
 import 'package:drugs_dosage_app/src/code/shared/map_util.dart';
 import 'package:drugs_dosage_app/src/code/shared/medication_package_json_generator.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/add_medication/add_medication_confirmation.dart';
-import 'package:drugs_dosage_app/src/views/manage_medications/add_medication/add_medication_dao.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/add_medication/add_medication_form_validators.dart';
+import 'package:drugs_dosage_app/src/views/manage_medications/manage_medications_dao.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -30,7 +30,7 @@ class _AddMedicationState extends State<AddMedication> {
 
   final List<String> availablePotencyUnits = ['mcg', 'mg', 'g'];
 
-  final addMedicationDao = AddMedicationDao();
+  final manageMedicationsDao = ManageMedicationsDao();
   bool productIdentifierAlreadyExists = false;
   late FocusNode packageCountInputFocusNode;
 
@@ -50,6 +50,9 @@ class _AddMedicationState extends State<AddMedication> {
     String packageDataForMedication = MedicationPackageJsonGenerator.generate(packages, originalCategory);
     _logger.info(packageDataForMedication);
 
+    var potencyValue = _formKey.currentState!.fields[Medication.potencyFieldName]!.value;
+    var potencyUnit = _formKey.currentState!.fields['potencyUnit']!.value;
+
     var medicationInstance = Medication(
         productIdentifier: _formKey.currentState!.fields[Medication.productIdentifierFieldName]!.value,
         productName: _formKey.currentState!.fields[Medication.productNameFieldName]!.value,
@@ -57,13 +60,13 @@ class _AddMedicationState extends State<AddMedication> {
         pharmaceuticalForm: _formKey.currentState!.fields[Medication.pharmaceuticalFormFieldName]!.value,
         packaging: packageDataForMedication,
         permitValidity: 'Bezterminowe',
-        potency: _formKey.currentState!.fields[Medication.potencyFieldName]!.value);
+        potency: '$potencyValue $potencyUnit');
 
     var status = false;
     try {
-      status = await DatabaseFacade().medicineHandler.insertMedicineList([medicationInstance]);
+      status = await DatabaseFacade().medicineHandler.insertMedicationsWithPackages([medicationInstance]);
       var insertedMedicationWithId =
-          await addMedicationDao.getMedicationByProductIdentifier(medicationInstance.productIdentifier);
+          await manageMedicationsDao.getMedicationByProductIdentifier(medicationInstance.productIdentifier);
       if (status && insertedMedicationWithId != null) {
         goToConfirmationPage(insertedMedicationWithId);
       }
@@ -75,14 +78,13 @@ class _AddMedicationState extends State<AddMedication> {
   }
 
   void goToConfirmationPage(Medication medication) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddMedicationConfirmation(medication: medication)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => AddMedicationConfirmation(medication: medication)));
   }
 
   Future<bool?> validate() async {
     String? productIdentifier = _formKey.currentState?.fields[Medication.productIdentifierFieldName]?.value;
     if (productIdentifier != null && productIdentifier != '') {
-      bool exists = await addMedicationDao.anotherMedicationWithSameProductIdentifierExists(productIdentifier);
+      bool exists = await manageMedicationsDao.anotherMedicationWithSameProductIdentifierExists(productIdentifier);
       setState(() {
         productIdentifierAlreadyExists = exists;
       });
