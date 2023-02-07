@@ -15,9 +15,9 @@ class DatabaseBroker {
   static final Logger _logger = LogDistributor.getLoggerFor('DatabaseHandler');
   static DatabaseBroker? _instance;
 
-  DatabaseBroker._internal() {
+  DatabaseBroker._internal({dropExisting = false}) {
     try {
-      _initDatabase();
+      _initDatabase(dropExisting);
     } catch(e, stackTrace) {
       _logger.severe('Database initialization failed', stackTrace);
     }
@@ -32,11 +32,19 @@ class DatabaseBroker {
     return DatabaseBroker();
   }
 
-  _initDatabase() async {
+  factory DatabaseBroker.dropExistingAndInitialize() {
+    _instance = DatabaseBroker._internal(dropExisting: true);
+    return _instance!;
+  }
+
+  _initDatabase([dropExisting = false]) async {
     String databasePath =
         join(await sqflite.getDatabasesPath(), Constants.databaseName);
     //TODO REMOVE database delete
-    await _dropDatabaseIfExists(databasePath);
+    if(dropExisting) {
+      await _dropDatabaseIfExists(databasePath);
+    }
+    //await _dropDatabaseIfExists(databasePath);
 
     sqflite.Database database = await sqflite.openDatabase(
       databasePath,
@@ -48,6 +56,7 @@ class DatabaseBroker {
         for(String query in bootstrapQueries) {
           await db.execute(query);
         }
+        _logger.info('Database has been created');
       },
       version: 1,
     );
@@ -57,7 +66,7 @@ class DatabaseBroker {
     if(metadataValuesCount == 0) {
       insert(AppMetadata(initialLoadDone: 0));
     }
-    _logger.info('Database successfully created');
+    _logger.info('Database initialization ended');
   }
 
   static Future<void> _dropDatabaseIfExists(String databasePath) async {
@@ -130,6 +139,14 @@ class DatabaseBroker {
       object.getTableName(),
       where: 'id = ?',
       whereArgs: [object.id],
+    );
+  }
+
+  Future<void> deleteById(int id, String tableName) async {
+    await database.delete(
+      tableName,
+      where: 'id = ?',
+      whereArgs: [id],
     );
   }
 

@@ -1,3 +1,4 @@
+import 'package:drugs_dosage_app/src/code/constants/constants.dart';
 import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/shared/utility_string_formatter.dart';
 import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/step3_results/search_input_data_summary.dart';
 import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/shared/close_wizard_dialog.dart';
@@ -7,6 +8,7 @@ import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/code/models/dosage_search.dart';
 import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/step4_result_details/step4_calculation_result_details.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class DosageCalculatorResult extends StatefulWidget {
   const DosageCalculatorResult({Key? key, required this.searchWrapper}) : super(key: key);
@@ -39,8 +41,9 @@ class _DosageCalculatorResultState extends State<DosageCalculatorResult> {
     StringBuffer buffer = StringBuffer();
     buffer.write('Wybrane opakowania:\n');
     buffer.write(UtilityStringFormatter.formatPackageQuantities(model));
-    if(model.redundancyFactor != 0) {
-      buffer.write('Ten zestaw ma ${model.redundancyFactor} ${UtilityStringFormatter.formatDosageWord(model.redundancyFactor)} za dużo');
+    if (model.redundancyFactor != 0) {
+      buffer.write(
+          'Ten zestaw ma ${model.redundancyFactor} ${UtilityStringFormatter.formatDosageWord(model.redundancyFactor)} za dużo');
     } else {
       buffer.write('Ten zestaw nie ma nadmiarowych dawek');
     }
@@ -66,7 +69,10 @@ class _DosageCalculatorResultState extends State<DosageCalculatorResult> {
         actions: [
           IconButton(
               onPressed: () => CloseWizardDialog.show(
-                  context, 'Czy na pewno chcesz wyjść?\nWprowadzone informacje nie zostaną zapisane'),
+                  context,
+                  'Czy na pewno chcesz wyjść?\nWprowadzone informacje nie zostaną zapisane',
+                  'Zamknij',
+                  () => context.go(Constants.homeScreenRoute)),
               icon: const Icon(Icons.home))
         ],
       ),
@@ -80,7 +86,7 @@ class _DosageCalculatorResultState extends State<DosageCalculatorResult> {
                 Expanded(
                     child: ListView.builder(
                   itemBuilder: (context, index) => Card(
-                    elevation: 6,
+                      elevation: 6,
                       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
                       child: Row(
                         children: [
@@ -92,18 +98,17 @@ class _DosageCalculatorResultState extends State<DosageCalculatorResult> {
                             ),
                           ),
                           Expanded(
-                            flex: 1,
+                              flex: 1,
                               child: IconButton(
                                 icon: const Icon(Icons.arrow_forward),
                                 onPressed: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => CalculationResultDetails(
-                                        resultModel: _dosageResultWrappers[index],
-                                      )),
+                                            resultModel: _dosageResultWrappers[index],
+                                          )),
                                 ),
-                              )
-                          )
+                              ))
                         ],
                       )),
                   itemCount: _dosageResultWrappers.length,

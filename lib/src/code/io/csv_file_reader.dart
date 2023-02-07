@@ -14,6 +14,7 @@ class CsvFileReader extends AbstractFileReader<String> {
     _logger.info('Loading data from file $filePath');
     try {
       csvFileContent = await rootBundle.loadString(filePath);
+      csvFileContent = csvFileContent.replaceAll('\r\n', '\n');
     } catch(e, stackTrace) {
       _logger.severe('Failed to load data from file $filePath', e, stackTrace);
     }
