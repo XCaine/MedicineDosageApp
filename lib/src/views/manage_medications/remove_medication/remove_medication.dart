@@ -50,7 +50,8 @@ class _RemoveMedicationState extends State<RemoveMedication> {
       String sql = '''
       SELECT ${RootDatabaseModel.idFieldName}, 
         ${Medication.commonlyUsedNameFieldName},
-        ${Medication.productNameFieldName} 
+        ${Medication.productNameFieldName},
+        ${Medication.potencyFieldName}  
       FROM ${Medication.tableName()}
       WHERE ${_searchMethod == _SearchMethod.byProductName ? Medication.productNameFieldName : Medication.commonlyUsedNameFieldName}  
       LIKE ${_matchType == _MatchType.exact ? "'$input%'" : "'%$input%'"}

@@ -6,7 +6,6 @@ import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
 import 'package:drugs_dosage_app/src/code/models/database/package.dart';
 import 'package:drugs_dosage_app/src/code/shared/map_util.dart';
 import 'package:drugs_dosage_app/src/code/shared/medication_package_json_generator.dart';
-import 'package:drugs_dosage_app/src/views/manage_medications/add_medication/add_medication_confirmation.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/add_medication/add_medication_form_validators.dart';
 import 'package:drugs_dosage_app/src/views/manage_medications/manage_medications_dao.dart';
 import 'package:drugs_dosage_app/src/views/shared/widgets/custom_snack_bar.dart';
@@ -27,7 +26,6 @@ class ModifyMedication extends StatefulWidget {
 }
 
 class _ModifyMedicationState extends State<ModifyMedication> {
-
   late GlobalKey<FormBuilderState> _formKey;
   static final Logger _logger = LogDistributor.getLoggerFor("ModifyMedication");
 
@@ -139,7 +137,7 @@ class _ModifyMedicationState extends State<ModifyMedication> {
     packageCountInputFocusNode.dispose();
     super.dispose();
   }
-  
+
   String getUnitFromPotencyString(String potency) {
     return potency.split(' ').last;
   }
@@ -153,9 +151,7 @@ class _ModifyMedicationState extends State<ModifyMedication> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Zmodyfikuj lek'),
-        actions: [
-          IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))
-        ],
+        actions: [IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))],
       ),
       body: Padding(
         padding: const EdgeInsets.all(4.0),
@@ -188,10 +184,10 @@ class _ModifyMedicationState extends State<ModifyMedication> {
                     initialValue: DrugCategories.categoryExplanationMap[widget.packages.first.category],
                     items: DrugCategories.categoryExplanations
                         .map((explanation) => DropdownMenuItem(
-                      alignment: AlignmentDirectional.center,
-                      value: explanation,
-                      child: Text(explanation),
-                    ))
+                              alignment: AlignmentDirectional.center,
+                              value: explanation,
+                              child: Text(explanation),
+                            ))
                         .toList(),
                     validator: AddMedicationFormValidators.requiredFieldWithPolishExplanation(),
                   ),
@@ -215,17 +211,17 @@ class _ModifyMedicationState extends State<ModifyMedication> {
                       ),
                       Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 11),
-                            child: FormBuilderDropdown(
-                              name: 'potencyUnit',
-                              initialValue: getUnitFromPotencyString(widget.medication.potency),
-                              items: availablePotencyUnits
-                                  .map((unit) => DropdownMenuItem(
+                        padding: const EdgeInsets.only(top: 11),
+                        child: FormBuilderDropdown(
+                          name: 'potencyUnit',
+                          initialValue: getUnitFromPotencyString(widget.medication.potency),
+                          items: availablePotencyUnits
+                              .map((unit) => DropdownMenuItem(
                                   alignment: AlignmentDirectional.center, value: unit, child: Text(unit)))
-                                  .toList(),
-                              validator: AddMedicationFormValidators.requiredFieldWithPolishExplanation(),
-                            ),
-                          ))
+                              .toList(),
+                          validator: AddMedicationFormValidators.requiredFieldWithPolishExplanation(),
+                        ),
+                      ))
                     ],
                   ),
                   FormBuilderTextField(

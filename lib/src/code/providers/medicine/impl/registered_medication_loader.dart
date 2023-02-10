@@ -27,8 +27,10 @@ class RegisteredMedicationLoader implements AbstractLoader<Medication> {
     String? csvContent;
     if (await InternetConnectionChecker().hasConnection) {
       try {
-        http.Response response =
-            await http.get(Uri.parse(Constants.sourceMedicationsFileAddress)).timeout(const Duration(seconds: 60)).catchError((e) {
+        http.Response response = await http
+            .get(Uri.parse(Constants.sourceMedicationsFileAddress))
+            .timeout(const Duration(seconds: 60))
+            .catchError((e) {
           _logger.warning('Error during API call', e);
           throw Exception('Failed to load medical records');
         });

@@ -12,9 +12,7 @@ class DosageSearchWrapper {
   bool searchByDates = true;
 
   factory DosageSearchWrapper.fromJson(Map<String, dynamic> medicineJson) {
-    return DosageSearchWrapper(
-        selectedMedicine: Medication.fromJson(medicineJson)
-    );
+    return DosageSearchWrapper(selectedMedicine: Medication.fromJson(medicineJson));
   }
 
   int get totalDosages {

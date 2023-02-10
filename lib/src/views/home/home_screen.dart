@@ -23,7 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _manageMedications: Constants.manageMedicationScreenRoute,
   };
 
-
   Icon _getIconForLink(String link) {
     Icon resultIcon = const Icon(Icons.disabled_by_default_outlined);
     switch (link) {
@@ -85,18 +84,19 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.only(left: 10),
               child: Center(
                   child: Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: _getIconForLink(link),
-                      ),
-                      Expanded(flex: 4, child: Text(_getTitleForLink(link)))
-                    ],
-                  )),
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: _getIconForLink(link),
+                  ),
+                  Expanded(flex: 4, child: Text(_getTitleForLink(link)))
+                ],
+              )),
             ),
           )),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

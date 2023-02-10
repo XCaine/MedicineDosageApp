@@ -9,7 +9,7 @@ class BaseDatabaseQueryHandler<T extends RootDatabaseModel> {
 
   Future<int> getLastInsertedRowId([Transaction? txn]) async {
     int lastId;
-    if(txn != null) {
+    if (txn != null) {
       var lastIdResultSet = await txn.rawQuery('SELECT last_insert_rowid()');
       lastId = (lastIdResultSet.single)['last_insert_rowid()'] as int;
     } else {

@@ -14,7 +14,6 @@ class AddMedicationConfirmation extends StatefulWidget {
 }
 
 class _AddMedicationConfirmationState extends State<AddMedicationConfirmation> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,11 +32,9 @@ class _AddMedicationConfirmationState extends State<AddMedicationConfirmation> {
                     elevation: 1,
                     child: ListTile(
                       title: Text(
-                          'Pomyślnie zapisano lek',
+                        'Pomyślnie zapisano lek',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),

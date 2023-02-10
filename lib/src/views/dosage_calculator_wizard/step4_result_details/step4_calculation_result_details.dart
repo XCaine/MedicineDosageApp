@@ -27,35 +27,35 @@ class _CalculationResultDetailsState extends State<CalculationResultDetails> {
         actions: [IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))],
       ),
       body: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  flex: 4,
-                  child: Card(
-                    margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-                    child: ListTile(
-                      title: Text(_getFormattedChosenPackages()),
-                      subtitle: const Text('wybrane opakowania'),
-                    ),
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                flex: 4,
+                child: Card(
+                  margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+                  child: ListTile(
+                    title: Text(_getFormattedChosenPackages()),
+                    subtitle: const Text('wybrane opakowania'),
                   ),
                 ),
-                Expanded(
-                  flex: 2,
-                  child: Card(
-                    margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-                    child: ListTile(
-                      title: Center(child: Text('${widget.resultModel.target}')),
-                      subtitle: const Text('całkowita liczba dawek'),
-                    ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Card(
+                  margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+                  child: ListTile(
+                    title: Center(child: Text('${widget.resultModel.target}')),
+                    subtitle: const Text('całkowita liczba dawek'),
                   ),
                 ),
-              ],
-            ),
-            DrugDetail(medicine: widget.resultModel.medicine)
-          ],
-        ),
+              ),
+            ],
+          ),
+          DrugDetail(medicine: widget.resultModel.medicine)
+        ],
+      ),
     );
   }
 }

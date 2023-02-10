@@ -49,22 +49,19 @@ class _MedicalCalculatorAppState extends State<MedicalCalculatorApp> {
       },
     ),
     GoRoute(
-      path: Constants.drugDosageCalculatorScreenRoute,
-      builder: (BuildContext context, GoRouterState state) {
-        return const DosageCalculatorSearch();
-      }
-    ),
+        path: Constants.drugDosageCalculatorScreenRoute,
+        builder: (BuildContext context, GoRouterState state) {
+          return const DosageCalculatorSearch();
+        }),
     GoRoute(
-      path: Constants.settingsScreenRoute,
-      builder: (BuildContext context, GoRouterState state) {
-        return const Settings();
-      }
-    ),
+        path: Constants.settingsScreenRoute,
+        builder: (BuildContext context, GoRouterState state) {
+          return const Settings();
+        }),
     GoRoute(
-      path: Constants.manageMedicationScreenRoute,
+        path: Constants.manageMedicationScreenRoute,
         builder: (BuildContext context, GoRouterState state) {
           return const ManageMedications();
-        }
-    )
+        })
   ]);
 }

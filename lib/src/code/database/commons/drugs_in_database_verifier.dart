@@ -11,5 +11,4 @@ class DrugsInDatabaseVerifier {
     int count = result['count'] as int;
     return count != 0;
   }
-
 }

@@ -69,32 +69,58 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ustawienia'),
-        actions: loading
-            ? []
-            : [IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))],
-      ),
-      body: loading
-          ? Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const CircularProgressIndicator(),
-                const SizedBox(height: 50),
-                Text(_dataLoadingMessage, style: const TextStyle(fontSize: 24),
-                )
-              ]
-            ),
-          )
-          : Column(
-              children: [
-                if (!initialLoadDone)
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Ustawienia'),
+          actions: loading
+              ? []
+              : [IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))],
+        ),
+        body: loading
+            ? Center(
+                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 50),
+                  Text(
+                    _dataLoadingMessage,
+                    style: const TextStyle(fontSize: 24),
+                  )
+                ]),
+              )
+            : Column(
+                children: [
+                  if (!initialLoadDone)
+                    GestureDetector(
+                      onTap: () => _fetchMedicalData(context),
+                      child: Card(
+                        color: Colors.green[300],
+                        elevation: 3,
+                        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                        child: SizedBox(
+                          height: 100,
+                          child: Row(
+                            children: const [
+                              Expanded(
+                                flex: 4,
+                                child: ListTile(
+                                  title: Text(
+                                    'Pobierz aktualne dane medyczne',
+                                    style: TextStyle(fontSize: 24),
+                                  ),
+                                ),
+                              ),
+                              Expanded(flex: 1, child: Icon(Icons.download, size: 24))
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   GestureDetector(
-                    onTap: () => _fetchMedicalData(context),
+                    onTap: () => triggerAppRestart(),
                     child: Card(
-                      color: Colors.green[300],
+                      color: Colors.red[300],
                       elevation: 3,
                       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                       child: SizedBox(
@@ -105,7 +131,32 @@ class _SettingsState extends State<Settings> {
                               flex: 4,
                               child: ListTile(
                                 title: Text(
-                                  'Pobierz aktualne dane medyczne',
+                                  'Usuń wszystkie dane',
+                                  style: TextStyle(fontSize: 24),
+                                ),
+                              ),
+                            ),
+                            Expanded(flex: 1, child: Icon(Icons.clear, size: 24))
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => _launchBrowserWithMedicalData(),
+                    child: Card(
+                      color: Colors.yellow[300],
+                      elevation: 3,
+                      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                      child: SizedBox(
+                        height: 100,
+                        child: Row(
+                          children: const [
+                            Expanded(
+                              flex: 4,
+                              child: ListTile(
+                                title: Text(
+                                  'Pobierz plik z danymi medycznymi',
                                   style: TextStyle(fontSize: 24),
                                 ),
                               ),
@@ -115,59 +166,10 @@ class _SettingsState extends State<Settings> {
                         ),
                       ),
                     ),
-                  ),
-                GestureDetector(
-                  onTap: () => triggerAppRestart(),
-                  child: Card(
-                    color: Colors.red[300],
-                    elevation: 3,
-                    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                    child: SizedBox(
-                      height: 100,
-                      child: Row(
-                        children: const [
-                          Expanded(
-                            flex: 4,
-                            child: ListTile(
-                              title: Text(
-                                'Usuń wszystkie dane',
-                                style: TextStyle(fontSize: 24),
-                              ),
-                            ),
-                          ),
-                          Expanded(flex: 1, child: Icon(Icons.clear, size: 24))
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () => _launchBrowserWithMedicalData(),
-                  child: Card(
-                    color: Colors.yellow[300],
-                    elevation: 3,
-                    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                    child: SizedBox(
-                      height: 100,
-                      child: Row(
-                        children: const [
-                          Expanded(
-                            flex: 4,
-                            child: ListTile(
-                              title: Text(
-                                'Pobierz plik z danymi medycznymi',
-                                style: TextStyle(fontSize: 24),
-                              ),
-                            ),
-                          ),
-                          Expanded(flex: 1, child: Icon(Icons.download, size: 24))
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
+                  )
+                ],
+              ),
+      ),
     );
   }
 }

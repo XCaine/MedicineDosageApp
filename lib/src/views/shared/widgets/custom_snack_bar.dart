@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class CustomSnackBar {
-
   static void show(BuildContext context, String content) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(content),
@@ -15,5 +14,4 @@ class CustomSnackBar {
       ),
     ));
   }
-
 }

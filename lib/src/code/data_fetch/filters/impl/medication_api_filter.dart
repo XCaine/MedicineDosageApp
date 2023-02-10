@@ -1,18 +1,14 @@
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
-import 'package:logging/logging.dart';
 
 class ApiMedicationFilter {
   final Map<String, dynamic> _medicineMap;
-  static final Logger _logger =
-      LogDistributor.getLoggerFor("ApiMedicineFilter");
+  static final _logger = LogDistributor.getLoggerFor("ApiMedicationFilter");
 
-  ApiMedicationFilter({required Map<String, dynamic> medicineMap})
-      : _medicineMap = medicineMap;
+  ApiMedicationFilter({required Map<String, dynamic> medicineMap}) : _medicineMap = medicineMap;
 
   bool isValid() {
-    bool validationResult =
-        _commonlyUsedNameValid() &&
+    bool validationResult = _commonlyUsedNameValid() &&
         _pharmaceuticalFormValid() &&
         _medicineTypeValid() &&
         _targetSpeciesValid() &&
@@ -31,6 +27,7 @@ class ApiMedicationFilter {
   }
 
   final List<String> _validPharmaceuticalFormPatterns = ['czopki', 'globulki', 'kapsułk', 'tabletk'];
+
   bool _pharmaceuticalFormValid() {
     String? pharmaceuticalForm = _medicineMap[Medication.pharmaceuticalFormFieldName];
     return pharmaceuticalForm != null &&
@@ -51,6 +48,7 @@ class ApiMedicationFilter {
   //50,5 mcg        -> yes
   //5 mg + 0.2 mg   -> no
   final RegExp _potencyRegex = RegExp(r"^(\d+(,\d+)?) (mcg|g|mg)$");
+
   bool _potencyValid() {
     String? potency = _medicineMap[Medication.potencyFieldName];
     return potency != null && potency.isNotEmpty && potency != '-' && _potencyRegex.hasMatch(potency);
@@ -69,8 +67,7 @@ class ApiMedicationFilter {
         var today = DateTime.now();
         result = today.compareTo(validUntil) <= 0;
       } catch (e, stackTrace) {
-        _logger.severe(
-            'Failed to parse permit date from $permitValidity', e, stackTrace);
+        _logger.severe('Failed to parse permit date from $permitValidity', e, stackTrace);
         result = false;
       }
     }

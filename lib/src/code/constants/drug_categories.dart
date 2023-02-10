@@ -1,6 +1,5 @@
 class DrugCategories {
-  static final List<String> categoryNames =
-      categoryExplanationMap.keys.toList();
+  static final List<String> categoryNames = categoryExplanationMap.keys.toList();
 
   static final List<String> categoryExplanations = categoryExplanationMap.values.toList();
 

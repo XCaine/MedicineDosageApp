@@ -48,7 +48,8 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
       String sqlForProductName = '''
         SELECT ${RootDatabaseModel.idFieldName}, 
         ${Medication.commonlyUsedNameFieldName},
-        ${Medication.productNameFieldName} 
+        ${Medication.productNameFieldName},
+        ${Medication.potencyFieldName} 
         FROM ${Medication.tableName()}
         WHERE ${Medication.productNameFieldName}  
         LIKE ${_matchType == _MatchType.exact ? "'$input%'" : "'%$input%'"}
@@ -57,7 +58,8 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
       String windowedSqlForActiveSubstance = '''
         SELECT ${RootDatabaseModel.idFieldName}, 
         ${Medication.commonlyUsedNameFieldName},
-        ${Medication.productNameFieldName} 
+        ${Medication.productNameFieldName},
+        ${Medication.potencyFieldName},  
         FROM (
           SELECT ${RootDatabaseModel.idFieldName}, ${Medication.commonlyUsedNameFieldName}, ${Medication.productNameFieldName},
           ROW_NUMBER() OVER (PARTITION BY  ${Medication.commonlyUsedNameFieldName} ORDER BY ${RootDatabaseModel.idFieldName}) rn
@@ -68,7 +70,8 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
         LIMIT 30;
       ''';
 
-      var queryResult = await db.rawQuery(_searchMethod == _SearchMethod.byProductName ? sqlForProductName : windowedSqlForActiveSubstance);
+      var queryResult = await db
+          .rawQuery(_searchMethod == _SearchMethod.byProductName ? sqlForProductName : windowedSqlForActiveSubstance);
       var instances = queryResult.map((e) => BasicMedicalRecord.fromJson(e));
       setState(() {
         _medicalRecords = instances.toList();
@@ -132,11 +135,7 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Kalkulator leków - Wyszukaj lek'),
-          actions: [
-            IconButton(
-                onPressed: () => context.go(Constants.homeScreenRoute),
-                icon: const Icon(Icons.home))
-          ],
+          actions: [IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))],
         ),
         //drawer: const MainMenu(),
         body: _drugsPresentInDatabase
@@ -203,7 +202,7 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
                                       groupValue: _matchType,
                                       onChanged: (e) => setState(() {
                                         _matchType =
-                                        _matchType == _MatchType.exact ? _MatchType.flexible : _MatchType.exact;
+                                            _matchType == _MatchType.exact ? _MatchType.flexible : _MatchType.exact;
                                         _searchForPrompts(_input);
                                       }),
                                     )),
@@ -215,7 +214,7 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
                                       groupValue: _matchType,
                                       onChanged: (e) => setState(() {
                                         _matchType =
-                                        _matchType == _MatchType.exact ? _MatchType.flexible : _MatchType.exact;
+                                            _matchType == _MatchType.exact ? _MatchType.flexible : _MatchType.exact;
                                         _searchForPrompts(_input);
                                       }),
                                     )),
@@ -229,7 +228,8 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
                     padding: const EdgeInsets.only(top: 6),
                     child: TextField(
                       decoration: InputDecoration(
-                          labelText: _searchMethod == _SearchMethod.byProductName ? "Nazwa produktu" : "Substancja czynna",
+                          labelText:
+                              _searchMethod == _SearchMethod.byProductName ? "Nazwa produktu" : "Substancja czynna",
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Theme.of(context).primaryColor),

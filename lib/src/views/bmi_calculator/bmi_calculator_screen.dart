@@ -12,8 +12,6 @@ class BmiCalculator extends StatefulWidget {
 class _BmiCalculatorState extends State<BmiCalculator> {
   final _heightController = TextEditingController();
   final _weightController = TextEditingController();
-  final _ageController = TextEditingController();
-  String? _sex;
 
   double? _bmi;
 
@@ -51,8 +49,6 @@ class _BmiCalculatorState extends State<BmiCalculator> {
       }
     });
   }
-
-  //article: BMI classification percentile and cut off points
 
   @override
   void dispose() {
@@ -114,11 +110,7 @@ class _BmiCalculatorState extends State<BmiCalculator> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Kalkulator BMI'),
-        actions: [
-          IconButton(
-              onPressed: () => context.go(Constants.homeScreenRoute),
-              icon: const Icon(Icons.home))
-        ],
+        actions: [IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))],
       ),
       body: bmiWidget,
     );

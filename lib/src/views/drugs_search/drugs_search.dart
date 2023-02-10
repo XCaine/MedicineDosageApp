@@ -48,7 +48,8 @@ class _DrugsListState extends State<DrugsList> {
       String sql = '''
       SELECT ${RootDatabaseModel.idFieldName}, 
         ${Medication.commonlyUsedNameFieldName},
-        ${Medication.productNameFieldName} 
+        ${Medication.productNameFieldName},
+        ${Medication.potencyFieldName}  
       FROM ${Medication.tableName()}
       WHERE ${_searchMethod == _SearchMethod.byProductName ? Medication.productNameFieldName : Medication.commonlyUsedNameFieldName}  
       LIKE ${_matchType == _MatchType.exact ? "'$input%'" : "'%$input%'"}
@@ -160,7 +161,7 @@ class _DrugsListState extends State<DrugsList> {
                                   title: Text('Sposób dopasowania', style: TextStyle(fontWeight: FontWeight.bold)),
                                 ),
                                 ListTile(
-                                  dense: true,
+                                    dense: true,
                                     title: const Text('Dokładne dopasowanie'),
                                     leading: Radio(
                                       value: _MatchType.exact,
@@ -172,7 +173,7 @@ class _DrugsListState extends State<DrugsList> {
                                       }),
                                     )),
                                 ListTile(
-                                  dense: true,
+                                    dense: true,
                                     title: const Text('Elastyczne dopasowanie'),
                                     leading: Radio(
                                       value: _MatchType.flexible,
@@ -193,7 +194,8 @@ class _DrugsListState extends State<DrugsList> {
                     padding: const EdgeInsets.only(top: 6),
                     child: TextField(
                       decoration: InputDecoration(
-                          labelText: _searchMethod == _SearchMethod.byProductName ? "Nazwa produktu" : "Substancja czynna",
+                          labelText:
+                              _searchMethod == _SearchMethod.byProductName ? "Nazwa produktu" : "Substancja czynna",
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Theme.of(context).primaryColor),
@@ -217,26 +219,46 @@ class _DrugsListState extends State<DrugsList> {
                     Expanded(
                         child: ListView.builder(
                       itemBuilder: (context, index) => Card(
-                        margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-                        child: ListTile(
-                          title: Text(_medicalRecords[index].commonlyUsedName),
-                          subtitle: Text(_medicalRecords[index].productName),
-                          onTap: () async {
-                            var medicineJson = (await _dbHandler.database.query(Medication.tableName(),
-                                    where: 'id = ?', whereArgs: [_medicalRecords[index].id]))
-                                .single;
-                            Medication medicine = Medication.fromJson(medicineJson);
-                            if (!mounted) return;
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DrugSearchResultDetail(
-                                        medicine: medicine,
-                                      )),
-                            );
-                          },
-                        ),
-                      ),
+                          margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+                          child: _searchMethod == _SearchMethod.byProductName
+                              ? ListTile(
+                                  title:
+                                      Text('${_medicalRecords[index].productName} (${_medicalRecords[index].potency})'),
+                                  subtitle: Text(_medicalRecords[index].commonlyUsedName),
+                                  onTap: () async {
+                                    var medicineJson = (await _dbHandler.database.query(Medication.tableName(),
+                                            where: 'id = ?', whereArgs: [_medicalRecords[index].id]))
+                                        .single;
+                                    Medication medicine = Medication.fromJson(medicineJson);
+                                    if (!mounted) return;
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => DrugSearchResultDetail(
+                                                medicine: medicine,
+                                              )),
+                                    );
+                                  },
+                                )
+                              : ListTile(
+                                  title: Text(_medicalRecords[index].commonlyUsedName),
+                                  subtitle: Text(
+                                      'na przykład: ${_medicalRecords[index].productName} (${_medicalRecords[index].potency})'),
+                                  onTap: () async {
+                                    var medicineJson = (await _dbHandler.database.query(Medication.tableName(),
+                                            where: 'id = ?', whereArgs: [_medicalRecords[index].id]))
+                                        .single;
+                                    Medication medicine = Medication.fromJson(medicineJson);
+                                    if (!mounted) return;
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => DrugSearchResultDetail(
+                                                medicine: medicine,
+                                              )),
+                                    );
+                                  },
+                                )),
                       itemCount: _medicalRecords.length,
                     )),
                 ],

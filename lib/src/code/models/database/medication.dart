@@ -27,20 +27,19 @@ class Medication extends RootDatabaseModel {
   final String? flyer; //Ulotka
   final String? characteristics; //Charakterystyka
 
-  Medication({
-    super.id,
-    required this.productIdentifier,
-    required this.productName,
-    required this.commonlyUsedName,
-    required this.potency,
-    required this.pharmaceuticalForm,
-    required this.permitValidity,
-    this.responsibleParty,
-    required this.packaging,
-    this.flyer,
-    this.characteristics,
-    super.isCustom = 1
-  });
+  Medication(
+      {super.id,
+      required this.productIdentifier,
+      required this.productName,
+      required this.commonlyUsedName,
+      required this.potency,
+      required this.pharmaceuticalForm,
+      required this.permitValidity,
+      this.responsibleParty,
+      required this.packaging,
+      this.flyer,
+      this.characteristics,
+      super.isCustom = 1});
 
   factory Medication.fromJson(Map<String, dynamic> json) {
     return Medication(

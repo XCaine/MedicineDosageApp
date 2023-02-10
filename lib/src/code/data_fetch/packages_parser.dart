@@ -6,6 +6,7 @@ import 'package:drugs_dosage_app/src/code/constants/drug_categories.dart';
 import 'package:logging/logging.dart';
 
 ///parser for raw data coming from API
+///Also filters package data
 class PackagesParser {
   static final Logger _logger = LogDistributor.getLoggerFor('PackagesParser');
   final String _rawData;
@@ -20,9 +21,7 @@ class PackagesParser {
   Map<String, dynamic> parseToJson() {
     List<Map<String, dynamic>> packageList = _parseInternal();
     packageList = _onlyValid(packageList);
-    Map<String, dynamic> json = {
-      Package.jsonIdentifierFieldName: packageList
-    };
+    Map<String, dynamic> json = {Package.jsonIdentifierFieldName: packageList};
     return json;
   }
 
@@ -31,11 +30,10 @@ class PackagesParser {
     for (Map<String, dynamic> singlePackage in allPackages) {
       String metadata = (singlePackage[_metadata] as String);
       bool packageDeleted = metadata.contains(_deleted);
-      bool isValidDrugType = DrugCategories.validOnes
-          .any((validDrugType) => metadata.contains(validDrugType));
+      bool isValidDrugType = DrugCategories.validOnes.any((validDrugType) => metadata.contains(validDrugType));
       bool countValid = singlePackage[Package.countFieldName] != null;
 
-      if(!packageDeleted && isValidDrugType && countValid) {
+      if (!packageDeleted && isValidDrugType && countValid) {
         validatedJsonPackages.add({
           Package.categoryFieldName: singlePackage[Package.categoryFieldName],
           Package.rawCountFieldName: singlePackage[Package.rawCountFieldName],
@@ -43,7 +41,7 @@ class PackagesParser {
         });
       }
     }
-    if(validatedJsonPackages.isEmpty) {
+    if (validatedJsonPackages.isEmpty) {
       _logger.finer('They are no json packages after validation');
     }
 
@@ -53,9 +51,7 @@ class PackagesParser {
   List<Map<String, dynamic>> _parseInternal() {
     LineSplitter splitter = const LineSplitter();
     List<String> dataLines = splitter.convert(_rawData);
-    if (dataLines.isEmpty ||
-        dataLines.length % 2 != 0 ||
-        dataLines.length < 2) {
+    if (dataLines.isEmpty || dataLines.length % 2 != 0 || dataLines.length < 2) {
       return [];
     }
     List<List<String>> packageInfo = [];
@@ -73,18 +69,19 @@ class PackagesParser {
       try {
         Map<String, dynamic> package = _parseSinglePackage(info);
         packagesJson.add(package);
-      } catch(e, stackTrace) {
+      } catch (e, stackTrace) {
         _logger.fine(e, stackTrace);
       }
     }
 
-    if(packagesJson.isEmpty) {
+    if (packagesJson.isEmpty) {
       _logger.finer('There are no packages after parsing');
     }
 
     var seen = <int>{};
     var deduplicatedPackagesJson = packagesJson
-        .where((packageJson) => packageJson[Package.countFieldName] != null && seen.add(packageJson[Package.countFieldName]))
+        .where((packageJson) =>
+            packageJson[Package.countFieldName] != null && seen.add(packageJson[Package.countFieldName]))
         .toList();
 
     return deduplicatedPackagesJson;
@@ -99,16 +96,9 @@ class PackagesParser {
     //'20 kaps.' -> 20
     int? count = int.tryParse(rawCount.split(' ').first);
 
-    String selectedCategory = DrugCategories.categoryNames.firstWhere(
-        (cat) => metadata.contains(cat),
-        orElse: () => ''
-    );
+    String selectedCategory =
+        DrugCategories.categoryNames.firstWhere((cat) => metadata.contains(cat), orElse: () => '');
 
-    //for (String category in DrugCategoryUtil.drugCategories) {
-    //  if (firstLine.toLowerCase().contains(category)) {
-    //    selectedCategory = category;
-    //  }
-    //}
     json[Package.categoryFieldName] = selectedCategory;
     json[_metadata] = metadata;
     json[Package.rawCountFieldName] = rawCount;

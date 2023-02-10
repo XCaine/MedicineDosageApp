@@ -16,16 +16,15 @@ class SampleMedicationLoader implements AbstractLoader<Medication> {
     String filePath = 'resources/files/sample_medical_data.json';
     _logger.info('Reading medical data from file $filePath');
     List<dynamic> data = await JsonFileReader(filePath: filePath).read();
-    if(data.isEmpty) {
+    if (data.isEmpty) {
       _logger.warning('Nothing was read from file $filePath');
       return;
     }
     List<Medication> medicineList = [];
     _logger.info('Creating Medicine instances');
-    for(Map<String, dynamic> jsonInstance in data) {
+    for (Map<String, dynamic> jsonInstance in data) {
       String packagingInfo = jsonInstance[Medication.packagingFieldName];
-      Map<String, dynamic> packages =
-      PackagesParser(rawData: packagingInfo).parseToJson();
+      Map<String, dynamic> packages = PackagesParser(rawData: packagingInfo).parseToJson();
       String jsonEncodedPackages = jsonEncode(packages);
       jsonInstance[Medication.packagingFieldName] = jsonEncodedPackages;
       Medication instance = Medication.fromJson(jsonInstance);
@@ -35,11 +34,11 @@ class SampleMedicationLoader implements AbstractLoader<Medication> {
       _logger.info('Inserting sample data to db');
       DatabaseFacade().medicineHandler.insertMedicationsWithPackages(medicineList, custom: false);
       _logger.info('Finished loading sample records into database');
-    } catch(e, stackTrace) {
+    } catch (e, stackTrace) {
       String msg = 'Could not load sample medicine data';
       _logger.severe(msg, e, stackTrace);
     }
-    if(onFinishCallback != null) {
+    if (onFinishCallback != null) {
       onFinishCallback();
     }
   }

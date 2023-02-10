@@ -25,8 +25,8 @@ class _DrugDetailState extends State<DrugDetail> {
   void _loadPackageDetails() async {
     try {
       final db = _dbHandler.database;
-      List<Map<String, dynamic>> rawPackages = await db.rawQuery(
-          'select * from ${Package.tableName()} where ${Package.medicineIdFieldName} = ${_medicine.id}');
+      List<Map<String, dynamic>> rawPackages = await db
+          .rawQuery('select * from ${Package.tableName()} where ${Package.medicineIdFieldName} = ${_medicine.id}');
       List<Package> packageInstances = [];
       for (Map<String, Object?> package in rawPackages) {
         packageInstances.add(Package.fromJson(package));
@@ -73,7 +73,8 @@ class _DrugDetailState extends State<DrugDetail> {
           _medicineInfoCard(_drugCategoryDescription, 'kategoria leku'),
           _medicineInfoCard(_medicine.pharmaceuticalForm, 'forma farmaceutyczna'),
           if (_drugCategoryDescription.isNotEmpty) _medicineInfoCard(_medicine.potency, 'moc'),
-          if (_packages.isNotEmpty) _medicineInfoCard(_packages.map((e) => e.rawCount).join(' '), 'dostępne warianty opakowań'),
+          if (_packages.isNotEmpty)
+            _medicineInfoCard(_packages.map((e) => e.rawCount).join(' '), 'dostępne warianty opakowań'),
           if (_medicine.flyer != null || _medicine.characteristics != null)
             Row(
               children: [
@@ -87,7 +88,8 @@ class _DrugDetailState extends State<DrugDetail> {
                         children: [
                           const Text('Pobierz\nulotkę'),
                           IconButton(
-                              onPressed: () => _launchPdf(_medicine.flyer!),//_downloadPdf(context, _medicine.flyer!, 'ulotka'),
+                              onPressed: () => _launchPdf(_medicine.flyer!),
+                              //_downloadPdf(context, _medicine.flyer!, 'ulotka'),
                               icon: const Icon(Icons.picture_as_pdf_sharp)),
                         ],
                       )),
@@ -103,7 +105,8 @@ class _DrugDetailState extends State<DrugDetail> {
                         children: [
                           const Text('Pobierz\ncharakterystykę'),
                           IconButton(
-                              onPressed: () => _launchPdf(_medicine.characteristics!),//_downloadPdf(context, _medicine.characteristics!, 'charakterystyka'),
+                              onPressed: () => _launchPdf(_medicine.characteristics!),
+                              //_downloadPdf(context, _medicine.characteristics!, 'charakterystyka'),
                               icon: const Icon(Icons.picture_as_pdf_sharp)),
                         ],
                       )),

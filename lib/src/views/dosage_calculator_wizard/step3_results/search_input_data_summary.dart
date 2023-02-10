@@ -39,8 +39,7 @@ class _SearchInputDataSummaryState extends State<SearchInputDataSummary> {
                             'Substancja aktywna',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          Text(
-                              widget.searchWrapper.selectedMedicine.commonlyUsedName),
+                          Text(widget.searchWrapper.selectedMedicine.commonlyUsedName),
                         ],
                       ),
                     ],
@@ -50,18 +49,17 @@ class _SearchInputDataSummaryState extends State<SearchInputDataSummary> {
                     flex: 1,
                     child: Column(
                       children: [
-
-                            Column(
-                              children: [
-                                const Text(
-                                  'Moc',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                    //style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                                    widget.searchWrapper.potency!),
-                              ],
-                            )
+                        Column(
+                          children: [
+                            const Text(
+                              'Moc',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                                //style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                                widget.searchWrapper.potency!),
+                          ],
+                        )
                       ],
                     ))
               ],
@@ -94,8 +92,7 @@ class _SearchInputDataSummaryState extends State<SearchInputDataSummary> {
                         children: [
                           Column(
                             children: [
-                              const Text(
-                                  style: TextStyle(fontWeight: FontWeight.bold), 'Liczba dni'),
+                              const Text(style: TextStyle(fontWeight: FontWeight.bold), 'Liczba dni'),
                               Text(
                                   //style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                                   '${widget.searchWrapper.totalDays}'),
