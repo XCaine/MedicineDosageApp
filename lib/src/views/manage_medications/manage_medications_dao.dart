@@ -14,13 +14,15 @@ class ManageMedicationsDao {
   Future<Medication?> getMedicationById(int id) async {
     Medication? instance;
     try {
-      var medicationJson = (await _dbBroker.database.query(Medication.tableName(),
+      var medicationJson = (await _dbBroker.database.query(
+        Medication.tableName(),
         where: '${RootDatabaseModel.idFieldName} = ?',
         whereArgs: [id],
-      )).single;
+      ))
+          .single;
       instance = Medication.fromJson(medicationJson);
-    } catch(e, stackTrace) {
-      _logger.severe('Could not fetch medication from database using id $id');
+    } catch (e, stackTrace) {
+      _logger.severe('Could not fetch medication from database using id $id', stackTrace);
     }
     return instance;
   }
@@ -29,23 +31,23 @@ class ManageMedicationsDao {
     Medication? medication;
     List<Package> packages = [];
     try {
-      var medicationJson = (await _dbBroker.database.query(Medication.tableName(),
+      var medicationJson = (await _dbBroker.database.query(
+        Medication.tableName(),
         where: '${RootDatabaseModel.idFieldName} = ?',
         whereArgs: [medicationId],
-      )).single;
+      ))
+          .single;
       medication = Medication.fromJson(medicationJson);
 
-      var packagesJson = (await _dbBroker.database.query(Package.tableName(),
-        where: '${Package.medicineIdFieldName} = ?',
-        whereArgs: [medicationId]
-      ));
+      var packagesJson = (await _dbBroker.database
+          .query(Package.tableName(), where: '${Package.medicineIdFieldName} = ?', whereArgs: [medicationId]));
 
-      for(var packageJson in packagesJson) {
+      for (var packageJson in packagesJson) {
         var package = Package.fromJson(packageJson);
         packages.add(package);
       }
-    } catch(e, stackTrace) {
-      _logger.severe('Could not fetch medication with packages from database using id $medicationId');
+    } catch (e, stackTrace) {
+      _logger.severe('Could not fetch medication with packages from database using id $medicationId', stackTrace);
     }
 
     return Pair(medication, packages);
@@ -56,12 +58,13 @@ class ManageMedicationsDao {
   }
 
   Future<bool> anotherMedicationWithSameProductIdentifierExists(String productIdentifier) async {
-    int count = firstIntValue(
-        await _dbBroker.database.query(Medication.tableName(),
+    int count = firstIntValue(await _dbBroker.database.query(
+          Medication.tableName(),
           columns: [sqlCountColumn],
           where: '${Medication.productIdentifierFieldName} = ?',
           whereArgs: [productIdentifier],
-        )) ?? 0;
+        )) ??
+        0;
 
     return count != 0;
   }
@@ -69,13 +72,15 @@ class ManageMedicationsDao {
   Future<Medication?> getMedicationByProductIdentifier(String productIdentifier) async {
     Medication? instance;
     try {
-      var medicationJson = (await _dbBroker.database.query(Medication.tableName(),
+      var medicationJson = (await _dbBroker.database.query(
+        Medication.tableName(),
         where: '${Medication.productIdentifierFieldName} = ?',
         whereArgs: [productIdentifier],
-      )).single;
+      ))
+          .single;
       instance = Medication.fromJson(medicationJson);
-    } catch(e, stackTrace) {
-      _logger.severe('Could not fetch medication from database using product identifier $productIdentifier');
+    } catch (e, stackTrace) {
+      _logger.severe('Could not fetch medication from database using product identifier $productIdentifier', stackTrace);
     }
     return instance;
   }

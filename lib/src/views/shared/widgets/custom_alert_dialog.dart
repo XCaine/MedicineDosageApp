@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CustomAlertDialog extends StatelessWidget {
-  const CustomAlertDialog({required String title, required String content, super.key}) :
-    _title = title,
-    _content = content;
+  const CustomAlertDialog({required String title, required String content, super.key})
+      : _title = title,
+        _content = content;
 
   final String _title;
   final String _content;
@@ -23,5 +23,4 @@ class CustomAlertDialog extends StatelessWidget {
       ],
     );
   }
-
 }

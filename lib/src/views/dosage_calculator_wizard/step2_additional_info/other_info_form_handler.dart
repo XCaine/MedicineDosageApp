@@ -16,7 +16,7 @@ class OtherInfoFormHandler {
 
   dynamic submit(BuildContext context, DosageSearchWrapper searchWrapper) {
     if (_key.currentState!.validate()) {
-      if(searchWrapper.searchByDates) {
+      if (searchWrapper.searchByDates) {
         searchWrapper.numberOfDays = searchWrapper.dateEnd!.difference(searchWrapper.dateStart!).inDays;
       } else {
         searchWrapper.dateStart = DateTime.now();

@@ -5,15 +5,13 @@ import 'package:drugs_dosage_app/src/code/data_fetch/packages_parser.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
 import 'package:drugs_dosage_app/src/code/models/database/package.dart';
-import 'package:logging/logging.dart';
 
 import '../filters/impl/medication_api_filter.dart';
 
 class ApiMedicationMapper {
   late final List<dynamic> parsedHeader;
   final Map<int, String> _indexToTargetFieldMap = {};
-  static final Logger _logger =
-      LogDistributor.getLoggerFor('ApiMedicineMapper');
+  static final _logger = LogDistributor.getLoggerFor('ApiMedicationMapper');
 
   ApiMedicationMapper({required List<dynamic> incomingHeader}) {
     _parseHeader(incomingHeader);
@@ -24,9 +22,8 @@ class ApiMedicationMapper {
     _logger.info('Parsing received CSV header');
     parsedHeader = [];
     for (String headerElement in incomingHeader) {
-      String normalizedHeaderElement = removeDiacritics(headerElement)
-          .replaceAll(RegExp('[^A-Za-z]'), '')
-          .toLowerCase();
+      String normalizedHeaderElement =
+          removeDiacritics(headerElement).replaceAll(RegExp('[^A-Za-z]'), '').toLowerCase();
       parsedHeader.add(normalizedHeaderElement);
     }
   }
@@ -78,7 +75,7 @@ class ApiMedicationMapper {
     //parse and additionally validate packaging info
     String packagingInfo = json[Medication.packagingFieldName];
     Map<String, dynamic> packages = PackagesParser(rawData: packagingInfo).parseToJson();
-    if(packages[Package.jsonIdentifierFieldName].isEmpty) {
+    if (packages[Package.jsonIdentifierFieldName].isEmpty) {
       return null;
     }
     String jsonEncodedPackages = jsonEncode(packages);

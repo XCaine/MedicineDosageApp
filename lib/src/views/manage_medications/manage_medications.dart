@@ -32,7 +32,8 @@ class _ManageMedicationsState extends State<ManageMedications> {
     super.initState();
   }
 
-  GestureDetector medicationAdministrationOption(String title, IconData iconData, StatefulWidget targetWidget, [Color? color]) {
+  GestureDetector medicationAdministrationOption(String title, IconData iconData, StatefulWidget targetWidget,
+      [Color? color]) {
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => targetWidget)),
       child: Card(
@@ -68,12 +69,14 @@ class _ManageMedicationsState extends State<ManageMedications> {
           actions: [IconButton(onPressed: () => context.go(Constants.homeScreenRoute), icon: const Icon(Icons.home))],
         ),
         body: ListView(
-                children: [
-                  medicationAdministrationOption('Dodaj lek', Icons.add, const AddMedication(), Colors.green[300]),
-                  if(_drugsPresentInDatabase) medicationAdministrationOption('Zmodyfikuj lek', Icons.edit, const ModifyMedicationSearch(), Colors.yellow[300]),
-                  if(_drugsPresentInDatabase) medicationAdministrationOption('Usuń lek', Icons.remove, const RemoveMedication(), Colors.red[300]),
-                ],
-              )
-    );
+          children: [
+            medicationAdministrationOption('Dodaj lek', Icons.add, const AddMedication(), Colors.green[300]),
+            if (_drugsPresentInDatabase)
+              medicationAdministrationOption(
+                  'Zmodyfikuj lek', Icons.edit, const ModifyMedicationSearch(), Colors.yellow[300]),
+            if (_drugsPresentInDatabase)
+              medicationAdministrationOption('Usuń lek', Icons.remove, const RemoveMedication(), Colors.red[300]),
+          ],
+        ));
   }
 }

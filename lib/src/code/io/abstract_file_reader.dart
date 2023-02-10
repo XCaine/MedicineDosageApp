@@ -1,4 +1,4 @@
-abstract class AbstractFileReader <T> {
+abstract class AbstractFileReader<T> {
   final String filePath;
 
   AbstractFileReader({required this.filePath});

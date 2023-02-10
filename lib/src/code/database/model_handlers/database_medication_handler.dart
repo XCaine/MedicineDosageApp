@@ -28,7 +28,7 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
           try {
             setMessageOnProgress('Ładowanie - część $currentCount z $iterations');
           } catch (e, stackTrace) {
-            _logger.warning('Cannot execute callback to set the loading message');
+            _logger.warning('Cannot execute callback to set the loading message', stackTrace);
           }
         }
         _logger.info('Iteration $currentCount/$iterations. Loading $chunkSize medical records per iteration');
@@ -64,13 +64,10 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
     try {
       await db.transaction((Transaction txn) async {
         medication.isCustom = custom ? 1 : 0;
-        await txn.update(Medication.tableName(),
-            medication.toMap(),
-            conflictAlgorithm:
-            ConflictAlgorithm.replace,
+        await txn.update(Medication.tableName(), medication.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
             where: '${RootDatabaseModel.idFieldName} = ?',
-            whereArgs: [medication.id]
-        );
+            whereArgs: [medication.id]);
         var packages = packagingMapper.mapToJson(medication.packaging);
         for (var originalPackage in originalPackages) {
           await txn.delete(Package.tableName(),

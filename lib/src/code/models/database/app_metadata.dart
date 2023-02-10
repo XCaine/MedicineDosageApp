@@ -10,10 +10,7 @@ class AppMetadata extends RootDatabaseModel {
   AppMetadata({super.id, this.initialLoadDone});
 
   factory AppMetadata.fromJson(Map<String, dynamic> json) {
-    return AppMetadata(
-      id: json[RootDatabaseModel.idFieldName],
-      initialLoadDone: json[initialLoadDoneFieldName]
-    );
+    return AppMetadata(id: json[RootDatabaseModel.idFieldName], initialLoadDone: json[initialLoadDoneFieldName]);
   }
 
   @override
@@ -27,10 +24,7 @@ class AppMetadata extends RootDatabaseModel {
 
   @override
   Map<String, dynamic> toMap() {
-    final map = {
-      initialLoadDoneFieldName: initialLoadDone
-    };
+    final map = {initialLoadDoneFieldName: initialLoadDone};
     return map;
   }
-
 }

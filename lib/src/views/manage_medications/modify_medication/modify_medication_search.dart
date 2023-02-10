@@ -50,7 +50,8 @@ class _ModifyMedicationSearchState extends State<ModifyMedicationSearch> {
       String sql = '''
       SELECT ${RootDatabaseModel.idFieldName}, 
         ${Medication.commonlyUsedNameFieldName},
-        ${Medication.productNameFieldName} 
+        ${Medication.productNameFieldName},
+        ${Medication.potencyFieldName}  
       FROM ${Medication.tableName()}
       WHERE ${_searchMethod == _SearchMethod.byProductName ? Medication.productNameFieldName : Medication.commonlyUsedNameFieldName}  
       LIKE ${_matchType == _MatchType.exact ? "'$input%'" : "'%$input%'"}
@@ -101,10 +102,9 @@ class _ModifyMedicationSearchState extends State<ModifyMedicationSearch> {
     var medicationWithPackagesPair = await _manageMedicationsDao.getMedicationWithPackagesById(medicalRecord.id);
     var medication = medicationWithPackagesPair.first;
     var packages = medicationWithPackagesPair.second;
-    if(medication != null && packages.isNotEmpty) {
+    if (medication != null && packages.isNotEmpty) {
       gotToModifyMedicationScreen(medication, packages);
     }
-
   }
 
   gotToModifyMedicationScreen(Medication medication, List<Package> packages) {
@@ -243,9 +243,9 @@ class _ModifyMedicationSearchState extends State<ModifyMedicationSearch> {
                       itemBuilder: (context, index) => Card(
                         margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                         child: ListTile(
-                            title: Text(_medicalRecords[index].commonlyUsedName),
-                            subtitle: Text(_medicalRecords[index].productName),
-                            onTap: () => proceedToMedicationModification(_medicalRecords[index]),
+                          title: Text(_medicalRecords[index].commonlyUsedName),
+                          subtitle: Text(_medicalRecords[index].productName),
+                          onTap: () => proceedToMedicationModification(_medicalRecords[index]),
                         ),
                       ),
                       itemCount: _medicalRecords.length,

@@ -14,18 +14,14 @@ class DosageResultSet implements Comparable<DosageResultSet> {
   //how many dosages are we losing on this set compared to target
   late final int redundancyFactor;
 
-  DosageResultSet({
-    required this.medicine,
-    required this.packages,
-    required this.packageVariants,
-    required this.target
-  }) {
+  DosageResultSet(
+      {required this.medicine, required this.packages, required this.packageVariants, required this.target}) {
     _calculateRedundancyFactor();
   }
 
   _calculateRedundancyFactor() {
     redundancyFactor = packages.map((package) => package.count!).sum - target;
-    if(redundancyFactor < 0) {
+    if (redundancyFactor < 0) {
       _logger.severe('redundancyFactor < 0, this should not happen!');
     }
   }
@@ -33,9 +29,9 @@ class DosageResultSet implements Comparable<DosageResultSet> {
   @override
   int compareTo(DosageResultSet other) {
     int result;
-    if(redundancyFactor == other.redundancyFactor && packages.length == other.packages.length) {
+    if (redundancyFactor == other.redundancyFactor && packages.length == other.packages.length) {
       result = 0;
-    } else if(redundancyFactor == other.redundancyFactor) {
+    } else if (redundancyFactor == other.redundancyFactor) {
       result = packages.length < other.packages.length ? -1 : 1;
     } else {
       result = redundancyFactor < other.redundancyFactor ? -1 : 1;

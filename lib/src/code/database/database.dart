@@ -11,14 +11,14 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 import '../constants/constants.dart';
 
 class DatabaseBroker {
-  late final sqflite.Database database;
+  late sqflite.Database database;
   static final Logger _logger = LogDistributor.getLoggerFor('DatabaseHandler');
   static DatabaseBroker? _instance;
 
   DatabaseBroker._internal({dropExisting = false}) {
     try {
       _initDatabase(dropExisting);
-    } catch(e, stackTrace) {
+    } catch (e, stackTrace) {
       _logger.severe('Database initialization failed', stackTrace);
     }
   }
@@ -38,13 +38,10 @@ class DatabaseBroker {
   }
 
   _initDatabase([dropExisting = false]) async {
-    String databasePath =
-        join(await sqflite.getDatabasesPath(), Constants.databaseName);
-    //TODO REMOVE database delete
-    if(dropExisting) {
+    String databasePath = join(await sqflite.getDatabasesPath(), Constants.databaseName);
+    if (dropExisting) {
       await _dropDatabaseIfExists(databasePath);
     }
-    //await _dropDatabaseIfExists(databasePath);
 
     sqflite.Database database = await sqflite.openDatabase(
       databasePath,
@@ -53,7 +50,7 @@ class DatabaseBroker {
       },
       onCreate: (db, version) async {
         List<String> bootstrapQueries = BootstrapQueryProvider().provide();
-        for(String query in bootstrapQueries) {
+        for (String query in bootstrapQueries) {
           await db.execute(query);
         }
         _logger.info('Database has been created');
@@ -63,7 +60,7 @@ class DatabaseBroker {
     this.database = database;
 
     int metadataValuesCount = await getCountOf(AppMetadata.tableName());
-    if(metadataValuesCount == 0) {
+    if (metadataValuesCount == 0) {
       insert(AppMetadata(initialLoadDone: 0));
     }
     _logger.info('Database initialization ended');
@@ -81,23 +78,18 @@ class DatabaseBroker {
   }
 
   Future<int> getCountOf(String tableName) async {
-    var result = (await database
-        .rawQuery('select count(*) as count from ${AppMetadata.tableName()}')).single;
+    var result = (await database.rawQuery('select count(*) as count from ${AppMetadata.tableName()}')).single;
     int count = result['count'] as int;
     return count;
   }
 
   Future<void> insert<T extends RootDatabaseModel>(T object,
-      [sqflite.ConflictAlgorithm conflictAlgorithm =
-          sqflite.ConflictAlgorithm.replace]) async {
-
-    await database.insert(object.getTableName(), object.toMap(),
-        conflictAlgorithm: conflictAlgorithm);
+      [sqflite.ConflictAlgorithm conflictAlgorithm = sqflite.ConflictAlgorithm.replace]) async {
+    await database.insert(object.getTableName(), object.toMap(), conflictAlgorithm: conflictAlgorithm);
   }
 
   Future<void> insertAll<T extends RootDatabaseModel>(List<T> objects,
-      [sqflite.ConflictAlgorithm conflictAlgorithm =
-          sqflite.ConflictAlgorithm.replace]) async {
+      [sqflite.ConflictAlgorithm conflictAlgorithm = sqflite.ConflictAlgorithm.replace]) async {
     if (objects.isEmpty) {
       return;
     }
@@ -105,23 +97,20 @@ class DatabaseBroker {
 
     sqflite.Batch batch = database.batch();
     for (var element in objects) {
-      batch.insert(tableName, element.toMap(),
-          conflictAlgorithm: conflictAlgorithm);
+      batch.insert(tableName, element.toMap(), conflictAlgorithm: conflictAlgorithm);
     }
     batch.commit();
   }
 
-  Future<T> get<T extends RootDatabaseModel>(String tableName,
-      T Function(Map<String, dynamic>) constructorCallback, String id) async {
-    final Map<String, dynamic> queryResult =
-        (await database.query(tableName, where: 'id = ?', whereArgs: [id])).single;
+  Future<T> get<T extends RootDatabaseModel>(
+      String tableName, T Function(Map<String, dynamic>) constructorCallback, String id) async {
+    final Map<String, dynamic> queryResult = (await database.query(tableName, where: 'id = ?', whereArgs: [id])).single;
     T instance = constructorCallback(queryResult);
     return instance;
   }
 
-  Future<List<T>> getAll<T extends RootDatabaseModel>(String tableName,
-      T Function(Map<String, dynamic>) constructorCallback) async {
-
+  Future<List<T>> getAll<T extends RootDatabaseModel>(
+      String tableName, T Function(Map<String, dynamic>) constructorCallback) async {
     final List<Map<String, dynamic>> queryResult = await database.query(tableName);
     return List.generate(queryResult.length, (i) => constructorCallback(queryResult[i]));
   }
@@ -129,8 +118,7 @@ class DatabaseBroker {
   Future<void> update<T extends RootDatabaseModel>(T object) async {
     assert(object.id != null, 'ID cannot be null');
     object.updateTime = DateTime.now();
-    await database.update(object.getTableName(), object.toMap(),
-        where: 'id = ?', whereArgs: [object.id]);
+    await database.update(object.getTableName(), object.toMap(), where: 'id = ?', whereArgs: [object.id]);
   }
 
   Future<void> delete<T extends RootDatabaseModel>(T object) async {

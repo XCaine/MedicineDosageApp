@@ -17,7 +17,7 @@ class JsonFileReader extends AbstractFileReader<List<dynamic>> {
     try {
       String inputString = await rootBundle.loadString(filePath);
       jsonMap = jsonDecode(inputString);
-    } catch(e, stackTrace) {
+    } catch (e, stackTrace) {
       _logger.severe('Failed to load data from file $filePath', e, stackTrace);
     }
     return jsonMap;

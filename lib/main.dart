@@ -9,15 +9,14 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   //DB IS LOCATED IN data/data/com.pw.drugs_dosage_app/databases/medical_app_database.db
   DatabaseBroker.initialize();
-  runApp(
-    const RestartHandler(
-      child: MedicalCalculatorApp(),
-    )
-  );
+  runApp(const RestartHandler(
+    child: MedicalCalculatorApp(),
+  ));
 }
 
 class RestartHandler extends StatefulWidget {
   static final _logger = LogDistributor.getLoggerFor('RestartHandler');
+
   const RestartHandler({super.key, required this.child});
 
   final Widget child;
@@ -46,11 +45,6 @@ class _RestartHandlerState extends State<RestartHandler> {
 
   @override
   Widget build(BuildContext context) {
-    return KeyedSubtree(
-      key: key,
-        child: widget.child
-    );
+    return KeyedSubtree(key: key, child: widget.child);
   }
 }
-
-

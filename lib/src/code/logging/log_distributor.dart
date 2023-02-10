@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 class LogDistributor {
-
   static void initialize() {
     Logger.root.level = Level.INFO;
     Logger.root.onRecord.listen((record) => _onRecord(record));
@@ -11,7 +10,7 @@ class LogDistributor {
   static _onRecord(LogRecord record) {
     if (kDebugMode) {
       String msg = '${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}';
-      if(record.error != null) {
+      if (record.error != null) {
         msg = '$msg with Exception\n${record.error}\n${record.stackTrace}';
       }
       print(msg);
@@ -25,5 +24,4 @@ class LogDistributor {
     final logger = _cache[className];
     return logger!;
   }
-
 }
