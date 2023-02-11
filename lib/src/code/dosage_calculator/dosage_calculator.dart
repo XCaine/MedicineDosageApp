@@ -76,7 +76,7 @@ class DosageCalculator {
             stackTrace);
       }
     }
-    //TODO MAYBE RETAIN 3 best options from searchWrapper's medicine and 1 best option from each other drug
+    //TODO UX IMPROVEMENT IDEA: RETAIN 3 best options from searchWrapper's medicine and 1 best option from each other drug
     results.sort((a, b) => a.compareTo(b));
 
     DosageResultSetWrapper wrapper;

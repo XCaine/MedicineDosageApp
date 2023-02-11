@@ -141,11 +141,11 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
                           setState(() => _searchWrapper!.dosagesPerDay = int.parse(value));
                         },
                         keyboardType: TextInputType.number,
-                        //TODO allow input with parts, one digit after comma (maybe only a half)
+                        //TODO UX IMPROVEMENT allow input with parts, one digit after comma (maybe only a half)
                         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         validator: (value) => _formHandler.validate(value),
                         decoration: InputDecoration(
-                          //TODO add validation - not more than 50 per day
+                          //TODO UX IMPROVEMENT add validation - not more than e.g. 50 per day
                           labelText: 'ilość dawek na dobę',
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
                         ),
@@ -192,7 +192,7 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
                                           //editing controller of this TextField
                                           decoration: const InputDecoration(
                                               icon: Icon(Icons.calendar_today), //icon of text field
-                                              //TODO not later than 1 year after starting date
+                                              //TODO UX IMPROVEMENT not later than 1 year after starting date
                                               labelText: "Data końcowa" //label text of field
                                               ),
                                           validator: (value) {
@@ -254,7 +254,7 @@ class _DosageCalculatorOtherInfoState extends State<DosageCalculatorOtherInfo> {
                                       return null;
                                     },
                                     decoration: InputDecoration(
-                                      //TODO max 366
+                                      //TODO UX IMPROVEMENT max 366
                                       labelText: 'ilość dni',
                                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
                                     ),

@@ -2,7 +2,6 @@ import 'package:drugs_dosage_app/src/code/dosage_calculator/dosage_calculation_a
 import 'package:collection/collection.dart';
 import 'package:test/test.dart';
 
-//TODO this function should not compare order
 Function listEquals = const ListEquality().equals;
 
 void main() {

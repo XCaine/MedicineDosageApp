@@ -27,12 +27,9 @@ class DosageCalculationAlgorithm {
     return finalResults;
   }
 
-  //TODO separate invocation options that are sources from invocation options that are results
   static List<List<int>> _applyInternal(List<int> sizeVariants, List<CalculationModel> models) {
     List<List<int>> finalResults = [];
 
-    //TODO will produce a lot of results for unbalanced input, e.g. [1,2,3,60], 100
-    //Still works correctly, just a room for optimization
     for (CalculationModel model in models) {
       List<List<int>> invocationOptions = [List<int>.from(model.options)];
       List<List<int>> tempResults = invocationOptions;
