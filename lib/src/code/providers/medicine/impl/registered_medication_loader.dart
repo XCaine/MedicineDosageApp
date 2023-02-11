@@ -58,7 +58,6 @@ class RegisteredMedicationLoader implements AbstractLoader<Medication> {
       csvContent = await CsvFileReader(filePath: _backupFilePath).read();
     }
 
-    //TODO line endings of the file should be lf
     _logger.info('Converting csv to list of values');
     List<List<dynamic>> decodedCsv = const CsvToListConverter(
       fieldDelimiter: ';',
