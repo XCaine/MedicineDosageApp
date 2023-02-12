@@ -16,9 +16,9 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
       {bool custom = true, Function(String)? setMessageOnProgress}) async {
     Database db = databaseBroker.database;
     ApiPackagesMapper packagingMapper = ApiPackagesMapper();
+    int currentCount = 0;
     int chunkSize = 500;
     var partitionedMedicineList = partition(medicineList, chunkSize);
-    int currentCount = 0;
     int iterations = partitionedMedicineList.length;
     var start = DateTime.now();
     for (List<Medication> medicineGroup in partitionedMedicineList) {

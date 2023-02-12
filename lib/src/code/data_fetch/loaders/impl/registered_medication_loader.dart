@@ -8,7 +8,7 @@ import 'package:drugs_dosage_app/src/code/database/database_facade.dart';
 import 'package:drugs_dosage_app/src/code/io/csv_file_reader.dart';
 import 'package:drugs_dosage_app/src/code/logging/log_distributor.dart';
 import 'package:drugs_dosage_app/src/code/models/database/medication.dart';
-import 'package:drugs_dosage_app/src/code/providers/abstract_loader.dart';
+import 'package:drugs_dosage_app/src/code/data_fetch/abstract_loader.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:logging/logging.dart';

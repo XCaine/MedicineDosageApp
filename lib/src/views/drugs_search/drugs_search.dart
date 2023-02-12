@@ -243,7 +243,7 @@ class _DrugsListState extends State<DrugsList> {
                               : ListTile(
                                   title: Text(_medicalRecords[index].commonlyUsedName),
                                   subtitle: Text(
-                                      'na przykład: ${_medicalRecords[index].productName} (${_medicalRecords[index].potency})'),
+                                      '${_medicalRecords[index].productName} (${_medicalRecords[index].potency})'),
                                   onTap: () async {
                                     var medicineJson = (await _dbHandler.database.query(Medication.tableName(),
                                             where: 'id = ?', whereArgs: [_medicalRecords[index].id]))
