@@ -17,7 +17,6 @@ class DosageCalculationAlgorithm {
       throw ArgumentError('Given arguments are invalid');
     }
     var finalResults = _applyInternal(sizeVariants, [CalculationModel([], total)]);
-
     for (List<int> resultSet in finalResults) {
       resultSet.sort((a, b) => a.compareTo(b));
     }

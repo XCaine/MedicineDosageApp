@@ -59,9 +59,9 @@ class _DosageCalculatorSearchState extends State<DosageCalculatorSearch> {
         SELECT ${RootDatabaseModel.idFieldName}, 
         ${Medication.commonlyUsedNameFieldName},
         ${Medication.productNameFieldName},
-        ${Medication.potencyFieldName},  
+        ${Medication.potencyFieldName}  
         FROM (
-          SELECT ${RootDatabaseModel.idFieldName}, ${Medication.commonlyUsedNameFieldName}, ${Medication.productNameFieldName},
+          SELECT ${RootDatabaseModel.idFieldName}, ${Medication.commonlyUsedNameFieldName}, ${Medication.productNameFieldName}, ${Medication.potencyFieldName},
           ROW_NUMBER() OVER (PARTITION BY  ${Medication.commonlyUsedNameFieldName} ORDER BY ${RootDatabaseModel.idFieldName}) rn
           FROM ${Medication.tableName()}
           WHERE ${Medication.commonlyUsedNameFieldName} LIKE ${_matchType == _MatchType.exact ? "'$input%'" : "'%$input%'"}

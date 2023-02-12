@@ -8,6 +8,6 @@ class Constants {
 
   static const String databaseName = 'medical_app_database.db';
 
-  static const String sourceMedicationsFileAddress =
-      'https://api.dane.gov.pl/resources/29618,wykaz-produktow-leczniczych-plik-w-formacie-csv/file';
+  static const String sourceMedicationsFileAddress = 'https://rejestrymedyczne.ezdrowie.gov.pl/api/rpl/medicinal-products/public-pl-report/get-csv';
+  //static const String sourceMedicationsFileAddress = 'https://api.dane.gov.pl/resources/29618,wykaz-produktow-leczniczych-plik-w-formacie-csv/file';
 }

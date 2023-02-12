@@ -24,4 +24,10 @@ class LogDistributor {
     final logger = _cache[className];
     return logger!;
   }
+
+  static Logger getLoggerForType(Type className) {
+    _cache.putIfAbsent(className.toString(), () => Logger(className.toString()));
+    final logger = _cache[className];
+    return logger!;
+  }
 }

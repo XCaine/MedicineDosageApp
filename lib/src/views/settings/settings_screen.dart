@@ -1,8 +1,8 @@
 import 'package:drugs_dosage_app/main.dart';
 import 'package:drugs_dosage_app/src/code/browser_file_launchers/pdf_launcher.dart';
 import 'package:drugs_dosage_app/src/code/constants/constants.dart';
+import 'package:drugs_dosage_app/src/code/data_fetch/loaders/impl/registered_medication_loader.dart';
 import 'package:drugs_dosage_app/src/code/database/app_metadata_dao.dart';
-import 'package:drugs_dosage_app/src/code/providers/medicine/impl/registered_medication_loader.dart';
 import 'package:drugs_dosage_app/src/views/dosage_calculator_wizard/shared/close_wizard_dialog.dart';
 import 'package:drugs_dosage_app/src/views/shared/widgets/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
@@ -156,7 +156,7 @@ class _SettingsState extends State<Settings> {
                               flex: 4,
                               child: ListTile(
                                 title: Text(
-                                  'Pobierz plik z danymi medycznymi',
+                                  'Pobierz plik z danymi medycznymi \n(źródło - dane.gov.pl)',
                                   style: TextStyle(fontSize: 24),
                                 ),
                               ),
