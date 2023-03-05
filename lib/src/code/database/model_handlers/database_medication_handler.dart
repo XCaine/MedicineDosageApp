@@ -12,16 +12,16 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
   static final _logger = LogDistributor.getLoggerFor('DatabaseMedicineHandler');
 
   //for registered medicine loader
-  Future<bool> insertMedicationsWithPackages(List<Medication> medicineList,
+  Future<bool> insertMedicationsWithPackages(List<Medication> medications,
       {bool custom = true, Function(String)? setMessageOnProgress}) async {
     Database db = databaseBroker.database;
     ApiPackagesMapper packagingMapper = ApiPackagesMapper();
     int currentCount = 0;
     int chunkSize = 500;
-    var partitionedMedicineList = partition(medicineList, chunkSize);
-    int iterations = partitionedMedicineList.length;
+    var partitionedMedications = partition(medications, chunkSize);
+    int iterations = partitionedMedications.length;
     var start = DateTime.now();
-    for (List<Medication> medicineGroup in partitionedMedicineList) {
+    for (List<Medication> medicationGroup in partitionedMedications) {
       try {
         currentCount++;
         if (setMessageOnProgress != null) {
@@ -33,21 +33,21 @@ class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
         }
         _logger.info('Iteration $currentCount/$iterations. Loading $chunkSize medical records per iteration');
         await db.transaction((Transaction txn) async {
-          for (Medication medicine in medicineGroup) {
-            medicine.isCustom = custom ? 1 : 0;
-            await txn.insert(Medication.tableName(), medicine.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+          for (Medication medication in medicationGroup) {
+            medication.isCustom = custom ? 1 : 0;
+            await txn.insert(Medication.tableName(), medication.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
             //inserting related packages
             int lastId = await getLastInsertedRowId(txn);
-            var packages = packagingMapper.mapToJson(medicine.packaging);
+            var packages = packagingMapper.mapToJson(medication.packaging);
             for (var package in packages) {
-              package[RootDatabaseModel.isCustomFieldName] = medicine.isCustom;
+              package[RootDatabaseModel.isCustomFieldName] = medication.isCustom;
               package[Package.medicineIdFieldName] = lastId;
               await txn.insert(Package.tableName(), package);
             }
           }
         });
       } catch (e, stackTrace) {
-        _logger.severe('Error during inserting medicine group', e, stackTrace);
+        _logger.severe('Error during inserting medication group', e, stackTrace);
         return false;
       }
     }

@@ -36,7 +36,7 @@ class RegisteredMedicationLoader implements AbstractLoader<Medication> {
         });
         if (response.statusCode != 200) {
           _logger.warning('Host indicated that there was an error while fetching medical data');
-          throw Exception('Failed to load medical records');
+          throw Exception('Failed to load medical records - wrong status code');
         }
         _logger.info('Decoding received response to utf8');
         csvContent = utf8.decode(response.bodyBytes);
