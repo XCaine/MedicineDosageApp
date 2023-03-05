@@ -22,7 +22,7 @@ class RegisteredMedicationLoader implements AbstractLoader<Medication> {
   load({Function? onFinishCallback, Function(String)? setMessageOnProgress}) async {
     _logger.info('Started the load of medical data');
     if (setMessageOnProgress != null) {
-      setMessageOnProgress('Ściągamy aktualne dane medyczne');
+      setMessageOnProgress('Pobieranie aktualne dane medyczne');
     }
     String? csvContent;
     if (await InternetConnectionChecker().hasConnection) {
@@ -36,7 +36,7 @@ class RegisteredMedicationLoader implements AbstractLoader<Medication> {
         });
         if (response.statusCode != 200) {
           _logger.warning('Host indicated that there was an error while fetching medical data');
-          throw Exception('Failed to load medical records');
+          throw Exception('Failed to load medical records - wrong status code');
         }
         _logger.info('Decoding received response to utf8');
         csvContent = utf8.decode(response.bodyBytes);

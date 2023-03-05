@@ -156,7 +156,7 @@ class _SettingsState extends State<Settings> {
                               flex: 4,
                               child: ListTile(
                                 title: Text(
-                                  'Pobierz plik z danymi medycznymi \n(źródło - dane.gov.pl)',
+                                  'Pobierz plik źródłowy z danymi medycznymi \n(źródło - dane.gov.pl)',
                                   style: TextStyle(fontSize: 24),
                                 ),
                               ),

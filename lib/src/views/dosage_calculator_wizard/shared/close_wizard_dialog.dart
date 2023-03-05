@@ -17,6 +17,7 @@ class CloseWizardDialog {
             TextButton(
                 onPressed: () {
                   onConfirmAction();
+                  Navigator.of(context).pop();
                 },
                 child: Text(confirmMessage)),
           ],
