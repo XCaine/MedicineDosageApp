@@ -30,8 +30,8 @@ class DosageCalculationAlgorithm {
     List<List<int>> currentIterationResults = [];
 
     for (CalculationModel model in modelsSoFar) {
-      List<List<int>> resultsSoFar = [List<int>.from(model.options)];
-      List<List<int>> currentModelResults = resultsSoFar;
+      List<List<int>> tempResultHolder = [List<int>.from(model.options)];
+      List<List<int>> currentModelResults = tempResultHolder;
       int total = model.total;
       int biggestPackage = max(sizeVariants)!;
       int smallestPackage = min(sizeVariants)!;
@@ -40,15 +40,15 @@ class DosageCalculationAlgorithm {
         _logger.finest('Ending processing');
       } else if (total >= 2 * biggestPackage) {
         //just add biggest package, we're guaranteed 2 more iterations in this case
-        resultsSoFar.single.add(biggestPackage);
+        tempResultHolder.single.add(biggestPackage);
         int newTotal = total - biggestPackage;
-        currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar.single, newTotal)]);
+        currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder.single, newTotal)]);
       } else if (sizeVariants.any((package) => package == total)) {
         //exact match of one of available packages
         int package = sizeVariants.firstWhere((package) => package == total);
-        resultsSoFar.single.add(package);
+        tempResultHolder.single.add(package);
         int newTotal = total - package;
-        currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar.single, newTotal)]);
+        currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder.single, newTotal)]);
       } else if (2 * biggestPackage > total && total > biggestPackage) {
         sizeVariants.sort((b, a) => a.compareTo(b));
         List<int> nBiggestPackages = sizeVariants.take(2).toList();
@@ -58,20 +58,20 @@ class DosageCalculationAlgorithm {
         if (total - biggestPackage >= secondBiggestPackage || nBiggestPackages.length == 1) {
           //just one case
           int newTotal = total - biggestPackage;
-          resultsSoFar.single.add(biggestPackage);
-          currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar.single, newTotal)]);
+          tempResultHolder.single.add(biggestPackage);
+          currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder.single, newTotal)]);
         } else {
           //two cases -> to handle
-          resultsSoFar.add(List<int>.from(resultsSoFar[0])); //make duplicate
+          tempResultHolder.add(List<int>.from(tempResultHolder[0])); //make duplicate
           int firstPackage = nBiggestPackages[0];
           int firstNewTotal = total - firstPackage;
           int secondPackage = nBiggestPackages[1];
           int secondNewTotal = total - secondPackage;
 
-          resultsSoFar[0].add(firstPackage);
-          resultsSoFar[1].add(secondPackage);
-          currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar[0], firstNewTotal)]) +
-              _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar[1], secondNewTotal)]);
+          tempResultHolder[0].add(firstPackage);
+          tempResultHolder[1].add(secondPackage);
+          currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder[0], firstNewTotal)]) +
+              _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder[1], secondNewTotal)]);
         }
       } else if (2 * smallestPackage > total &&
           total > smallestPackage &&
@@ -81,16 +81,16 @@ class DosageCalculationAlgorithm {
         if (equivalentExists) {
           int equivalent2xPackage = sizeVariants.firstWhere((variant) => variant == 2 * smallestPackage);
           int newTotalForEquivalent = total - equivalent2xPackage;
-          resultsSoFar.add(List<int>.from(resultsSoFar[0]));
-          resultsSoFar[0].add(smallestPackage);
-          resultsSoFar[1].add(equivalent2xPackage);
+          tempResultHolder.add(List<int>.from(tempResultHolder[0]));
+          tempResultHolder[0].add(smallestPackage);
+          tempResultHolder[1].add(equivalent2xPackage);
           currentModelResults =
-              _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar[0], newSmallestPackageTotal)]) +
-                  _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar[1], newTotalForEquivalent)]);
+              _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder[0], newSmallestPackageTotal)]) +
+                  _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder[1], newTotalForEquivalent)]);
         } else {
-          resultsSoFar.single.add(smallestPackage);
+          tempResultHolder.single.add(smallestPackage);
           currentModelResults =
-              _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar.single, newSmallestPackageTotal)]);
+              _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder.single, newSmallestPackageTotal)]);
         }
       } else {
         //total < biggestPackage
@@ -99,8 +99,8 @@ class DosageCalculationAlgorithm {
         if (nBestMatchingPackages.length == 1) {
           int package = nBestMatchingPackages[0];
           int newTotal = total - package;
-          resultsSoFar.single.add(package);
-          currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar.single, newTotal)]);
+          tempResultHolder.single.add(package);
+          currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder.single, newTotal)]);
         } else {
           //two cases
           int firstPackage = nBestMatchingPackages[0];
@@ -112,31 +112,32 @@ class DosageCalculationAlgorithm {
           if (firstNewTotal < 0 && secondNewTotal < 0) {
             int chosenPackage = firstNewTotal < secondNewTotal ? secondPackage : firstPackage;
             int chosenTotal = total - chosenPackage;
-            resultsSoFar.single.add(chosenPackage);
-            currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar.single, chosenTotal)]);
+            tempResultHolder.single.add(chosenPackage);
+            currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder.single, chosenTotal)]);
           } else {
             bool thereIsAVariantThatIsSufficient = sizeVariants.any((variant) => variant > total);
 
-            resultsSoFar.add(List<int>.from(resultsSoFar[0]));
+            tempResultHolder.add(List<int>.from(tempResultHolder[0]));
             if (thereIsAVariantThatIsSufficient) {
-              resultsSoFar.add(List<int>.from(resultsSoFar[0]));
+              tempResultHolder.add(List<int>.from(tempResultHolder[0]));
             }
-            resultsSoFar[0].add(firstPackage);
-            resultsSoFar[1].add(secondPackage);
+            tempResultHolder[0].add(firstPackage);
+            tempResultHolder[1].add(secondPackage);
 
             if (thereIsAVariantThatIsSufficient) {
+              //A package exists that would result in processing finish - let's find it
               sizeVariants.sort((a, b) => a.compareTo(b));
               int smallestSufficientPackage = sizeVariants.firstWhere((variant) => variant > total);
               int totalForSmallestSufficientPackage = total - smallestSufficientPackage;
 
-              resultsSoFar[2].add(smallestSufficientPackage);
-              currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar[0], firstNewTotal)]) +
-                  _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar[1], secondNewTotal)]) +
+              tempResultHolder[2].add(smallestSufficientPackage);
+              currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder[0], firstNewTotal)]) +
+                  _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder[1], secondNewTotal)]) +
                   _applyAlgorithm(
-                      sizeVariants, [CalculationModel(resultsSoFar[2], totalForSmallestSufficientPackage)]);
+                      sizeVariants, [CalculationModel(tempResultHolder[2], totalForSmallestSufficientPackage)]);
             } else {
-              currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar[0], firstNewTotal)]) +
-                  _applyAlgorithm(sizeVariants, [CalculationModel(resultsSoFar[1], secondNewTotal)]);
+              currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder[0], firstNewTotal)]) +
+                  _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder[1], secondNewTotal)]);
             }
           }
         }
