@@ -15,9 +15,15 @@ void main() {
 
   test('Test composition of smaller packages 1', () {
     var results = DosageCalculationAlgorithm.apply([10, 20, 30, 60], 100);
-    var expected = [10, 30, 60];
+    var expectedOptions = [
+      [10, 30, 60],
+      [60, 60]
+    ];
 
-    expect(results.any((result) => listEquals(result, expected)), true);
+    expect(
+        expectedOptions.every((expected) => results.any((result) => listEquals(result, expected))),
+        true
+    );
   });
 
   //edge case - a lot of results
