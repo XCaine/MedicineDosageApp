@@ -13,7 +13,7 @@ void main() {
     expect(results.any((result) => listEquals(result, expected)), true);
   });
 
-  test('Test composition of smaller packages 1', () {
+  test('Test composition of smaller packages variant 1', () {
     var results = DosageCalculationAlgorithm.apply([10, 20, 30, 60], 100);
     var expectedOptions = [
       [10, 30, 60],
@@ -27,14 +27,14 @@ void main() {
   });
 
   //edge case - a lot of results
-  test('Test composition of smaller packages 2', () {
+  test('Test composition of smaller packages variant 2', () {
     var results = DosageCalculationAlgorithm.apply([1, 2, 3, 60], 100);
     var expected = [60, 60];
 
     expect(results.any((result) => listEquals(result, expected)), true);
   });
 
-  test('Test composition of smaller packages 3', () {
+  test('Test composition of smaller packages variant 3', () {
     var results = DosageCalculationAlgorithm.apply([30, 60, 90, 120], 40);
     var expected = [60];
 
@@ -48,28 +48,28 @@ void main() {
     expect(results.any((result) => listEquals(result, expected)), true);
   });
 
-  test('Test composition 4', () {
+  test('Test composition variant 4', () {
     var results = DosageCalculationAlgorithm.apply([30, 60], 80);
     var expected = [30, 60];
 
     expect(results.any((result) => listEquals(result, expected)), true);
   });
 
-  test('Test composition 5', () {
+  test('Test composition variant 5', () {
     var results = DosageCalculationAlgorithm.apply([25, 28, 30, 50, 56, 60, 100, 250], 32);
     var expected = [50];
 
     expect(results.any((result) => listEquals(result, expected)), true);
   });
 
-  test('Test composition 6', () {
+  test('Test composition variant 6', () {
     var results = DosageCalculationAlgorithm.apply([25, 28, 30, 50, 56, 60, 100, 250], 29);
     var expected = [30];
 
     expect(results.any((result) => listEquals(result, expected)), true);
   });
 
-  test('Test composition 7 - no package variant for 2*smallestPackage', () {
+  test('Test composition variant 7 - no package variant for 2*smallestPackage', () {
     var results = DosageCalculationAlgorithm.apply([25, 28, 30, 56, 60, 100, 250], 29);
     var expected = [30];
 
