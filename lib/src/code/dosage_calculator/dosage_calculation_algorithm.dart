@@ -39,7 +39,7 @@ class DosageCalculationAlgorithm {
       if (total <= 0) {
         _logger.finest('Ending processing');
       } else if (total >= 2 * biggestPackage) {
-        //just add biggest package, we're guaranteed 2 more iterations in this case
+        //Add biggest package, since we're guaranteed 2 more iterations
         tempResultHolder.single.add(biggestPackage);
         int newTotal = total - biggestPackage;
         currentModelResults = _applyAlgorithm(sizeVariants, [CalculationModel(tempResultHolder.single, newTotal)]);
