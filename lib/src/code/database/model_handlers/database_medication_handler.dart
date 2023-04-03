@@ -9,7 +9,7 @@ import 'package:sqflite/sqlite_api.dart';
 import '../../models/database/package.dart';
 
 class DatabaseMedicationHandler extends BaseDatabaseQueryHandler<Medication> {
-  static final _logger = LogDistributor.getLoggerFor('DatabaseMedicineHandler');
+  static final _logger = LogDistributor.getLoggerFor('DatabaseMedicationHandler');
 
   //for registered medicine loader
   Future<bool> insertMedicationsWithPackages(List<Medication> medications,

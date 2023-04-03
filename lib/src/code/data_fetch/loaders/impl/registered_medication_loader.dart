@@ -22,7 +22,7 @@ class RegisteredMedicationLoader implements AbstractLoader<Medication> {
   load({Function? onFinishCallback, Function(String)? setMessageOnProgress}) async {
     _logger.info('Started the load of medical data');
     if (setMessageOnProgress != null) {
-      setMessageOnProgress('Ściągamy aktualne dane medyczne');
+      setMessageOnProgress('Pobieranie aktualne dane medyczne');
     }
     String? csvContent;
     if (await InternetConnectionChecker().hasConnection) {

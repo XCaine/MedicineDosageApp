@@ -88,7 +88,7 @@ class _RemoveMedicationState extends State<RemoveMedication> {
   void deleteMedication(BasicMedicalRecord medicalRecord) {
     CloseWizardDialog.show(
         context,
-        'Czy na pewno chcesz usunąć ${medicalRecord.productName}',
+        'Czy na pewno chcesz usunąć ${medicalRecord.productName}?',
         'Tak, usuń ${medicalRecord.productName}',
         () => {_manageMedicationsDao.deleteMedication(medicalRecord.id), showSnackBar(medicalRecord.productName)});
   }

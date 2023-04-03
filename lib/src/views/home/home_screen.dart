@@ -1,5 +1,4 @@
 import 'package:drugs_dosage_app/src/code/constants/constants.dart';
-import 'package:drugs_dosage_app/src/code/data_fetch/filters/impl/medication_api_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -53,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
         result = 'Baza leków';
         break;
       case _dosageCalculator:
-        result = 'Kalkulator dawek';
+        result = 'Kalkulator opakowań';
         break;
       case _bmiCalculator:
         result = 'Kalkulator BMI';
